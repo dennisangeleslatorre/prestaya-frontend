@@ -1,0 +1,37 @@
+.table-header {
+    text-align: center;
+    border: 1px solid;
+    border-color: white;
+}
+
+.btn-warning {
+    color: white !important;    
+}
+
+.btn-table {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: transparent;
+    padding: 0px;
+    font-size: 15px;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-outline-table {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-table:hover {
+    color: #212529;
+    background-color: white;
+}

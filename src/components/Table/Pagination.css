@@ -1,0 +1,68 @@
+.dataTables_paginate {
+    float: right;
+    text-align: right;
+    margin-left: 15px;
+}
+
+ul.paginate-links.dataTable {
+    padding-top: 10px;
+}
+
+.pagination {
+    display: -ms-flexbox;
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+ul.paginate-links.dataTable li {
+    display: inline;
+    background: #ddd;
+    border-color: #ddd;
+    width: auto;
+    float: inherit;
+    font-weight: normal;
+    font-size: inherit;
+}
+
+.page-item.active .page-link {
+    color: #fff;
+    z-index: 0;
+}
+
+ul.paginate-links.dataTable li.disabled a {
+    color: #777;
+    cursor: not-allowed;
+    justify-content: center!important;
+    pointer-events: none;
+}
+
+ul.paginate-links.dataTable li.enabled a {
+    color: rgb(65, 64, 64);
+    justify-content: center!important;
+}
+
+.page-item:first-child .page-link {
+    margin-left: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+ul.paginate-links.dataTable li a {
+    text-decoration: none;
+    display: inline;
+    background: #ddd;
+    border-color: #ddd;
+    width: auto;
+    float: inherit;
+    font-weight: normal;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.dataTables_paginate a {
+    padding: 6px 9px!important;
+    background: #ddd!important;
+    border-color: #ddd!important;
+}

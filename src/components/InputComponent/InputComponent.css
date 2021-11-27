@@ -1,0 +1,22 @@
+.input-succes {
+    border: 3px solid transparent;
+    border-color: #1ed12d !important;
+    box-shadow: 3px 0px 30px rgb(72 233 61 / 40%) !important;
+}
+
+.input-error {
+    border: 3px solid #bb2929 !important;
+    box-shadow:  3px 0px 30px rgb(185 46 5 / 40%) !important;
+}
+.invalid__message__data {
+    width: 100%;
+    margin-top: 3px;
+    margin-left: 1px;
+    font-size: 13px;
+    color: #dc3545;
+}
+
+.label-input {
+    font-weight: bold;
+    color: #10489e;
+}

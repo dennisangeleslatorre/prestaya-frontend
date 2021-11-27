@@ -1,0 +1,112 @@
+.mini-brand {
+    width: 100%;
+    height: 40px;
+    object-fit: contain;
+}
+
+.brand {
+    width: 90%;
+    height: 100px;
+    margin: 10px;
+    object-fit: contain;
+}
+
+#sidebar {
+    position: absolute;
+    width: 220px;
+  }
+  #sidebar .pro-sidebar {
+    height: 100vh;
+  }
+  /*Botones close*/
+  #sidebar .close-menu {
+    color: #ffff;
+    position: absolute;
+    right: 0;
+    z-index: 7;
+    font-weight: bold;
+    font-size: 22px;
+    top: 100px;
+    cursor: pointer;
+  }
+  #sidebar .close-mini-menu {
+    color: #ffff;
+    position: absolute;
+    right: 0;
+    z-index: 7;
+    font-weight: bold;
+    font-size: 22px;
+    top: 24px;
+    cursor: pointer;
+  }
+  #sidebar .pro-sidebar {
+    width: 100%;
+    min-width: 100%;
+  }
+  #sidebar .pro-sidebar.collapsed {
+    width: 80px;
+    min-width: 80px;
+  }
+  /*Color total del layout*/
+  #sidebar .pro-sidebar-inner {
+    background-color: #10489e;
+    box-shadow: 0.5px 0.866px 2px 0px rgba(0, 0, 0, 0.15);
+  }
+
+  #sidebar .pro-sidebar-inner .pro-sidebar-layout {
+    overflow-y: hidden;
+  }
+  .container-log {
+    padding: 0 20px;
+  }
+  #sidebar .pro-sidebar-inner .pro-sidebar-layout .logotext p {
+    font-size: 20px;
+    padding: 0 20px;
+    color: #000;
+    font-weight: bold;
+  }
+  #sidebar .pro-sidebar-inner .pro-sidebar-layout ul {
+    padding: 0 5px;
+  }
+
+  /*texto*/
+  #sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item {
+    color: rgb(255, 255, 255);
+    margin: 10px 0px;
+    font-weight: bold;
+  }
+
+  /*icono*/
+  #sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
+    background-color: #fbf4cd;
+    color: #000;
+    border-radius: 3px;
+  }
+
+  /*Submenu*/
+  .pro-sidebar .pro-menu > ul > .pro-sub-menu > .pro-inner-list-item {
+    position: relative;
+    background-color: #10489e;
+  }
+
+  .pro-inner-item:hover {
+    background-color: #ffa500;
+  }
+
+  #header .pro-sidebar-inner .pro-sidebar-layout .active {
+    background-color: linear-gradient(0deg, #ffa500 0%, #ffa500 100%);
+  }
+
+  @media only screen and (max-width: 720px) {
+    html {
+      overflow: hidden;
+    }
+  }
+
+  .logout-button {
+    display: flex;
+    justify-content: center;
+    background-color: none;
+    color: white;
+    font-size: 2rem;
+}

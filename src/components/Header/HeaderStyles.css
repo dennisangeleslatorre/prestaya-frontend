@@ -1,0 +1,43 @@
+.header-container {
+    display: flex;
+    height: 40 px;
+    background-color: #10489e;
+    align-items: center;
+    z-index: 6;
+}
+
+.header-container-md {
+    display: flex;
+    height: 40 px;
+    width: calc(100% - 230px);
+    margin-left: 230px;
+    background-color: #10489e;
+    align-items: center;
+}
+
+
+.menu-bars {
+    margin-left: 10 px;
+    background-color: none;
+    color: white;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.header-title {
+    text-align: center;
+}
+
+p {
+    color: white;
+}
+
+.profile-button {
+    display: flex;
+    padding-right: 10px;
+    justify-content: flex-end;
+    background-color: none;
+    color: white;
+    font-size: 2rem;
+}

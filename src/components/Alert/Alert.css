@@ -1,0 +1,11 @@
+.alert-success p {
+    color: #155724 !important;
+}
+
+.alert-danger p {
+    color: #721c24;
+}
+
+.alert-warning p {
+    color: #856404;
+}
