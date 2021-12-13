@@ -26,9 +26,18 @@ ul.paginate-links.dataTable li {
     font-size: inherit;
 }
 
-.page-item.active .page-link {
+.page-item .active .page-link {
     color: #fff;
-    z-index: 0;
+    z-index: 0 !important;
+}
+
+.no-current-page {
+    background: #ddd !important;
+    border-color: #ddd !important;
+}
+.current-page {
+    background-color: #343a40 !important;
+    border-color: #343a40 !important;
 }
 
 ul.paginate-links.dataTable li.disabled a {
@@ -63,6 +72,4 @@ ul.paginate-links.dataTable li a {
 
 .dataTables_paginate a {
     padding: 6px 9px!important;
-    background: #ddd!important;
-    border-color: #ddd!important;
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const RoleForm = () => {
+const CompaniaForm = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const RoleForm = () => {
     )
 }
 
-export default RoleForm
+export default CompaniaForm

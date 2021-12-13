@@ -12,11 +12,11 @@ const ProtectedRoute = ({...params}) => {
     })
 
     return (
-        <div>
+        <>
             <Layout>
                 { isAuth ? <Route {...params}/> : <Redirect to={"/signIn"}/> }
             </Layout>
-        </div>
+        </>
     )
 }
 

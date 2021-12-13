@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.btn-form {
+  width: 200px;
+}
+
 .hr-presta-ya {
   border-top: 3px solid;
   color: #ffa500;
@@ -22,4 +26,16 @@ code {
   font-size: 24px;
   font-weight: bold;
   color: #10489e;
+}
+
+.btn-danger {
+  color: #ffff !important;
+}
+
+.btn-info {
+  color: #ffff !important;
+}
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
+  background-color: #c3e6ff !important;
 }

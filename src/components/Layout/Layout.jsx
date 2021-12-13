@@ -10,7 +10,7 @@ const Layout = (props) => {
     const { height, width } = useWindowsDimensions();
 
     const containerClass = () => {
-        if(width < 690) {
+        if(width < 480) {
             return "c-wrapper-mobile";
         } else {
             return !isVisible ? "c-wrapper-nav-collapse" : "c-wrapper-nav-no-collapse";

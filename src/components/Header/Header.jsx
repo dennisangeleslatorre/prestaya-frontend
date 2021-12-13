@@ -9,7 +9,7 @@ const Header = ( props ) => {
     let location = useLocation();
 
     useEffect(() => {
-        currentPage(location.pathname)
+        currentPage(location.pathname.split('/')[1])
     }, []);
 
     return(

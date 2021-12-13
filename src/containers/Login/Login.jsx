@@ -23,12 +23,12 @@ const Login = (props) => {
     const [user, setUser] = useState(null);
     //Context
     const { setPagesForUser, pages } = useContext(PagesContext);
-    const { getUserAuth, login, setUserData } = useContext(UserContext);
+    const { getUserAuth, login, setUserData, setUserToken } = useContext(UserContext);
     //Objetos
     const isAuth = getUserAuth();
     let history = useHistory();
     const { changePages } = props;
-    const goToProfile = () => { history.push('/profile') } ;
+    const goToProfile = () => { history.push('/miPerfil') } ;
 
     const handleSetData = (keys, user) => {
         login(() => {
@@ -57,12 +57,12 @@ const Login = (props) => {
             }
             const response = await signIn(user);
             const body = response.body;
-            console.log("Respuesta", response);
             if( response.status === 200 && !body.success ) {
                 setIsAlert(true);
                 setErrorMessage(body.message);
             } else {
                 setUser(body.data);
+                setUserToken(body.token);
                 setIsAlert(false);
             }
         } else {
@@ -74,12 +74,12 @@ const Login = (props) => {
 
     useEffect(() => {
         if(user) {
-            handleSetData(user.c_paginas, user);
+            handleSetData(user.a_paginas, user);
         }
     }, [user])
 
     return (
-        isAuth ? <Redirect to='/profile' /> : <>
+        isAuth ? <Redirect to='/miPerfil' /> : <>
             <div className="justify-content-center" >
                 <div className="container">
                     <div className="row justify-content-center">

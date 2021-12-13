@@ -46,12 +46,22 @@ const useInitialState = () => {
     };
 
     //Pagina actual
-    const currentPage = currentUrl => {
+    const currentPage = routeFragment => {
         let auxArrayPages = [...pages];
+        let currentTitlePage = "";
         //Buscamos la pagina que incluye el fragmento de la ruta
-        let currentTitlePage = auxArrayPages.find((item) => item.path === currentUrl).name;
+        auxArrayPages = auxArrayPages.map( (page) => {
+            if(page.path.includes(routeFragment)) {
+                page.isCurrent = true;
+                currentTitlePage = page.name;
+            } else {
+                page.isCurrent = false ;
+            }
+            return page;
+        })
+        setPages(auxArrayPages);
         setTitle(currentTitlePage);
-    };
+    }
 
     return {
         setPagesKeysForUser,

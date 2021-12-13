@@ -12,10 +12,9 @@ import 'react-pro-sidebar/dist/css/styles.css'
 import './Sidebar.css'
 
 const systemModules = {
-    salesModule: ['CATEGORIAS', 'FAMILIAS', 'GRUPOS', 'MATERIALES'],
-    logisticsModule: [],
-    customerServiceModule: [],
-    systemModule: ['USUARIOS', 'ROLES']
+    masterModule: [ 'TIPOS DE PRODUCTO', 'TIPOS DE DOCUMENTO', 'UNIDADES DE MEDIDA', 'AGENCIAS', 'PARÁMETROS', 'PAÍSES',
+                    'DEPARTAMENTOS', 'PROVINCIAS', 'DISTRITOS', 'COMPAÑÍAS', 'PERÍODOS' ],
+    systemModule: ['USUARIOS', 'PERFILES']
 }
 
 const Sidebar = ({isCollapse, showSidebar, toggled}) => {
@@ -24,13 +23,11 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
     let { logout } = useContext(UserContext);
     let history = useHistory();
     //Paginas por modulo
-    const salesPages = pages.filter((item) => systemModules['salesModule'].includes(item.name));
-    const logisticPages = pages.filter((item) => systemModules['logisticsModule'].includes(item.name));
-    const customerServicePages = pages.filter((item) => systemModules['customerServiceModule'].includes(item.name));
+    const masterPages = pages.filter((item) => systemModules['masterModule'].includes(item.name));
     const systemPages = pages.filter((item) => systemModules['systemModule'].includes(item.name));
 
     //Logica para cerrar sesion
-    const goToSignIn = () => { console.log('entro');  history.push('/signIn') };
+    const goToSignIn = () => { history.push('/signIn') };
     const handleLogout = () => { logout( () => goToSignIn() ) };
 
     return (
@@ -53,40 +50,20 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                 </SidebarHeader>
                 <SidebarContent>
                     <Menu iconShape="square">
-                        {pages.find((item)=> item.name === 'PERFIL') && <MenuItem onClick={() => changePage('PERFIL')} icon={<i className="bi bi-person-fill"></i>}>Perfil<Link to="/profile" /></MenuItem>}
-                        {salesPages.length !== 0 && (
+                        {pages.find((item)=> item.name === 'MI PERFIL') && <MenuItem onClick={() => changePage('MI PERFIL')} icon={<i className="bi bi-person-fill"></i>}>MI PERFIL<Link to="/miPerfil" /></MenuItem>}
+                        {masterPages.length !== 0 && (
                             <SubMenu
-                            icon={<i className="bi bi-receipt"></i>}
-                            title="Ventas"
+                            icon={<i className="bi bi-gear-fill"></i>}
+                            title="Maestros"
                             >
-                                {salesPages.map((page) => (
-                                    <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
-                                ))}
-                            </SubMenu>
-                        )}
-                        {logisticPages.length !== 0 && (
-                            <SubMenu
-                            icon={<i className="bi bi-box"></i>}
-                            title="Logística"
-                            >
-                                {logisticPages.map((page) => (
-                                    <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
-                                ))}
-                            </SubMenu>
-                        )}
-                        {customerServicePages.length !== 0 && (
-                            <SubMenu
-                            icon={<i className="bi bi-telephone-fill"></i>}
-                            title="Servicio al Cliente"
-                            >
-                                {customerServicePages.map((page) => (
+                                {masterPages.map((page) => (
                                     <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
                                 ))}
                             </SubMenu>
                         )}
                         {systemPages.length !== 0 && (
                             <SubMenu
-                            icon={<i className="bi bi-receipt"></i>}
+                            icon={<i className="bi bi-shield-shaded"></i>}
                             title="Sistema"
                             >
                                 {systemPages.map((page) => (

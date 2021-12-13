@@ -27,10 +27,12 @@ const Table = (props) => {
     //Se usa el slice para que tenga por defecto los primeros datos del array
     const [currentItems, setCurrentItems] = useState(filteredItems.slice(0, quantityPerPage));
     //Constantes del boton
-    const textButton = props.textButton || "Registrar";
+    const textButton = props.textButton || "Agregar";
     const buttonLink = props.buttonLink || "";
     //Mostrar cabecera
     const showHeadTable = props.showHeadTable === undefined ? true : props.showHeadTable;
+    //Permiso del botón
+    const registerPermission = props.registerPermission;
 
     //Funciones
     //Funcion para cambiar el query
@@ -60,7 +62,7 @@ const Table = (props) => {
     //Funcion que cambia la cantidad de items que se muestran en la lista por pagina, se envia en la accion onChange del SelectDataPerPage
     const handleChangeQuantityPerPage = e => {
         setCurrentPage(1);
-        setQuantityPerPage(e.target.value); 
+        setQuantityPerPage(e.target.value);
     }
     //Funcion que llama al setCurrentPage para cambiar la pagina actual, esta funcion se envia en las propiedades del pagination para hacer el cambio de pagina
     const handleChangePage = (page) => {
@@ -75,10 +77,12 @@ const Table = (props) => {
         //Se establecen los items actuales
         setCurrentItems(currentItems);
     }
-    
+
     //Mostrar boton de registrar
     const showRegisterButton = () => {
         if(!buttonLink) return null;
+        //Permiso del boton
+        if(!registerPermission) return null;
         return(
             <div className="col-md-5 col-lg-2 offset-lg-4 pl-lg-3">
                 <Link to={buttonLink} className="btn btn-success ml-lg-5">
@@ -165,7 +169,7 @@ const Table = (props) => {
     return (
         <div className="card">
             {/*Titulo de la tabla*/}
-            {showHeadTable === true ? 
+            {showHeadTable === true ?
                 <div className="card-header">
                     {/*Se usa la propiedad tableTitle*/}
                     <div className="row align-items-center">
@@ -203,7 +207,7 @@ const Table = (props) => {
                                 {currentItems.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            {columns.map((head, index2) => {                                                
+                                            {columns.map((head, index2) => {
                                                 return(
                                                     <td key={index + "-" + index2}>{item[head.name]}</td>
                                                 )

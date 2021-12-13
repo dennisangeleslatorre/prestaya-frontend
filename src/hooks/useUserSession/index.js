@@ -16,28 +16,27 @@ const useUserSession = () => {
         window.localStorage.setItem('isSessionActive', JSON.stringify(value));
     };
 
-    /*const setUserToken = token => {
+    const setUserToken = token => {
         window.localStorage.setItem('userToken', JSON.stringify(token));
-    };*/
+    };
 
     //Guarda el usuario en el local storage
     const setUserData = user => {
-        console.log('user', user);
         window.localStorage.setItem('userData', JSON.stringify(user));
     };
 
     //Funcin para obtener el usuario
-    const getUserData = async () => {
-        let user = await window.localStorage.getItem('userData');
+    const getUserData = () => {
+        let user = window.localStorage.getItem('userData');
         user = JSON.parse(user);
         return user;
     };
 
-    /*const getUserToken = async () => {
+    const getUserToken = async () => {
         let token = await window.localStorage.getItem('userToken');
         token = JSON.parse(token);
         return token;
-    };*/
+    };
 
     const getUserAuth = () => {
         let isSessionActive = window.localStorage.getItem('isSessionActive');
@@ -51,6 +50,8 @@ const useUserSession = () => {
         getUserAuth,
         setUserData,
         getUserData,
+        setUserToken,
+        getUserToken
     }
 };
 

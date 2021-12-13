@@ -29,10 +29,14 @@
     position: flex;
     background-color: #ebedef;
     height: 100vh;
+    overflow-y:scroll;
+    padding-bottom: 100px;
 }
 
 .container-layout {
     background-color: #10489e;
+    overflow-y:hidden;
+    height: 100vh;
 }
 
 .container-fluid {

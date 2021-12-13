@@ -5,7 +5,7 @@ import './Alert.css';
 const Alert = (props) => {
     const { title, type, mainMessage, secondaryMessage, classAlert="" } = props;
     return (
-        <div className={`alert ${type} ${classAlert}`} role="alert">
+        <div className={`alert ${type} ${classAlert} mt-3`} role="alert">
             { title && <h4 className="alert-heading">{title}</h4> }
             { mainMessage && <p>{mainMessage}</p> }
             { secondaryMessage &&

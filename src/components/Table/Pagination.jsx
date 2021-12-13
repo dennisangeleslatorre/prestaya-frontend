@@ -16,7 +16,7 @@ const Pagination = (props) => {
     const totalItems = props.totalItems ? props.totalItems : 0;
     //Limite por pagina
     const pageLimit = props.pageLimit ? props.pageLimit : 10;
-    //Numero de paginas    
+    //Numero de paginas
     const totalPages = Math.ceil(totalItems/pageLimit);
     //Pagina actual
     const currentPage = props.currentPage;
@@ -38,14 +38,14 @@ const Pagination = (props) => {
     const handleMoveLeft = e => {
         e.preventDefault();
         //Se crea una constante para saber si se puede cambiar de pagina
-        const newCurrentPage = currentPage - 1 > 0 ?  currentPage - 1 : 1;        
+        const newCurrentPage = currentPage - 1 > 0 ?  currentPage - 1 : 1;
         goToPage(newCurrentPage);
     }
     //Al hacer click en la flecha derecha
     const handleMoveRight = e => {
         e.preventDefault();
         //Se crea una constante para saber si se puede cambiar de pagina
-        const newCurrentPage = currentPage + 1 <= totalPages  ?  currentPage + 1 : currentPage;        
+        const newCurrentPage = currentPage + 1 <= totalPages  ?  currentPage + 1 : currentPage;
         goToPage(newCurrentPage);
     }
 
@@ -62,15 +62,15 @@ const Pagination = (props) => {
                     {/*Pasar a anterior*/}
                     <li className={`left-arrow page-item"`}>
                         <a className="page-link" onClick={(e) => handleMoveLeft(e)}>Anterior</a>
-                    </li>                
+                    </li>
                     {/*número de las páginas*/}
                     {pages.map((page, index) => {
                         return (
-                            <li key={index} className="number active page-item"> 
-                                <a className="page-link" onClick={handleClick(page)}> { page } </a>
+                            <li key={index} className={`number active page-item`}>
+                                <a className={`page-link ${page===currentPage ? "current-page": "no-current-page"}`} onClick={handleClick(page)}> { page } </a>
                             </li>
                         )
-                    })}                    
+                    })}
                     {/*Pasar a siguiente*/}
                     <li className={`left-arrow page-item"`}>
                         <a className="page-link" onClick={(e) => handleMoveRight(e)}>Siguiente</a>
