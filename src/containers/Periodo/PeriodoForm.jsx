@@ -11,13 +11,12 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { getAgenciaByCodigoAgencia, registerAgencia, updateAgencia, listCompanias, listAllCompanias } from '../../Api/Api'
+import { getPeriodosByCodigoPeriodos, registerPeriodo, updatePeriodo, listCompanias, listAllCompanias } from '../../Api/Api'
 
-const AgenciaForm = (props) => {
-    //Estados
+const PeriodoForm = (props) => {
     const [compania, setCompania] = useState("");
-    const [agenciacodigo, setAgenciacodigo] = useState({value: "", isValid:null});
-    const [descripcion, setDescripcion] = useState({value: "", isValid:null});
+    const [tipoPeriodo, setTipoPeriodo] = useState({value:"", isValid:null});
+    const [periodo, setPeriodo] = useState({value:"", isValid:null});
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
     //Estados del formulario
@@ -38,22 +37,22 @@ const AgenciaForm = (props) => {
     let history = useHistory();
     const urlFragment = location.pathname.split('/')[1];
     const buttonTypes = {
-        nuevoAgencia: {label:"Guardar", class:"btn btn-primary btn-form"},
-        editarAgencia: {label:"Actualizar", class:"btn btn-warning btn-form"},
-        visualizarAgencia: {label:"Ir a lista", class:"btn btn-info btn-form"}
+        nuevoPeriodo: {label:"Guardar", class:"btn btn-primary btn-form"},
+        editarPeriodo: {label:"Actualizar", class:"btn btn-warning btn-form"},
+        visualizarPeriodo: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
-    const readOnlyView = urlFragment === "visualizarAgencia" ? true : false;
-    const readOnlyCode = urlFragment !== "nuevoAgencia" ? true : false;
+    const readOnlyView = urlFragment === "visualizarPeriodo" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoPeriodo" ? true : false;
 
     const formFunctions = {
-        nuevoAgencia: ()=> handleRegister(),
-        editarAgencia: ()=> handleUpdate()
+        nuevoPeriodo: ()=> handleRegister(),
+        editarPeriodo: ()=> handleUpdate()
     }
 
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
-        setResponseData({message: message, title: "Operación exitosa", url:"/agencias"});
+        setResponseData({message: message, title: "Operación exitosa", url:"/periodos"});
         setOpenResponseModal(true);
     }
 
@@ -63,15 +62,15 @@ const AgenciaForm = (props) => {
     }
 
     const validate = () => {
-        if(!compania || !agenciacodigo.isValid  || !descripcion.isValid) return false;
+        if(!compania || !tipoPeriodo.isValid  || !periodo.isValid) return false;
         return true;
     }
 
     const prepareData = () => {
         const data = {
             c_compania: compania,
-            c_agencia: agenciacodigo.value,
-            c_descripcion: descripcion.value,
+            c_tipoperiodo: tipoPeriodo.value,
+            c_periodo: periodo.value,
             c_estado: estado
         }
         return data;
@@ -82,8 +81,8 @@ const AgenciaForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
-        const response = await registerAgencia(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito la agencia") : prepareNotificationDanger("Error al registrar", response.message);
+        const response = await registerPeriodo(data);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el período") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -92,33 +91,33 @@ const AgenciaForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
-        const response = await updateAgencia(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito la agencia") : prepareNotificationDanger("Error al actualizar", response.message);
+        const response = await updatePeriodo(data);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el período") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
     const handleClick = () => {
-        if(urlFragment !== "visualizarAgencia") {
+        if(urlFragment !== "visualizarPeriodo") {
             if(validate()) {
                 setOpen(true);
-                if(urlFragment === "nuevoAgencia") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
-                if(urlFragment === "editarAgencia") setModalAttributes({title:"Aviso de actualización", message:"¿Seguro que desea actualizar este elemento?"});
+                if(urlFragment === "nuevoPeriodo") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
+                if(urlFragment === "editarPeriodo") setModalAttributes({title:"Aviso de actualización", message:"¿Seguro que desea actualizar este elemento?"});
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
         } else {
-            history.push("/agencias")
+            history.push("/periodos")
         }
     }
 
     const getData = async () => {
-        const [c_compania, c_agencia] = elementId.split('-');
-        const response = await getAgenciaByCodigoAgencia({c_compania:c_compania, c_agencia:c_agencia});
+        const [c_compania, c_tipoperiodo] = elementId.split('-');
+        const response = await getPeriodosByCodigoPeriodos({c_compania:c_compania, c_tipoperiodo:c_tipoperiodo});
         if(response.status === 200) {
             const data = response.body.data;
             setCompania(data.c_compania);
-            setAgenciacodigo({value:data.c_agencia, isValid: true});
-            setDescripcion({value:data.c_descripcion, isValid: true});
+            setTipoPeriodo({value:data.c_tipoperiodo, isValid: true});
+            setPeriodo({value:data.c_periodo, isValid: true});
             setEstado(data.c_estado);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
@@ -126,7 +125,7 @@ const AgenciaForm = (props) => {
     }
 
     const getCompanias = async () => {
-        const response = urlFragment === "nuevoAgencia" ? await listCompanias() : await listAllCompanias();
+        const response = urlFragment === "nuevoPeriodo" ? await listCompanias() : await listAllCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
     }
 
@@ -134,18 +133,18 @@ const AgenciaForm = (props) => {
         await setIsLoading(true);
         await getCompanias();
         setButtonAttributes(buttonTypes[urlFragment]);
-        if(urlFragment !== "nuevoAgencia") await getData();
+        if(urlFragment !== "nuevoPeriodo") await getData();
         setIsLoading(false);
     }, [])
 
     useEffect(() => {
-        if(urlFragment === "nuevoAgencia" && companias.length !== 0) setCompania(companias[0].c_compania)
+        if(urlFragment === "nuevoPeriodo" && companias.length !== 0) setCompania(companias[0].c_compania)
     }, [companias])
 
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
-            goList={()=>history.push("/agencias")} view={readOnlyView}>
+            goList={()=>history.push("/periodos")} view={readOnlyView}>
                 <ReactSelect
                     inputId="companiaCodeId"
                     labelText="Compañía"
@@ -158,32 +157,32 @@ const AgenciaForm = (props) => {
                     disabledElement={readOnlyCode}
                 />
                 <InputComponent
-                    label="Código de agencia"
-                    state={agenciacodigo}
-                    setState={setAgenciacodigo}
+                    label="Tipo de período"
+                    state={tipoPeriodo}
+                    setState={setTipoPeriodo}
                     type="text"
-                    placeholder="Código de agencia"
-                    inputId="agenciacodigoId"
-                    validation="textWithRange"
+                    placeholder="Tipo de período"
+                    inputId="periodocodigoId"
+                    validation="numberAndTextWithRange"
                     min={1}
-                    max={2}
+                    max={10}
                     readOnly={readOnlyCode}
                 />
                 <InputComponent
-                    label="Descripción"
-                    state={descripcion}
-                    setState={setDescripcion}
+                    label="Período"
+                    state={periodo}
+                    setState={setPeriodo}
                     type="text"
-                    placeholder="Descripción"
-                    inputId="descripcionId"
-                    validation="name"
-                    max={60}
+                    placeholder="Período"
+                    inputId="periodoId"
+                    validation="number"
+                    max={6}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent
                     labelText="Estado"
                     defaultValue="Seleccione un estado"
-                    items={[{name: "Activo", value:"A"}, {name: "Inactivo", value:"I"}]}
+                    items={[{name: "Abierto", value:"A"}, {name: "Cerrado", value:"C"}]}
                     selectId="estadoId"
                     valueField="value"
                     optionField="name"
@@ -211,4 +210,4 @@ const AgenciaForm = (props) => {
     )
 }
 
-export default AgenciaForm
+export default PeriodoForm

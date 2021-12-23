@@ -4,6 +4,7 @@ import FormContainer from '../../components/FormContainer/FormContainer'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -21,6 +22,8 @@ const TipoDocumentoForm = (props) => {
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -38,7 +41,7 @@ const TipoDocumentoForm = (props) => {
         visualizarTipoDocumento: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarDepartamento" ? true : false;
-    const readOnlyCode = urlFragment === "editarDepartamento" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoTipoDocumento" ? true : false;
 
     const formFunctions = {
         nuevoTipoDocumento: ()=> handleRegister(),
@@ -48,6 +51,8 @@ const TipoDocumentoForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/tiposDocumento"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -126,7 +131,8 @@ const TipoDocumentoForm = (props) => {
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/tiposDocumento")} view={readOnlyView}>
                 <InputComponent
                     state={codigoTipoDocumento}
                     setState={setCodigoTipoDocumento}
@@ -134,10 +140,10 @@ const TipoDocumentoForm = (props) => {
                     label="Tipo de documento"
                     placeholder="Tipo de documento"
                     inputId="codigoTipoDocumentoInput"
-                    validation="textWithRange"
+                    validation="numberAndTextWithRange"
                     min={1}
                     max={3}
-                    disabledElement={readOnlyView || readOnlyCode}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     state={descripcion}
@@ -147,6 +153,7 @@ const TipoDocumentoForm = (props) => {
                     placeholder="Descripción"
                     inputId="numeroDigitosInput"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <InputComponent
@@ -178,6 +185,13 @@ const TipoDocumentoForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

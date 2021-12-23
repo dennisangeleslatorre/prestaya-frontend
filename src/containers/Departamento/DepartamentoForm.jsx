@@ -5,6 +5,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -23,6 +24,8 @@ const DepartamentoForm = (props) => {
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -40,7 +43,7 @@ const DepartamentoForm = (props) => {
         visualizarDepartamento: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarDepartamento" ? true : false;
-    const readOnlyCode = urlFragment === "editarDepartamento" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoDepartamento" ? true : false;
 
     const formFunctions = {
         nuevoDepartamento: ()=> handleRegister(),
@@ -50,6 +53,8 @@ const DepartamentoForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/departamentos"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -78,7 +83,7 @@ const DepartamentoForm = (props) => {
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         const response = await registerDepartamento(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el usuario") : prepareNotificationDanger("Error al registrar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el departamento") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -88,7 +93,7 @@ const DepartamentoForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updateDepartamento(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el usuario") : prepareNotificationDanger("Error al actualizar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el departamento") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
@@ -140,7 +145,8 @@ const DepartamentoForm = (props) => {
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/departamentos")} view={readOnlyView}>
                 <ReactSelect
                     inputId="paisCodeId"
                     labelText="País"
@@ -150,7 +156,7 @@ const DepartamentoForm = (props) => {
                     handleElementSelected={setPaisCodigo}
                     optionField="c_descripcion"
                     valueField="c_paiscodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <InputComponent
                     label="Código de departamento"
@@ -159,8 +165,10 @@ const DepartamentoForm = (props) => {
                     type="text"
                     placeholder="Código de departamento"
                     inputId="departamentocodigoId"
-                    validation="name"
-                    readOnly={readOnlyView || readOnlyCode}
+                    validation="textWithRange"
+                    min={1}
+                    max={10}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     label="Descripción"
@@ -170,6 +178,7 @@ const DepartamentoForm = (props) => {
                     placeholder="Descripción"
                     inputId="descripcionId"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent
@@ -191,6 +200,13 @@ const DepartamentoForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

@@ -4,6 +4,7 @@ import FormContainer from '../../components/FormContainer/FormContainer'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -20,6 +21,8 @@ const PaisForm = (props) => {
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -37,7 +40,7 @@ const PaisForm = (props) => {
         visualizarPais: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarPais" ? true : false;
-    const readOnlyCode = urlFragment === "editarPais" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoPais" ? true : false;
 
     const formFunctions = {
         nuevoPais: ()=> handleRegister(),
@@ -47,6 +50,8 @@ const PaisForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/paises"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -74,7 +79,7 @@ const PaisForm = (props) => {
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         const response = await registerPais(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el perfil") : prepareNotificationDanger("Error al registrar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el país") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -84,7 +89,7 @@ const PaisForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updatePais({body:data, id:elementId});
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el perfil") : prepareNotificationDanger("Error al actualizar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el país") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
@@ -98,7 +103,7 @@ const PaisForm = (props) => {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
         } else {
-            history.push("/tiposProducto")
+            history.push("/paises")
         }
     }
 
@@ -123,7 +128,8 @@ const PaisForm = (props) => {
 
     return (
         <>
-        <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+        <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+        goList={()=>history.push("/paises")} view={readOnlyView}>
             <InputComponent
                 state={pais}
                 setState={setPais}
@@ -134,7 +140,7 @@ const PaisForm = (props) => {
                 validation="textWithRange"
                 min={1}
                 max={10}
-                readOnly={readOnlyView || readOnlyCode}
+                readOnly={readOnlyCode}
             />
             <InputComponent
                 state={descripcion}
@@ -142,8 +148,9 @@ const PaisForm = (props) => {
                 type="text"
                 label="Descripción"
                 placeholder="Descripción"
-                inputId="numeroDigitosInput"
+                inputId="descripcionInput"
                 validation="name"
+                max={60}
                 readOnly={readOnlyView}
             />
             <SelectComponent
@@ -165,6 +172,13 @@ const PaisForm = (props) => {
             title={modalAttributes.title}
             message={modalAttributes.message}
             onHandleFunction={formFunctions[urlFragment]}
+        />
+        <ResponseModal
+            isOpen={openResponseModal}
+            title={responseData.title}
+            onClose={()=>setOpenResponseModal(false)}
+            message={responseData.message}
+            buttonLink={responseData.url}
         />
     </>
     )

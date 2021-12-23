@@ -5,6 +5,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -25,6 +26,8 @@ const UserForm = (props) => {
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -52,6 +55,8 @@ const UserForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/usuarios"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -144,13 +149,14 @@ const UserForm = (props) => {
         await setIsLoading(true);
         await getPerfiles();
         setButtonAttributes(buttonTypes[urlFragment]);
-        if(urlFragment !== "nuevoPerfil") await getData();
+        if(urlFragment !== "nuevoUsuario") await getData();
         setIsLoading(false);
     }, [])
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/usuarios")} view={readOnlyView} >
                 <InputComponent
                     label="Código"
                     state={codigoUsuario}
@@ -158,8 +164,9 @@ const UserForm = (props) => {
                     type="text"
                     placeholder="Código"
                     inputId="codigoId"
-                    validation="code"
-                    readOnly={readOnlyView || readOnlyCode}
+                    validation="textNumber"
+                    max={10}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     label="Nombre completo"
@@ -169,6 +176,7 @@ const UserForm = (props) => {
                     placeholder="Nombre completo"
                     inputId="nombresId"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <InputComponent
@@ -179,6 +187,7 @@ const UserForm = (props) => {
                     placeholder="Teléfono"
                     inputId="telefonoId"
                     validation="phone"
+                    max={20}
                     readOnly={readOnlyView}
                 />
                 <ReactSelect
@@ -200,6 +209,7 @@ const UserForm = (props) => {
                     placeholder="Correo"
                     inputId="CorreoId"
                     validation="email"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 { urlFragment === "nuevoUsuario" && <InputComponent
@@ -231,6 +241,13 @@ const UserForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

@@ -5,6 +5,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -24,9 +25,12 @@ const ProvinciaForm = (props) => {
     const [departamentosFiltrados, setDepartamentosFiltrados] = useState([]);
     const [estado, setEstado] = useState("A");
     //Estados del formulario
+    const [firstLoad, setfirstLoad] = useState(true);
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -44,7 +48,7 @@ const ProvinciaForm = (props) => {
         visualizarProvincia: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarProvincia" ? true : false;
-    const readOnlyCode = urlFragment === "editarProvincia" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevaProvincia" ? true : false;
 
     const formFunctions = {
         nuevaProvincia: ()=> handleRegister(),
@@ -54,6 +58,8 @@ const ProvinciaForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/provincias"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -83,7 +89,7 @@ const ProvinciaForm = (props) => {
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         const response = await registerProvincia(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el usuario") : prepareNotificationDanger("Error al registrar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito la provincia") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -93,7 +99,7 @@ const ProvinciaForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updateProvincia(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el usuario") : prepareNotificationDanger("Error al actualizar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito la provincia") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
@@ -142,6 +148,7 @@ const ProvinciaForm = (props) => {
     }
 
     useEffect(() => {
+        if(!firstLoad) setDepartamentoCodigo("");
         if(paisCodigo && departamentos.length !== 0) {
             const departamentosAux = departamentos.filter((item) => item.c_paiscodigo === paisCodigo);
             setDepartamentosFiltrados(departamentosAux);
@@ -154,12 +161,14 @@ const ProvinciaForm = (props) => {
         await getDepartamentos();
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevaProvincia") await getData();
+        setfirstLoad(false);
         setIsLoading(false);
     }, [])
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/provincias")} view={readOnlyView}>
                 <ReactSelect
                     inputId="paisCodeId"
                     labelText="País"
@@ -169,7 +178,7 @@ const ProvinciaForm = (props) => {
                     handleElementSelected={setPaisCodigo}
                     optionField="c_descripcion"
                     valueField="c_paiscodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <ReactSelect
                     inputId="departamentoCodeId"
@@ -180,7 +189,7 @@ const ProvinciaForm = (props) => {
                     handleElementSelected={setDepartamentoCodigo}
                     optionField="c_descripcion"
                     valueField="c_departamentocodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <InputComponent
                     label="Código de provincia"
@@ -189,8 +198,10 @@ const ProvinciaForm = (props) => {
                     type="text"
                     placeholder="Código de provincia"
                     inputId="provinciacodigoId"
-                    validation="name"
-                    readOnly={readOnlyView || readOnlyCode}
+                    validation="textWithRange"
+                    min={1}
+                    max={10}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     label="Descripción"
@@ -200,6 +211,7 @@ const ProvinciaForm = (props) => {
                     placeholder="Descripción"
                     inputId="descripcionId"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent
@@ -221,6 +233,13 @@ const ProvinciaForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

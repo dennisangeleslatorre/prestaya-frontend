@@ -9,28 +9,28 @@ import Loading from '../../components/Modal/LoadingModal'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
-import { listAllCompanias, deleteCompania } from '../../Api/Api'
+import { listAllParametros, deleteParametro } from '../../Api/Api'
 
-const DropdownButton = ({c_compania, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
+const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
-        <Menu key={`Menu${c_compania}`}>
-          {viewPermission && <Menu.Item key={`View${c_compania}`} className="btn btn-info">
-            <Link to={`/visualizarCompania/${c_compania}`}>
+        <Menu key={`Menu${keyCodes.c_compania}${keyCodes.c_parametrocodigo}`}>
+          { viewPermission && <Menu.Item key={`View${keyCodes.c_compania}${keyCodes.c_parametrocodigo}`} className="btn btn-info">
+            <Link to={`/visualizarParametro/${keyCodes.c_compania}-${keyCodes.c_parametrocodigo}`}>
                 <Space direction="horizontal">
                     <Space wrap><i className="bi bi-eye"></i></Space>
                     <Space wrap>Visualizar</Space>
                 </Space>
             </Link>
           </Menu.Item>}
-          {updatePermission && <Menu.Item key={`Edit${c_compania}`} className="btn btn-warning">
-            <Link to={`/editarCompania/${c_compania}`}>
+          { updatePermission && <Menu.Item key={`Edit${keyCodes.c_compania}${keyCodes.c_parametrocodigo}`} className="btn btn-warning">
+            <Link to={`/editarParametro/${keyCodes.c_compania}-${keyCodes.c_parametrocodigo}`}>
                 <Space direction="horizontal">
                     <Space wrap><i className="bi bi-pencil"></i></Space>
                     <Space wrap>Editar</Space>
                 </Space>
             </Link>
           </Menu.Item>}
-          {deletePermission && <Menu.Item key={`Delete${c_compania}`} className="btn btn-danger" onClick={showDeleteModal}>
+          { deletePermission && <Menu.Item key={`Delete${keyCodes.c_compania}${keyCodes.c_parametrocodigo}`} className="btn btn-danger" onClick={showDeleteModal}>
             <Space direction="horizontal">
                 <Space wrap><i className="bi bi-trash"></i></Space>
                 <Space wrap>Eliminar</Space>
@@ -50,35 +50,37 @@ const DropdownButton = ({c_compania, showDeleteModal, viewPermission=false, upda
     )
 }
 
-const Companias = () => {
+const Parametros = () => {
     //Estados
-    const [companiasTable, setCompaniasTable] = useState([]);
+    const [parametrosTable, setParametrosTable] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [idElement, setIdElement] = useState(null);
     const [openResponseModal, setOpenResponseModal] = useState(false);
     const [responseData, setResponseData] = useState({});
+    const [keyElement, setKeyElement] = useState(null);
+    const tipoValor = {
+        N: "n_valornumero",
+        F: "d_valorfecha",
+        T: "c_valortexto"
+    }
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "ACTUALIZAR COMPAÑÍA" || item === "AGREGAR COMPAÑÍA" || item === "VISUALIZAR COMPAÑÍA" || item === "ELIMINAR COMPAÑÍA"
+        return item === "ACTUALIZAR PARÁMETRO" || item === "AGREGAR PARÁMETRO" || item === "VISUALIZAR PARÁMETRO" || item === "ELIMINAR PARÁMETRO"
     })
-    const registerPermission = userPermisssions.includes("AGREGAR COMPAÑÍA");
-    const updatePermission = userPermisssions.includes("ACTUALIZAR COMPAÑÍA");
-    const viewPermission = userPermisssions.includes("VISUALIZAR COMPAÑÍA");
-    const deletePermission = userPermisssions.includes("ELIMINAR COMPAÑÍA");
+    const registerPermission = userPermisssions.includes("AGREGAR PARÁMETRO");
+    const updatePermission = userPermisssions.includes("ACTUALIZAR PARÁMETRO");
+    const viewPermission = userPermisssions.includes("VISUALIZAR PARÁMETRO");
+    const deletePermission = userPermisssions.includes("ELIMINAR PARÁMETRO");
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'c_compania', label: 'Compañía', sortVar:0 },
-        {name:'c_descripcion', label: 'Descripción', sortVar:0 },
-        {name:'c_ruc', label: 'RUC', sortVar:0 },
-        {name:'c_direccion', label: 'Dirección', sortVar:0 },
-        {name:'c_paiscodigo', label: 'País', sortVar:0 },
-        {name:'c_departamentocodigo', label: 'Departamento', sortVar:0 },
-        {name:'c_provinciacodigo', label: 'Provincia', sortVar:0 },
-        {name:'c_distritocodigo', label: 'Distrito', sortVar:0 },
-        {name:'c_estado', label: 'Estado', sortVar:0 },
+        {name:'c_compania', label: 'Compañía', sortVar:1 },
+        {name:'c_parametrocodigo', label: 'Código', sortVar:1 },
+        {name:'c_descripcion', label: 'Descripción', sortVar:1 },
+        {name:'c_tipovalor', label: 'Tipo valor', sortVar:1 },
+        {name:'valor', label: 'Valor', sortVar:1 },
+        {name:'c_estado', label: 'Estado', sortVar:1 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
@@ -88,13 +90,10 @@ const Companias = () => {
     //campos de filtro
     const fieldsFilter= [
         { name: 'c_compania' },
+        { name: 'c_parametrocodigo' },
         { name: 'c_descripcion' },
-        { name: 'c_ruc' },
-        { name: 'c_direccion' },
-        { name: 'c_paiscodigo' },
-        { name: 'c_departamentocodigo' },
-        { name: 'c_provinciacodigo' },
-        { name: 'c_distritocodigo' },
+        { name: 'c_tipovalor' },
+        { name: 'valor' },
         { name: 'c_estado' }
     ];
 
@@ -105,28 +104,28 @@ const Companias = () => {
 
     const refreshFunction = async () => {
         await setIsLoading(true);
-        await getCompanias();
+        await getParametros();
         setIsLoading(false);
     }
 
-    //Funcion para obtener companias
-    const getCompanias = async () => {
-        const response = await listAllCompanias();
-        if(response && response.status === 200 && response.body.data.length != 0) getCompaniasTable(response.body.data);
+    //Funcion para obtener parametros
+    const getParametros = async () => {
+        const response = await listAllParametros();
+        if(response && response.status === 200 && response.body.data.length != 0) getParametrosTable(response.body.data);
     }
 
-    const showDeleteModal = (c_compania) => {
-        setIdElement(c_compania);
+    const showDeleteModal = (keyCodes) => {
+        setKeyElement(keyCodes);
         setOpen(true);
     }
 
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        const response = await deleteCompania(idElement)
+        const response = await deleteParametro(keyElement);
         if(response && response.status === 200) {
-            await getCompanias();
-            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito la compañía." });
+            await getParametros();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el parámetro." });
         } else {
             setResponseData( {title: "Error al eliminar", message: response.message });
         }
@@ -134,35 +133,33 @@ const Companias = () => {
         setIsLoading(false);
     }
 
-    //Obtener companias para la tabla
-    const getCompaniasTable = (companias) => {
-        const listCompaniasTable = companias.map((item) => {
+    //Obtener parametros para la tabla
+    const getParametrosTable = (parametros) => {
+        const listParametrosTable = parametros.map((item) => {
             let aux = {};
             aux.c_compania = item.c_compania;
+            aux.c_parametrocodigo = item.c_parametrocodigo;
             aux.c_descripcion = item.c_descripcion;
-            aux.c_ruc = item.c_ruc;
-            aux.c_direccion = item.c_direccion;
-            aux.c_paiscodigo = item.c_paiscodigo;
-            aux.c_departamentocodigo = item.c_departamentocodigo;
-            aux.c_provinciacodigo = item.c_provinciacodigo;
-            aux.c_distritocodigo = item.c_distritocodigo;
+            aux.c_tipovalor = item.c_tipovalor;
+            aux.valor = item[tipoValor[item.c_tipovalor]];
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
             aux.d_fecharegistro = item.d_fecharegistro ? (new Date(item.d_fecharegistro)).toLocaleString("en-US") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? (new Date(item.d_ultimafechamodificacion)).toLocaleString("en-US") : "";
-            aux.actions = (<DropdownButton c_compania={item.c_compania} showDeleteModal={()=>showDeleteModal(item.c_compania)}
+            const keyCodes = { c_parametrocodigo: item.c_parametrocodigo, c_compania: item.c_compania }
+            aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;
         })
-        setCompaniasTable(listCompaniasTable);
+        setParametrosTable(listParametrosTable);
     }
 
     return (
         <>
             <ListContainer
-                columns={columns} dataTable={companiasTable} fieldsFilter={fieldsFilter} buttonLink='/nuevaCompania'
-                textButton='Agregar Compañía' registerPermission={registerPermission} refreshFunction={refreshFunction}
+                columns={columns} dataTable={parametrosTable} fieldsFilter={fieldsFilter} buttonLink='/nuevoParametro'
+                textButton='Agregar Parámetro' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -183,4 +180,4 @@ const Companias = () => {
     )
 }
 
-export default Companias
+export default Parametros

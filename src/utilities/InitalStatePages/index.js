@@ -34,7 +34,11 @@ import ProvinciaForm from '../../containers/Provincia/ProvinciaForm'
 import Distritos from '../../containers/Distrito/Distritos'
 import DistritoForm from '../../containers/Distrito/DistritoForm'
 //PARAMETROS
+import Parametros from '../../containers/Parametro/Parametros'
+import ParametroForm from '../../containers/Parametro/ParametroForm'
 //PERIODOS
+import Periodos from '../../containers/Periodo/Periodos'
+import PeriodoForm from '../../containers/Periodo/PeriodoForm'
 
 export default{
     initialPages: [
@@ -270,6 +274,46 @@ export default{
             path: '/visualizarAgencia/:id',
             exact: true,
             name: 'VISUALIZAR AGENCIA'
+        },{
+            component: Parametros,
+            path: '/parametros',
+            exact: true,
+            name: 'PARÁMETROS'
+        },{
+            component: ParametroForm,
+            path: '/nuevoParametro',
+            exact: true,
+            name: 'AGREGAR PARÁMETRO'
+        },{
+            component: ParametroForm,
+            path: '/editarParametro/:id',
+            exact: true,
+            name: 'ACTUALIZAR PARÁMETRO'
+        },{
+            component: ParametroForm,
+            path: '/visualizarParametro/:id',
+            exact: true,
+            name: 'VISUALIZAR PARÁMETRO'
+        },{
+            component: Periodos,
+            path: '/periodos',
+            exact: true,
+            name: 'PERÍODOS'
+        },{
+            component: PeriodoForm,
+            path: '/nuevoPeriodo',
+            exact: true,
+            name: 'AGREGAR PERÍODO'
+        },{
+            component: PeriodoForm,
+            path: '/editarPeriodo/:id',
+            exact: true,
+            name: 'ACTUALIZAR PERÍODO'
+        },{
+            component: PeriodoForm,
+            path: '/visualizarPeriodo/:id',
+            exact: true,
+            name: 'VISUALIZAR PERÍODO'
         }
     ]
 }

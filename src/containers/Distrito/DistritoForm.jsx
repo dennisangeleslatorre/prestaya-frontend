@@ -5,6 +5,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -27,9 +28,12 @@ const DistritoForm = (props) => {
     const [provinciasFiltradas, setProvinciasFiltradas] = useState([]);
     const [estado, setEstado] = useState("A");
     //Estados del formulario
+    const [firstLoad, setfirstLoad] = useState(true);
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -47,7 +51,7 @@ const DistritoForm = (props) => {
         visualizarDistrito: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarDistrito" ? true : false;
-    const readOnlyCode = urlFragment === "editarDistrito" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoDistrito" ? true : false;
 
     const formFunctions = {
         nuevoDistrito: ()=> handleRegister(),
@@ -57,6 +61,8 @@ const DistritoForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/distritos"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -87,7 +93,7 @@ const DistritoForm = (props) => {
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         const response = await registerDistrito(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el usuario") : prepareNotificationDanger("Error al registrar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el distrito") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -97,7 +103,7 @@ const DistritoForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updateDistrito(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el usuario") : prepareNotificationDanger("Error al actualizar", response.message);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el distrito") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
@@ -152,6 +158,7 @@ const DistritoForm = (props) => {
     }
 
     useEffect(() => {
+        if(!firstLoad) setDepartamentoCodigo("");
         if(paisCodigo && departamentos.length !== 0) {
             const departamentosAux = departamentos.filter((item) => item.c_paiscodigo === paisCodigo);
             setDepartamentosFiltrados(departamentosAux);
@@ -159,10 +166,13 @@ const DistritoForm = (props) => {
     }, [paisCodigo, departamentos])
 
     useEffect(() => {
-        console.log(provincias);
+        if(!firstLoad) setProvinciaCodigo("");
         if(departamentoCodigo && provincias.length !== 0) {
             const provinciasAux = provincias.filter((item) => item.c_departamentocodigo === departamentoCodigo);
             setProvinciasFiltradas(provinciasAux);
+        }
+        if(!departamentoCodigo) {
+            setProvinciasFiltradas([]);
         }
     }, [departamentoCodigo, provincias])
 
@@ -173,12 +183,14 @@ const DistritoForm = (props) => {
         await getProvincias();
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoDistrito") await getData();
+        setfirstLoad(false);
         setIsLoading(false);
     }, [])
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/distritos")} view={readOnlyView}>
                 <ReactSelect
                     inputId="paisCodeId"
                     labelText="País"
@@ -188,7 +200,7 @@ const DistritoForm = (props) => {
                     handleElementSelected={setPaisCodigo}
                     optionField="c_descripcion"
                     valueField="c_paiscodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <ReactSelect
                     inputId="departamentoCodeId"
@@ -199,7 +211,7 @@ const DistritoForm = (props) => {
                     handleElementSelected={setDepartamentoCodigo}
                     optionField="c_descripcion"
                     valueField="c_departamentocodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <ReactSelect
                     inputId="provinciaCodeId"
@@ -210,7 +222,7 @@ const DistritoForm = (props) => {
                     handleElementSelected={setProvinciaCodigo}
                     optionField="c_descripcion"
                     valueField="c_provinciacodigo"
-                    disabledElement={readOnlyView || readOnlyCode}
+                    disabledElement={readOnlyCode}
                 />
                 <InputComponent
                     label="Código de distrito"
@@ -219,8 +231,10 @@ const DistritoForm = (props) => {
                     type="text"
                     placeholder="Código de distrito"
                     inputId="distritocodigoId"
-                    validation="name"
-                    readOnly={readOnlyView || readOnlyCode}
+                    validation="numberAndTextWithRange"
+                    min={1}
+                    max={10}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     label="Descripción"
@@ -230,6 +244,7 @@ const DistritoForm = (props) => {
                     placeholder="Descripción"
                     inputId="descripcionId"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent
@@ -251,6 +266,13 @@ const DistritoForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

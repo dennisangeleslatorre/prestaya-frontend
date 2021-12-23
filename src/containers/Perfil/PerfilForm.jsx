@@ -5,6 +5,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import TreeSelectComponent from '../../components/TreeSelectComponent/TreeSelectComponent'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -18,12 +19,14 @@ const PerfilForm = (props) => {
     //Estados
     const [perfil, setPerfil] = useState({value: "", isValid:null});
     const [codigo, setCodigo] = useState({value: "", isValid:null});
-    const [paginas, setPaginas] = useState([]);
+    const [paginas, setPaginas] = useState(['MI PERFIL']);
     const [estado, setEstado] = useState("A");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -51,6 +54,8 @@ const PerfilForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/perfiles"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -65,7 +70,7 @@ const PerfilForm = (props) => {
 
     const prepareData = () => {
         const data = {
-            n_perfil: perfil.value.toUpperCase(),
+            n_perfil: perfil.value,
             c_codigoperfil: codigo.value.toUpperCase(),
             c_paginas: paginas.reduce((value, cvv)=>cvv=`${value},${cvv}`),
             c_estado: estado
@@ -129,7 +134,8 @@ const PerfilForm = (props) => {
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/perfiles")} view={readOnlyView}>
                 <InputComponent
                     state={perfil}
                     setState={setPerfil}
@@ -151,6 +157,7 @@ const PerfilForm = (props) => {
                     inputId="codeInput"
                     validation="textNumber"
                     readOnly={readOnlyView}
+                    max={10}
                 />
                 <TreeSelectComponent
                     data={pagesArray}
@@ -177,6 +184,13 @@ const PerfilForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

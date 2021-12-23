@@ -15,7 +15,7 @@ const Header = ( props ) => {
     return(
         <div className="container-fluid pr-0">
             <div className="row header-container">
-                { props.width < 690 &&
+                { props.width <= 480 &&
                 <div className="col-2">
                     <a className="menu-bars">
                         <i className={ props.isVisible ? 'bi bi-arrow-left-circle' : 'bi bi-arrow-right-circle' } onClick={props.showSidebar} />

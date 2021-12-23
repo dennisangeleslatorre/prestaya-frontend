@@ -3,6 +3,7 @@ import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
@@ -57,6 +58,8 @@ const Perfiles = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const profilePermisssions = getPagesKeysForUser().filter((item)=>{
@@ -85,10 +88,14 @@ const Perfiles = () => {
 
     //consumo de api
     useEffect(async () => {
+        await refreshFunction();
+    }, [])
+
+    const refreshFunction = async () => {
         await setIsLoading(true);
         await getPerfiles();
         setIsLoading(false);
-    }, [])
+    }
 
     //Funcion para obtener perfiles
     const getPerfiles = async () => {
@@ -104,9 +111,14 @@ const Perfiles = () => {
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        console.log("Eliminar", idElement);
-        //const response = await deletePerfil(idElement)
-        await getPerfiles();
+        const response = await deletePerfil(idElement);
+        if(response && response.status === 200) {
+            await getPerfiles();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el perfil." });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message });
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -129,7 +141,7 @@ const Perfiles = () => {
         <>
             <ListContainer
                 columns={columns} dataTable={perfilesTable} fieldsFilter={fieldsFilter} buttonLink='/nuevoPerfil'
-                textButton='Agregar Perfil' registerPermission={registerPermission}
+                textButton='Agregar Perfil' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -139,6 +151,12 @@ const Perfiles = () => {
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
                 onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

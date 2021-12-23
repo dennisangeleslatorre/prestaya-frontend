@@ -3,12 +3,13 @@ import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
-import { listAllUnidadesMedida } from '../../Api/Api'
+import { listAllUnidadesMedida, deleteUnidadMedida } from '../../Api/Api'
 
 const DropdownButton = ({c_unidadmedida, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
@@ -55,6 +56,8 @@ const UnidadesMedida = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -85,10 +88,14 @@ const UnidadesMedida = () => {
 
     //consumo de api
     useEffect(async () => {
+        await refreshFunction();
+    }, [])
+
+    const refreshFunction = async () => {
         await setIsLoading(true);
         await getUnidadesMedida();
         setIsLoading(false);
-    }, [])
+    }
 
     //Funcion para obtener unidadesMedida
     const getUnidadesMedida = async () => {
@@ -104,9 +111,14 @@ const UnidadesMedida = () => {
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        console.log("Eliminar", idElement);
-        //const response = await deleteUnidadMedida(idElement)
-        await getUnidadesMedida();
+        const response = await deleteUnidadMedida(idElement);
+        if(response && response.status === 200) {
+            await getUnidadesMedida();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito la unidad de medida." });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message });
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -118,9 +130,9 @@ const UnidadesMedida = () => {
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro || "";
+            aux.d_fecharegistro = item.d_fecharegistro ? (new Date(item.d_fecharegistro)).toLocaleString("en-US") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion || "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? (new Date(item.d_ultimafechamodificacion)).toLocaleString("en-US") : "";
             aux.actions = (<DropdownButton c_unidadmedida={item.c_unidadmedida} showDeleteModal={()=>showDeleteModal(item.c_unidadmedida)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;
@@ -132,7 +144,7 @@ const UnidadesMedida = () => {
         <>
             <ListContainer
                 columns={columns} dataTable={unidadesMedidaTable} fieldsFilter={fieldsFilter} buttonLink='/nuevaUnidadMedida'
-                textButton='Agregar Unidade de medida' registerPermission={registerPermission}
+                textButton='Agregar Unidade de medida' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -142,6 +154,12 @@ const UnidadesMedida = () => {
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
                 onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

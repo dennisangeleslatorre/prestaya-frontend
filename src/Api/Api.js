@@ -43,9 +43,9 @@ export const listUsers = async () => {
     const response = await consumer(url, 'get');
     return response;
 };
-export const getUserByCodigoUsuario = async (c_codigousuario) => {
+export const getUserByCodigoUsuario = async (id) => {
     console.log('---API--- : getUserByCodigoUsuario');
-    const url = `${port}/user/${c_codigousuario}/getUserByCodigoUsuario`;
+    const url = `${port}/user/${id}/getUserByCodigoUsuario`;
     const response = await consumer(url, 'get');
     return response;
 };
@@ -55,16 +55,16 @@ export const registerUser = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-export const updateUser = async ({body, c_codigousuario}) => {
+export const updateUser = async ({body, id}) => {
     console.log('---API--- : updateUser');
-    const url = `${port}/user/${c_codigousuario}/update`;
+    const url = `${port}/user/${id}/update`;
     const response = await consumer(url, 'put', body);
     return response;
 };
-export const deleteUser = async (n_perfil) => {
+export const deleteUser = async (c_codigousuario) => {
     console.log('---API--- : deleteUser');
-    const url = `${port}/user/${n_perfil}/delete`;
-    const response = await consumer(url, 'patch', body);
+    const url = `${port}/user/${c_codigousuario}/delete`;
+    const response = await consumer(url, 'post', {});
     return response;
 };
 //Perfiles
@@ -98,10 +98,10 @@ export const updatePerfil = async ({body, id}) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
-export const deletePerfil = async (body) => {
+export const deletePerfil = async (n_perfil) => {
     console.log('---API--- : deletePerfil');
-    const url = `${port}/role/${body.n_perfil}/delete`;
-    const response = await consumer(url, 'patch', body);
+    const url = `${port}/role/${n_perfil}/delete`;
+    const response = await consumer(url, 'post', {});
     return response;
 };
 //Unidad medida
@@ -135,6 +135,12 @@ export const updateUnidadMedida = async ({body, id}) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deleteUnidadMedida = async (c_unidadmedida) => {
+    console.log('---API--- : deleteUnidadMedida');
+    const url = `${port}/unidadmedida/${c_unidadmedida}/delete`;
+    const response = await consumer(url, 'post', {});
+    return response;
+};
 //Tipo documento
 export const listTiposDocumento = async () => {
     console.log('---API--- : listTiposDocumento');
@@ -164,6 +170,12 @@ export const updateTipoDocumento = async ({body, id}) => {
     console.log('---API--- : updateTipoDocumento');
     const url = `${port}/tipodocumento/${id}/update`;
     const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteTipoDocumento = async (c_tipodocumento) => {
+    console.log('---API--- : deleteTipoDocumento');
+    const url = `${port}/tipodocumento/${c_tipodocumento}/delete`;
+    const response = await consumer(url, 'post', {});
     return response;
 };
 //Tipo producto
@@ -197,6 +209,12 @@ export const updateTipoProducto = async ({body, id}) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deleteTipoProducto = async (c_tipoproducto) => {
+    console.log('---API--- : deleteTipoProducto');
+    const url = `${port}/tipoproducto/${c_tipoproducto}/delete`;
+    const response = await consumer(url, 'post', {});
+    return response;
+};
 //Compania
 export const listCompanias = async () => {
     console.log('---API--- : listCompanias');
@@ -208,6 +226,30 @@ export const listAllCompanias = async () => {
     console.log('---API--- : listAllCompanias');
     const url = `${port}/compania/listAll`;
     const response = await consumer(url, 'get');
+    return response;
+};
+export const getCompaniaByCodigoCompania = async (id) => {
+    console.log('---API--- : getCompaniaByCodigoCompania');
+    const url = `${port}/compania/${id}/getCompaniaByCodigoCompania`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const registerCompania = async (body) => {
+    console.log('---API--- : registerCompania');
+    const url = `${port}/compania/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateCompania = async (body) => {
+    console.log('---API--- : updateCompania');
+    const url = `${port}/compania/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteCompania = async (c_compania) => {
+    console.log('---API--- : deleteCompania');
+    const url = `${port}/compania/${c_compania}/delete`;
+    const response = await consumer(url, 'post', {});
     return response;
 };
 //Pais
@@ -241,6 +283,12 @@ export const updatePais = async ({body, id}) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deletePais = async (c_paiscodigo) => {
+    console.log('---API--- : deletePais');
+    const url = `${port}/pais/${c_paiscodigo}/delete`;
+    const response = await consumer(url, 'post', {});
+    return response;
+};
 //Departamento
 export const listDepartamentos = async () => {
     console.log('---API--- : listDepartamentos');
@@ -270,6 +318,12 @@ export const updateDepartamento = async (body) => {
     console.log('---API--- : updateDepartamento');
     const url = `${port}/departamento/update`;
     const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteDepartamento = async (body) => {
+    console.log('---API--- : deleteDepartamento');
+    const url = `${port}/departamento/delete`;
+    const response = await consumer(url, 'post', body);
     return response;
 };
 //Provincia
@@ -303,6 +357,12 @@ export const updateProvincia = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deleteProvincia = async (body) => {
+    console.log('---API--- : deleteProvincia');
+    const url = `${port}/provincia/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Distrito
 export const listDistritos = async () => {
     console.log('---API--- : listDistritos');
@@ -334,6 +394,12 @@ export const updateDistrito = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deleteDistrito = async (body) => {
+    console.log('---API--- : deleteDistrito');
+    const url = `${port}/distrito/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Agencia
 export const listAgencias = async () => {
     console.log('---API--- : listAgencias');
@@ -345,5 +411,103 @@ export const listAllAgencias = async () => {
     console.log('---API--- : listAllAgencias');
     const url = `${port}/agencia/listAll`;
     const response = await consumer(url, 'get');
+    return response;
+};
+export const registerAgencia = async (body) => {
+    console.log('---API--- : registerAgencia');
+    const url = `${port}/agencia/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateAgencia = async (body) => {
+    console.log('---API--- : updateAgencia');
+    const url = `${port}/agencia/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getAgenciaByCodigoAgencia = async (body) => {
+    console.log('---API--- : getAgenciaByCodigoAgencia');
+    const url = `${port}/agencia/getAgenciaByCodigoAgencia`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const deleteAgencia = async (body) => {
+    console.log('---API--- : deleteAgencia');
+    const url = `${port}/agencia/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Parametro
+export const listParametrosByCompania = async (c_codigocompania) => {
+    console.log('---API--- : listParametros');
+    const url = `${port}/${c_codigocompania}/parametros/list`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listAllParametros = async () => {
+    console.log('---API--- : listAllParametros');
+    const url = `${port}/parametros/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const registerParametro = async (body) => {
+    console.log('---API--- : registerParametro');
+    const url = `${port}/parametros/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateParametro = async (body) => {
+    console.log('---API--- : updateParametro');
+    const url = `${port}/parametros/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getParametrosByCodigoParametros = async (body) => {
+    console.log('---API--- : getParametrosByCodigoParametros');
+    const url = `${port}/parametros/getParametrosByCodigoParametros`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const deleteParametro = async (body) => {
+    console.log('---API--- : deleteParametro');
+    const url = `${port}/parametros/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Peridos
+export const listPeriodosByCompania = async (c_codigocompania) => {
+    console.log('---API--- : listPeriodos');
+    const url = `${port}/${c_codigocompania}/periodos/list`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listAllPeriodos = async () => {
+    console.log('---API--- : listAllPeriodos');
+    const url = `${port}/periodos/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const registerPeriodo = async (body) => {
+    console.log('---API--- : registerPeriodo');
+    const url = `${port}/periodos/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updatePeriodo = async (body) => {
+    console.log('---API--- : updatePeriodo');
+    const url = `${port}/periodos/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getPeriodosByCodigoPeriodos = async (body) => {
+    console.log('---API--- : getPeriodosByCodigoPeriodos');
+    const url = `${port}/periodos/getPeriodosByCodigoPeriodos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const deletePeriodos = async (body) => {
+    console.log('---API--- : deletePeriodos');
+    const url = `${port}/periodos/delete`;
+    const response = await consumer(url, 'post', body);
     return response;
 };

@@ -22,7 +22,7 @@ const Table = (props) => {
     //Cantidad por pagina
     const [quantityPerPage, setQuantityPerPage] = useState(15);
     //useState para la pagina actual
-    const [currentPage, setCurrentPage] = useState(1); 
+    const [currentPage, setCurrentPage] = useState(1);
     //Datos de las paginas
     //Se usa el slice para que tenga por defecto los primeros datos del array
     const [currentItems, setCurrentItems] = useState(filteredItems.slice(0, quantityPerPage));
@@ -33,6 +33,8 @@ const Table = (props) => {
     const showHeadTable = props.showHeadTable === undefined ? true : props.showHeadTable;
     //Permiso del botón
     const registerPermission = props.registerPermission;
+    //Refresh
+    const refreshFunction = props.refreshFunction;
 
     //Funciones
     //Funcion para cambiar el query
@@ -84,10 +86,11 @@ const Table = (props) => {
         //Permiso del boton
         if(!registerPermission) return null;
         return(
-            <div className="col-md-5 col-lg-2 offset-lg-4 pl-lg-3">
-                <Link to={buttonLink} className="btn btn-success ml-lg-5">
+            <div className="col-12 col-md-6 section-buttons">
+                <Link to={buttonLink} className="btn btn-success">
                     {textButton}
                 </Link>
+                { refreshFunction && <button onClick={refreshFunction} className="btn btn-info mr-2"><i className="bi bi-arrow-repeat"></i></button> }
             </div>
         )
     }

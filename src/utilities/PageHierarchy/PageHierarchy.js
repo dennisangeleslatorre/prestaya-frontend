@@ -3,6 +3,7 @@ const pagesArray = [
         title: 'MI PERFIL',
         value: 'MI PERFIL',
         key: 'MI PERFIL',
+        disabled: true
     },{
         title: 'COMERCIAL',
         value: 'COMERCIAL',

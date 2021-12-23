@@ -4,6 +4,7 @@ import FormContainer from '../../components/FormContainer/FormContainer'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -20,6 +21,8 @@ const TipoProductoForm = (props) => {
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
@@ -37,7 +40,7 @@ const TipoProductoForm = (props) => {
         visualizarTipoProduto: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
     const readOnlyView = urlFragment === "visualizarTipoProduto" ? true : false;
-    const readOnlyCode = urlFragment === "editarTipoProduto" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoTipoProduto" ? true : false;
 
     const formFunctions = {
         nuevoTipoProduto: ()=> handleRegister(),
@@ -47,6 +50,8 @@ const TipoProductoForm = (props) => {
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
+        setResponseData({message: message, title: "Operación exitosa", url:"/tiposProducto"});
+        setOpenResponseModal(true);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
@@ -123,7 +128,8 @@ const TipoProductoForm = (props) => {
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
+            goList={()=>history.push("/tiposProducto")} view={readOnlyView}>
                 <InputComponent
                     state={tipoProducto}
                     setState={setTipoProducto}
@@ -131,8 +137,10 @@ const TipoProductoForm = (props) => {
                     label="Tipo producto"
                     placeholder="Tipo producto"
                     inputId="tipoProductoInput"
-                    validation="codeTextNumber"
-                    readOnly={readOnlyView && readOnlyCode}
+                    validation="numberAndTextWithRange"
+                    min={1}
+                    max={3}
+                    readOnly={readOnlyCode}
                 />
                 <InputComponent
                     state={descripcion}
@@ -142,6 +150,7 @@ const TipoProductoForm = (props) => {
                     placeholder="Descripción"
                     inputId="numeroDigitosInput"
                     validation="name"
+                    max={60}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent
@@ -163,6 +172,13 @@ const TipoProductoForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
             />
         </>
     )

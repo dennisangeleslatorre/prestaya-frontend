@@ -5,7 +5,7 @@
 }
 
 .btn-warning {
-    color: white !important;    
+    color: white !important;
 }
 
 .btn-table {
@@ -34,4 +34,8 @@
 .btn-outline-table:hover {
     color: #212529;
     background-color: white;
+}
+
+.section-buttons {
+    text-align: end !important;
 }

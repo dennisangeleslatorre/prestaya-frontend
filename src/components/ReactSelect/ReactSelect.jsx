@@ -30,6 +30,7 @@ const ReactSelect = (props) => {
         if(options.length !== 0 && valueSelected) {
             intialValue(valueSelected);
         }
+        if(!valueSelected) setItemSelected("");
     }, [options, valueSelected])
 
     const intialValue = (value) => {

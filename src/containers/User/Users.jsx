@@ -3,6 +3,7 @@ import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
@@ -56,6 +57,8 @@ const UserList = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -72,7 +75,7 @@ const UserList = () => {
         {name:'c_nombres', label: 'Nombre', sortVar:1 },
         {name:'c_correo', label: 'Correo', sortVar:1 },
         {name:'c_telefono', label: 'Teléfono', sortVar:1 },
-        {name:'n_perfil', label: 'N° de perfil', sortVar:1 },
+        {name:'c_codigoperfil', label: 'Perfil', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:0}
     ];
 
@@ -82,16 +85,20 @@ const UserList = () => {
         {name:'c_nombres'},
         {name:'c_correo'},
         {name:'c_telefono'},
-        {name:'n_perfil'},
+        {name:'c_codigoperfil'},
         {name:'c_estado'}
     ];
 
     //consumo de api
     useEffect(async () => {
+        await refreshFunction();
+    }, [])
+
+    const refreshFunction = async () => {
         await setIsLoading(true);
         await getUsers();
         setIsLoading(false);
-    }, [])
+    }
 
     //Funcion para obtener usuarios
     const getUsers = async () => {
@@ -107,9 +114,14 @@ const UserList = () => {
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        console.log("Eliminar", idElement);
-        //const response = await deleteUser(idElement)
-        await getUsers();
+        const response = await deleteUser(idElement)
+        if(response && response.status === 200) {
+            await getUsers();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el usuario" });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message });
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -121,7 +133,7 @@ const UserList = () => {
             aux.c_nombres = item.c_nombres
             aux.c_correo = item.c_correo
             aux.c_telefono = item.c_telefono
-            aux.n_perfil = item.n_perfil
+            aux.c_codigoperfil = item.c_codigoperfil
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.actions = (<DropdownButton c_codigousuario={item.c_codigousuario} showDeleteModal={()=>showDeleteModal(item.c_codigousuario)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
@@ -133,7 +145,7 @@ const UserList = () => {
         <>
             <ListContainer
                 columns={columns} dataTable={usuariosTable} fieldsFilter={fieldsFilter} buttonLink='/nuevoUsuario'
-                textButton='Agregar Usuario' registerPermission={registerPermission}
+                textButton='Agregar Usuario' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -143,6 +155,12 @@ const UserList = () => {
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
                 onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

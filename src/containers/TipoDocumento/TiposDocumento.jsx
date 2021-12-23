@@ -3,12 +3,13 @@ import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
-import { listAllTiposDocumento } from '../../Api/Api'
+import { listAllTiposDocumento, deleteTipoDocumento } from '../../Api/Api'
 
 const DropdownButton = ({c_tipodocumento, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
@@ -55,6 +56,8 @@ const TiposDocumento = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -92,6 +95,12 @@ const TiposDocumento = () => {
         setIsLoading(false);
     }, [])
 
+    const refreshFunction = async () => {
+        await setIsLoading(true);
+        await getTiposDocumentos();
+        setIsLoading(false);
+    }
+
     //Funcion para obtener tiposDocumento
     const getTiposDocumentos = async () => {
         const response = await listAllTiposDocumento();
@@ -106,9 +115,14 @@ const TiposDocumento = () => {
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        console.log("Eliminar", idElement);
-        //const response = await deleteTipoDocumento(idElement)
-        await getTiposDocumentos();
+        const response = await deleteTipoDocumento(idElement);
+        if(response && response.status === 200) {
+            await getTiposDocumentos();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el tipo de documento." });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message });
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -121,9 +135,9 @@ const TiposDocumento = () => {
             aux.n_numerodigitos = item.n_numerodigitos;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro || "";
+            aux.d_fecharegistro = item.d_fecharegistro ? (new Date(item.d_fecharegistro)).toLocaleString("en-US") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion || "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? (new Date(item.d_ultimafechamodificacion)).toLocaleString("en-US") : "";
             aux.actions = (<DropdownButton c_tipodocumento={item.c_tipodocumento} showDeleteModal={()=>showDeleteModal(item.c_tipodocumento)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;
@@ -134,7 +148,7 @@ const TiposDocumento = () => {
         <>
             <ListContainer
                 columns={columns} dataTable={tiposDocumentoTable} fieldsFilter={fieldsFilter} buttonLink='/nuevoTipoDocumento'
-                textButton='Agregar Tipo de Documento' registerPermission={registerPermission}
+                textButton='Agregar Tipo de Documento' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -144,6 +158,12 @@ const TiposDocumento = () => {
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
                 onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

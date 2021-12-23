@@ -3,12 +3,13 @@ import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
-import { listAllDistritos } from '../../Api/Api'
+import { listAllDistritos, deleteDistrito } from '../../Api/Api'
 
 const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
@@ -55,6 +56,8 @@ const Distritos = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
+    const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -91,10 +94,14 @@ const Distritos = () => {
 
     //consumo de api
     useEffect(async () => {
+        await refreshFunction();
+    }, [])
+
+    const refreshFunction = async () => {
         await setIsLoading(true);
         await getDistritos();
         setIsLoading(false);
-    }, [])
+    }
 
     //Funcion para obtener distritos
     const getDistritos = async () => {
@@ -110,9 +117,14 @@ const Distritos = () => {
     const handleDelete = async () => {
         await setOpen(false);
         await setIsLoading(true);
-        console.log("Eliminar", idElement);
-        //const response = await deletePais(idElement)
-        await getDistritos();
+        const response = await deleteDistrito(idElement)
+        if(response && response.status === 200) {
+            await getDistritos();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el departamento." });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message });
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -127,9 +139,9 @@ const Distritos = () => {
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro || "";
+            aux.d_fecharegistro = item.d_fecharegistro ? (new Date(item.d_fecharegistro)).toLocaleString("en-US") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion || "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? (new Date(item.d_ultimafechamodificacion)).toLocaleString("en-US") : "";
             const keyCodes = {
                 c_departamentocodigo: item.c_departamentocodigo,
                 c_paiscodigo: item.c_paiscodigo,
@@ -147,7 +159,7 @@ const Distritos = () => {
         <>
             <ListContainer
                 columns={columns} dataTable={distritosTable} fieldsFilter={fieldsFilter} buttonLink='/nuevoDistrito'
-                textButton='Agregar Distrito' registerPermission={registerPermission}
+                textButton='Agregar Distrito' registerPermission={registerPermission} refreshFunction={refreshFunction}
             />
             {isLoading === true && <Loading/>}
             <ConfirmationModal
@@ -157,6 +169,12 @@ const Distritos = () => {
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
                 onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

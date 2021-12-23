@@ -2,11 +2,10 @@ import React from 'react'
 import Alert from '../Alert/Alert'
 
 const FormContainer = (props) => {
-    const { buttonAttributes={label:"", class:""}, handleClick=null, isAlert=false,
+    const { buttonAttributes={label:"", class:""}, handleClick=null, isAlert=false, view, goList,
     notification={title:"", type:"", message:""} } = props;
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = () => {
         handleClick();
     }
 
@@ -17,12 +16,13 @@ const FormContainer = (props) => {
                     <div className="col">
                         <div className="card">
                             <div className="card-body">
-                                <form className="mb-3" action="" onSubmit={handleSubmit} autoComplete="on">
+                                <div className="mb-3" onSubmit={handleSubmit}>
                                     {props.children}
                                     <div className="text-center">
-                                        <button type="submit" className={buttonAttributes.class}>{buttonAttributes.label}</button>
+                                        <button onClick={handleSubmit} className={buttonAttributes.class}>{buttonAttributes.label}</button>
+                                        {!view && <button onClick={goList} className="btn btn-light btn-form ml-2">Cancelar</button>}
                                     </div>
-                                </form>
+                                </div>
                                 {/*Alerta*/}
                                 { isAlert === true && <Alert
                                     title={notification.title}
