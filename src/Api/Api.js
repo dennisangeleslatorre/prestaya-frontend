@@ -511,3 +511,17 @@ export const deletePeriodos = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//Clientes
+export const getClienteByCodigoCliente = async (body) => {
+    console.log('---API--- : getClienteByCodigoCliente');
+    const url = `${port}/cliente/getClienteByCodigoCliente`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getClienteDinamico = async (body) => {
+    console.log('---API--- : getClienteDinamico');
+    const url = `${port}/cliente/getClienteDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Prestamos

@@ -39,6 +39,12 @@ import ParametroForm from '../../containers/Parametro/ParametroForm'
 //PERIODOS
 import Periodos from '../../containers/Periodo/Periodos'
 import PeriodoForm from '../../containers/Periodo/PeriodoForm'
+//CLIENTES
+import Clientes from '../../containers/Cliente/Clientes'
+import ClienteForm from '../../containers/Cliente/ClienteForm'
+//PRESTAMOS
+import Prestamos from '../../containers/Prestamo/Prestamos'
+import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
 
 export default{
     initialPages: [
@@ -314,6 +320,46 @@ export default{
             path: '/visualizarPeriodo/:id',
             exact: true,
             name: 'VISUALIZAR PERÍODO'
+        },{
+            component: Clientes,
+            path: '/clientes',
+            exact: true,
+            name: 'CLIENTES'
+        },{
+            component: ClienteForm,
+            path: '/nuevoCliente',
+            exact: true,
+            name: 'AGREGAR CLIENTE'
+        },{
+            component: ClienteForm,
+            path: '/editarCliente/:id',
+            exact: true,
+            name: 'ACTUALIZAR CLIENTE'
+        },{
+            component: ClienteForm,
+            path: '/visualizarCliente/:id',
+            exact: true,
+            name: 'VISUALIZAR CLIENTE'
+        },{
+            component: Prestamos,
+            path: '/prestamo',
+            exact: true,
+            name: 'PRÉSTAMOS'
+        },{
+            component: PrestamoForm,
+            path: '/nuevoPrestamo',
+            exact: true,
+            name: 'AGREGAR PRÉSTAMO'
+        },{
+            component: PrestamoForm,
+            path: '/editarPrestamo/:id',
+            exact: true,
+            name: 'ACTUALIZAR PRÉSTAMO'
+        },{
+            component: PrestamoForm,
+            path: '/visualizarPrestamo/:id',
+            exact: true,
+            name: 'VISUALIZAR PRÉSTAMO'
         }
     ]
 }

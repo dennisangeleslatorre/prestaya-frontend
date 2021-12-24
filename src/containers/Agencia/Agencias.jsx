@@ -102,7 +102,7 @@ const Agencias = () => {
     //Funcion para obtener agencias
     const getAgencias = async () => {
         const response = await listAllAgencias();
-        if(response && response.status === 200 && response.body.data.length != 0) getAgenciasTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getAgenciasTable(response.body.data);
     }
 
     const showDeleteModal = (keyCodes) => {

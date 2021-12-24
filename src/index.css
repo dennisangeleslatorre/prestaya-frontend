@@ -39,3 +39,15 @@ code {
 #sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
   background-color: #c3e6ff !important;
 }
+
+.invalid__message__data {
+  width: 100%;
+  margin-top: 3px;
+  margin-left: 1px;
+  font-size: 13px;
+  color: #dc3545;
+}
+
+/*.ant-table-wrapper {
+  
+}*/

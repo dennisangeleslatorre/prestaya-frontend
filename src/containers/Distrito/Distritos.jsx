@@ -106,7 +106,7 @@ const Distritos = () => {
     //Funcion para obtener distritos
     const getDistritos = async () => {
         const response = await listAllDistritos();
-        if(response && response.status === 200 && response.body.data.length != 0) getDistritosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getDistritosTable(response.body.data);
     }
 
     const showDeleteModal = (keyCodes) => {

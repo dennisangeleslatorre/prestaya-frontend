@@ -16,7 +16,10 @@ const validations = {
     alphanumericRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z0-9]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d\\-\\_\\.\\°]){${a},${b}}$`), errorMessage: `Solo se aceptan caractéres alfanuméricos de ${a} a ${b} dígitos. No puede terminar en espacio.` } }
 }
 
-const InputComponent = ({state, setState, type, label=null, placeholder="", inputId, validation, min, max=250, readOnly, autoComplete="new-text", required=true, uppercaseOnly=true }) => {
+const InputComponent = (props) => {
+
+    const { state, setState, type, label=null, placeholder="", inputId, validation, min, max=250, readOnly, autoComplete="new-text",
+            required=true, uppercaseOnly=true, classForm="", marginForm="", labelSpace=2  } = props;
 
     const handleOnChange = (e) => {
         if(uppercaseOnly) setState({...state, value: e.target.value.toUpperCase()});
@@ -33,9 +36,9 @@ const InputComponent = ({state, setState, type, label=null, placeholder="", inpu
     }
 
     return (
-        <div className="form-group row">
-            { label && <label htmlFor={inputId} className="col-sm-2 col-form-label label-input">{ label }</label> }
-            <div className={ label ? "col-sm-10" : "col-sm-12"}>
+        <div className={`form-group ${marginForm} ${classForm} row`}>
+            { label && <label htmlFor={inputId} className={`col-sm-${labelSpace} col-form-label label-input`}>{ label }</label> }
+            <div className={ label ? `col-sm-${12-labelSpace}` : `col-sm-${14-labelSpace}`}>
                 <input
                     autoComplete={autoComplete}
                     readOnly={readOnly}

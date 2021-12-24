@@ -14,9 +14,9 @@ const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonCl
                 {buttonLink && <Link to={buttonLink} className={`btn ${buttonClass} mr-4`}>
                     Ir a lista
                 </Link>}
-                <button onClick={onClose} className="btn btn-light">
-                    {buttonLink ? 'Cancel': 'Aceptar'}
-                </button>
+                {!buttonLink && <button onClick={onClose} className="btn btn-light">
+                    Aceptar
+                </button>}
             </div>
         </Modal>
     )

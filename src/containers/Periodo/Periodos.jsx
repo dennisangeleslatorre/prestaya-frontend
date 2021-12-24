@@ -106,7 +106,7 @@ const Periodos = () => {
     //Funcion para obtener periodos
     const getPeriodos = async () => {
         const response = await listAllPeriodos();
-        if(response && response.status === 200 && response.body.data.length != 0) getPeriodosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getPeriodosTable(response.body.data);
     }
 
     const showDeleteModal = (keyCodes) => {

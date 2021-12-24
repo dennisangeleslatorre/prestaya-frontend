@@ -10,6 +10,7 @@
 .c-wrapper-nav-no-collapse {
     margin-left : 223px;
     width: 100%;
+    /*padding-right: 140px;*/
 }
 
 .c-wrapper-nav-collapse {

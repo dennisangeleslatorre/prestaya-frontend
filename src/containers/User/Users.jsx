@@ -103,7 +103,7 @@ const UserList = () => {
     //Funcion para obtener usuarios
     const getUsers = async () => {
         const response = await listUsers();
-        if(response && response.status === 200 && response.body.success && response.body.data.length != 0) getUsersTable(response.body.data);
+        if(response && response.status === 200 && response.body.success && response.body.data) getUsersTable(response.body.data);
     }
 
     const showDeleteModal = (c_codigousuario) => {

@@ -100,7 +100,7 @@ const Perfiles = () => {
     //Funcion para obtener perfiles
     const getPerfiles = async () => {
         const response = await listPerfiles();
-        if(response && response.status === 200 && response.body.success && response.body.data.length != 0) getPerfilesTable(response.body.data);
+        if(response && response.status === 200 && response.body.success && response.body.data) getPerfilesTable(response.body.data);
     }
 
     const showDeleteModal = (n_perfil) => {

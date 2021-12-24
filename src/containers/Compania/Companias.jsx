@@ -112,7 +112,7 @@ const Companias = () => {
     //Funcion para obtener companias
     const getCompanias = async () => {
         const response = await listAllCompanias();
-        if(response && response.status === 200 && response.body.data.length != 0) getCompaniasTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getCompaniasTable(response.body.data);
     }
 
     const showDeleteModal = (c_compania) => {

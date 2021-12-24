@@ -100,7 +100,7 @@ const UnidadesMedida = () => {
     //Funcion para obtener unidadesMedida
     const getUnidadesMedida = async () => {
         const response = await listAllUnidadesMedida();
-        if(response && response.status === 200 && response.body.data.length != 0) getUnidadesMedidaTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getUnidadesMedidaTable(response.body.data);
     }
 
     const showDeleteModal = (c_unidadmedida) => {

@@ -111,7 +111,7 @@ const Parametros = () => {
     //Funcion para obtener parametros
     const getParametros = async () => {
         const response = await listAllParametros();
-        if(response && response.status === 200 && response.body.data.length != 0) getParametrosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getParametrosTable(response.body.data);
     }
 
     const showDeleteModal = (keyCodes) => {

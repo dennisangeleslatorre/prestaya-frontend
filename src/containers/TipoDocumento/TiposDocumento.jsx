@@ -104,7 +104,7 @@ const TiposDocumento = () => {
     //Funcion para obtener tiposDocumento
     const getTiposDocumentos = async () => {
         const response = await listAllTiposDocumento();
-        if(response && response.status === 200 && response.body.data.length != 0) getTiposDocumentosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getTiposDocumentosTable(response.body.data);
     }
 
     const showDeleteModal = (c_tipodocumento) => {

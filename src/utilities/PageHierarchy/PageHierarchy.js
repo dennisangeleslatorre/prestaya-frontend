@@ -38,31 +38,31 @@ const pagesArray = [
                     }
                 ]
             },{
-                title: 'PRESTAMO',
-                value: 'PRESTAMO',
-                key: 'PRESTAMO',
+                title: 'PRÉSTAMO',
+                value: 'PRÉSTAMO',
+                key: 'PRÉSTAMO',
                 children: [
                     {
-                        title: 'PRESTAMOS',
-                        value: 'PRESTAMOS',
-                        key: 'PRESTAMOS'
+                        title: 'PRÉSTAMOS',
+                        value: 'PRÉSTAMOS',
+                        key: 'PRÉSTAMOS'
                     },{
-                        title: 'AGREGAR PRESTAMO',
-                        value: 'AGREGAR PRESTAMO',
-                        key: 'AGREGAR PRESTAMO'
+                        title: 'AGREGAR PRÉSTAMO',
+                        value: 'AGREGAR PRÉSTAMO',
+                        key: 'AGREGAR PRÉSTAMO'
                     },{
-                        title: 'ACTUALIZAR PRESTAMO',
-                        value: 'ACTUALIZAR PRESTAMO',
-                        key: 'ACTUALIZAR PRESTAMO'
+                        title: 'ACTUALIZAR PRÉSTAMO',
+                        value: 'ACTUALIZAR PRÉSTAMO',
+                        key: 'ACTUALIZAR PRÉSTAMO'
                     },{
-                        title: 'VISUALIZAR PRESTAMO',
-                        value: 'VISUALIZAR PRESTAMO',
-                        key: 'VISUALIZAR PRESTAMO'
+                        title: 'VISUALIZAR PRÉSTAMO',
+                        value: 'VISUALIZAR PRÉSTAMO',
+                        key: 'VISUALIZAR PRÉSTAMO'
                     }
                     ,{
-                        title: 'ELIMINAR PRESTAMO',
-                        value: 'ELIMINAR PRESTAMO',
-                        key: 'ELIMINAR PRESTAMO'
+                        title: 'ELIMINAR PRÉSTAMO',
+                        value: 'ELIMINAR PRÉSTAMO',
+                        key: 'ELIMINAR PRÉSTAMO'
                     }
                 ]
             }

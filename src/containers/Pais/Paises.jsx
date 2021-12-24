@@ -100,7 +100,7 @@ const Paises = () => {
     //Funcion para obtener paises
     const getPaises = async () => {
         const response = await listAllPaises();
-        if(response && response.status === 200 && response.body.data.length != 0) getPaisesTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getPaisesTable(response.body.data);
     }
 
     const showDeleteModal = (c_paiscodigo) => {

@@ -102,7 +102,7 @@ const Departamentos = () => {
     //Funcion para obtener departamentos
     const getDepartamentos = async () => {
         const response = await listAllDepartamentos();
-        if(response && response.status === 200 && response.body.data.length != 0) getDepartamentosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getDepartamentosTable(response.body.data);
     }
 
     const showDeleteModal = (keyCodes) => {

@@ -100,7 +100,7 @@ const TiposProducto = () => {
     //Funcion para obtener tiposProducto
     const getTiposProductos = async () => {
         const response = await listAllTiposProducto();
-        if(response && response.status === 200 && response.body.data.length != 0) getTiposProductosTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) getTiposProductosTable(response.body.data);
     }
 
     const showDeleteModal = (c_tipoproducto) => {
