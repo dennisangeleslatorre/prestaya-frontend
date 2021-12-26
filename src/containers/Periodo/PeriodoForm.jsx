@@ -11,7 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { getPeriodosByCodigoPeriodos, registerPeriodo, updatePeriodo, listCompanias, listAllCompanias } from '../../Api/Api'
+import { getPeriodosByCodigoPeriodos, registerPeriodo, updatePeriodo, listCompanias } from '../../Api/Api'
 
 const PeriodoForm = (props) => {
     const [compania, setCompania] = useState("");
@@ -125,7 +125,7 @@ const PeriodoForm = (props) => {
     }
 
     const getCompanias = async () => {
-        const response = urlFragment === "nuevoPeriodo" ? await listCompanias() : await listAllCompanias();
+        const response = await listCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
     }
 

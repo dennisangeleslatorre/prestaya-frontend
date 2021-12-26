@@ -12,7 +12,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { getParametrosByCodigoParametros, registerParametro, updateParametro, listCompanias, listAllCompanias } from '../../Api/Api'
+import { getParametrosByCodigoParametros, registerParametro, updateParametro, listCompanias } from '../../Api/Api'
 
 const ParametroForm = (props) => {
     const [compania, setCompania] = useState("");
@@ -155,7 +155,7 @@ const ParametroForm = (props) => {
     }
 
     const getCompanias = async () => {
-        const response = urlFragment === "nuevoParametro" ? await listCompanias() : await listAllCompanias();
+        const response = await listCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
     }
 

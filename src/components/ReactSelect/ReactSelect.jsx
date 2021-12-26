@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
+import { Button } from 'antd'
 import './ReactSelect.css'
 
 const ReactSelect = (props) => {
     //Propiedades
     const {labelText, placeholder="Selecciona un item", data=[], inputId, valueSelected, disabledElement=false,
-            handleElementSelected, classForm="", marginForm="", labelSpace=2, valueField="id", optionField="name" } = props;
+            handleElementSelected, classForm="", marginForm="", labelSpace=2, valueField="id", optionField="name",
+            isClear=false } = props;
     const [options, setOptions] = useState([]);
     const [itemSelected, setItemSelected] = useState(null);
 
@@ -45,7 +47,9 @@ const ReactSelect = (props) => {
 
     return (
         <div className={`form-group ${marginForm} ${classForm} row`}>
-            <label htmlFor={inputId} className={`col-sm-${labelSpace} col-form-label label-input`}>{ labelText }</label>
+            <label htmlFor={inputId} className={`col-sm-${labelSpace} col-form-label label-input`}>
+                { labelText } {isClear && <Button  onClick={()=>handleElementSelected("")}>Limpiar</Button>}
+            </label>
             <div className={ labelText ? `col-sm-${12-labelSpace}` : `col-sm-${14-labelSpace}`}>
                 <Select
                     inputId={inputId}

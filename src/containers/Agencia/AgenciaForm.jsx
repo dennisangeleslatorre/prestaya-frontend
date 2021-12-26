@@ -126,7 +126,7 @@ const AgenciaForm = (props) => {
     }
 
     const getCompanias = async () => {
-        const response = urlFragment === "nuevoAgencia" ? await listCompanias() : await listAllCompanias();
+        const response = await listCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
     }
 

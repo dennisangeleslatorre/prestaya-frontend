@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Divider, Space, Button, Row, Col } from 'antd'
+import { Table, Divider, Space, Button } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -105,7 +105,7 @@ const Clientes = () => {
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [tipoDocumento, setTipoDocumento] = useState("T");
     const [numeroDocumento, setNumeroDocumento] = useState({value: "", isValid:null});
-    //Componentes
+    //Estado de los Componentes
     const [companias, setCompanias] = useState([]);
     const [tiposDocumentos, setTiposDocumentos] = useState([]);
     const [elementSelected, setElementSelected] = useState(null);
@@ -119,13 +119,34 @@ const Clientes = () => {
     //Funciones
     const handleSelectUpdate = () => {
         if(elementSelected) {
-            history.push(`/editarCliente/${elementSelected}`);
+            history.push(`/editarCliente/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
         }
     }
-    const handleSelectDelete = () => {
+    const handleSelectDelete = async () => {
         if(elementSelected) {
-            console.log("Eliminar", elementSelected);
+            await setOpen(false);
+            await setIsLoading(true);
+            const [c_compania, n_cliente] = elementSelected[0].split("-");
+            const response = {}; //await deleteUnidadMedida({c_compania:c_compania, n_cliente:n_cliente});
+            if(response && response.status === 200) {
+                await onHandleSearch();
+                setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el cliente." });
+            } else {
+                setResponseData( {title: "Error al eliminar", message: response.message });
+            }
+            setOpenResponseModal(true);
+            setIsLoading(false);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
         }
+    }
+
+    const handleOpenDeleteModal = () => {
+        setOpen(true);
     }
 
     const handleOpenSearchModal = async () => {
@@ -133,18 +154,21 @@ const Clientes = () => {
     }
 
     const findByCode = async () => {
+        setIsLoading(true);
         if(codigoCliente) {
             const response = await getClienteByCodigoCliente({c_compania:compania, n_cliente:codigoCliente});
             if(response && response.status === 200 && response.body.data) {
                 setNombreCliente(response.body.data.c_nombrescompleto);
             } else {
                 setResponseData({title:"Aviso", message:"No hay un cliente con ese código"});
+                setCodigoCliente("");
                 setOpenResponseModal(true);
             }
         }
+        setIsLoading(false);
     }
 
-    const prepareBody = () => {
+    const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
         if(codigoCliente) body.n_cliente = codigoCliente;
@@ -155,11 +179,14 @@ const Clientes = () => {
     }
 
     const onHandleSearch = async () => {
-        await setIsLoading(true);
-        let parametros = prepareBody();
-        console.log("parametros", parametros);
+        let parametros = prepareBodyToSearch();
         const response = await getClienteDinamico(parametros);
         if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+    }
+
+    const onHandleClickSearch = async () => {
+        await setIsLoading(true);
+        await onHandleSearch();
         setIsLoading(false);
     }
 
@@ -235,7 +262,7 @@ const Clientes = () => {
                                         <SelectComponent
                                             labelText="Estado"
                                             defaultValue="Seleccione un estado"
-                                            items={[{name: "TODOS", value:"T"}, {name: "Activo", value:"A"}, {name: "Inactivo", value:"I"}]}
+                                            items={[{name: "TODOS", value:"T"}, {name: "ACTIVO", value:"A"}, {name: "INACTIVO", value:"I"}]}
                                             selectId="estadoId"
                                             valueField="value"
                                             optionField="name"
@@ -291,7 +318,7 @@ const Clientes = () => {
                                         />
                                     </div>
                                     <div className="col-12 col-md-12 mt-3 mb-3 text-center">
-                                        <button onClick={onHandleSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
+                                        <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -300,7 +327,7 @@ const Clientes = () => {
                                         <Space style={{ marginBottom: 16 }}>
                                             <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>
                                             <Button onClick={handleSelectUpdate}>Modificar</Button>
-                                            <Button onClick={handleSelectDelete}>Eliminar</Button>
+                                            <Button onClick={handleOpenDeleteModal}>Eliminar</Button>
                                         </Space>
                                         <Table
                                             classForm
@@ -326,7 +353,7 @@ const Clientes = () => {
                 onClose={()=>setOpen(false)}
                 title={"Aviso de eliminación"}
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
-                onHandleFunction={()=>handleDelete()}
+                onHandleFunction={()=>handleSelectDelete()}
                 buttonClass="btn-danger"
             />
             <ResponseModal

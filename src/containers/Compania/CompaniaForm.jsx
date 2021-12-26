@@ -11,7 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { listPaises, listAllPaises, listDepartamentos, listAllDepartamentos, listProvincias, listAllProvincias, listDistritos, listAllDistritos,
+import { listPaises, listDepartamentos, listProvincias, listDistritos,
         getCompaniaByCodigoCompania, registerCompania, updateCompania } from '../../Api/Api'
 
 const CompaniaForm = (props) => {
@@ -155,25 +155,24 @@ const CompaniaForm = (props) => {
     }
 
     const getPaises = async () => {
-        const response = urlFragment === "nuevaCompania" ? await listPaises() : await listAllPaises();
+        const response = await listPaises();
         if(response && response.status === 200) setPaises(response.body.data);
     }
 
     const getDepartamentos = async () => {
-        const response = urlFragment === "nuevaCompania" ? await listDepartamentos() : await listAllDepartamentos();
+        const response = await listDepartamentos();
         if(response && response.status === 200) setDepartamentos(response.body.data);
     }
 
     const getProvincias = async () => {
-        const response = urlFragment === "nuevaCompania" ? await listProvincias() : await listAllProvincias();
+        const response = await listProvincias();
         if(response && response.status === 200) setProvincias(response.body.data);
     }
 
     const getDistritos = async () => {
-        const response = urlFragment === "nuevaCompania" ? await listDistritos() : await listAllDistritos();
+        const response = await listDistritos();
         if(response && response.status === 200) setDistritos(response.body.data);
     }
-
 
     useEffect(() => {
         if(!firstLoad) setDepartamentoCodigo("");
@@ -315,7 +314,7 @@ const CompaniaForm = (props) => {
                 <SelectComponent
                     labelText="Estado"
                     defaultValue="Seleccione un estado"
-                    items={[{name: "Activo", value:"A"}, {name: "Inactivo", value:"I"}]}
+                    items={[{name: "ACTIVO", value:"A"}, {name: "INACTIVO", value:"I"}]}
                     selectId="estadoId"
                     valueField="value"
                     optionField="name"

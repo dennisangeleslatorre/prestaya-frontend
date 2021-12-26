@@ -11,7 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { listPaises, listAllPaises, listDepartamentos, listAllDepartamentos, getProvinciaByCodigoProvincia,
+import { listPaises, listDepartamentos, getProvinciaByCodigoProvincia,
          registerProvincia, updateProvincia } from '../../Api/Api'
 
 const ProvinciaForm = (props) => {
@@ -138,12 +138,12 @@ const ProvinciaForm = (props) => {
     }
 
     const getPaises = async () => {
-        const response = urlFragment === "nuevaProvincia" ? await listPaises() : await listAllPaises();
+        const response = await listPaises();
         if(response && response.status === 200) setPaises(response.body.data);
     }
 
     const getDepartamentos = async () => {
-        const response = urlFragment === "nuevaProvincia" ? await listDepartamentos() : await listAllDepartamentos();
+        const response = await listDepartamentos()
         if(response && response.status === 200) setDepartamentos(response.body.data);
     }
 

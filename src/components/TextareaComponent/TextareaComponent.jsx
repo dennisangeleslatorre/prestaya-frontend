@@ -1,6 +1,6 @@
 import React from 'react'
 
-const TextareaComponent = ({inputId, label, placeholder, readOnly, value, setState, max, classForm="", labelSpace=2}) => {
+const TextareaComponent = ({inputId, label, placeholder, readOnly, value, setState, max=250, classForm="", labelSpace=2}) => {
     const handleOnChange = (e) => {
         setState(e.target.value);
     }

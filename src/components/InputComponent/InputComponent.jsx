@@ -13,7 +13,8 @@ const validations = {
     textWithRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z']{${a},${b}}$`), errorMessage: `Solo se aceptan letras de ${a} a ${b} dígitos` } },
     numberWithRange: (a, b) => { return { expression: new RegExp(`^\\d{${a},${b}}$`), errorMessage: `Solo se aceptan número de ${a} a ${b} dígitos` } },
     numberAndTextWithRange: (a, b) => { return { expression: new RegExp(`^[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d]{${a},${b}}$`), errorMessage: `Solo se aceptan letras y números de ${a} a ${b} dígitos` } },
-    alphanumericRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z0-9]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d\\-\\_\\.\\°]){${a},${b}}$`), errorMessage: `Solo se aceptan caractéres alfanuméricos de ${a} a ${b} dígitos. No puede terminar en espacio.` } }
+    alphanumericRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z0-9]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d\\-\\_\\.\\°]){${a},${b}}$`), errorMessage: `Solo se aceptan caractéres alfanuméricos de ${a} a ${b} dígitos. No puede terminar en espacio.` } },
+    documentNumber: (a, b) => { return { expression: new RegExp(`^\\d{${a},${b}}$`), errorMessage: `Solo se aceptan número de ${a} dígitos` } }
 }
 
 const InputComponent = (props) => {

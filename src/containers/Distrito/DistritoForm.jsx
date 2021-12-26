@@ -11,8 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { listPaises, listAllPaises, listDepartamentos, listAllDepartamentos, listProvincias, listAllProvincias,
-        getDistritoByCodigoDistrito, registerDistrito, updateDistrito } from '../../Api/Api'
+import { listPaises, listDepartamentos, listProvincias, getDistritoByCodigoDistrito, registerDistrito, updateDistrito } from '../../Api/Api'
 
 const DistritoForm = (props) => {
     //Estados
@@ -143,17 +142,17 @@ const DistritoForm = (props) => {
     }
 
     const getPaises = async () => {
-        const response = urlFragment === "nuevoDistrito" ? await listPaises() : await listAllPaises();
+        const response = await listPaises();
         if(response && response.status === 200) setPaises(response.body.data);
     }
 
     const getDepartamentos = async () => {
-        const response = urlFragment === "nuevoDistrito" ? await listDepartamentos() : await listAllDepartamentos();
+        const response = await listDepartamentos();
         if(response && response.status === 200) setDepartamentos(response.body.data);
     }
 
     const getProvincias = async () => {
-        const response = urlFragment === "nuevoDistrito" ? await listProvincias() : await listAllProvincias();
+        const response = await listProvincias();
         if(response && response.status === 200) setProvincias(response.body.data);
     }
 

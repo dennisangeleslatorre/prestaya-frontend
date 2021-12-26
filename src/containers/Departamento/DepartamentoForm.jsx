@@ -11,7 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { listPaises, listAllPaises, getDepartamentoByCodigoDepartamento, registerDepartamento, updateDepartamento } from '../../Api/Api'
+import { listPaises, getDepartamentoByCodigoDepartamento, registerDepartamento, updateDepartamento } from '../../Api/Api'
 
 const DepartamentoForm = (props) => {
     //Estados
@@ -131,7 +131,7 @@ const DepartamentoForm = (props) => {
     }
 
     const getPaises = async () => {
-        const response = urlFragment === "nuevoDepartamento" ? await listPaises() : await listAllPaises();
+        const response = await listPaises();
         if(response && response.status === 200) setPaises(response.body.data);
     }
 

@@ -48,6 +48,14 @@ code {
   color: #dc3545;
 }
 
+.valid__message__data {
+  width: 100%;
+  margin-top: 3px;
+  margin-left: 1px;
+  font-size: 13px;
+  color: #319602;
+}
+
 /*.ant-table-wrapper {
   
 }*/
