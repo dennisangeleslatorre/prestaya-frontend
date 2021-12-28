@@ -322,7 +322,7 @@ const Clientes = () => {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-12 col-md-11">
+                                    <div className="col" style={{ overflow: 'scroll' }}>
                                         <Divider />
                                         <Space style={{ marginBottom: 16 }}>
                                             <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>
@@ -337,7 +337,6 @@ const Clientes = () => {
                                             }}
                                             columns={columns}
                                             dataSource={clientsToTable}
-                                            scroll={{ x: 1300}}
                                             pagination={{ pageSize: 50 }}
                                         />
                                     </div>
