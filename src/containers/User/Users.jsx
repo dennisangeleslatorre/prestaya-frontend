@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Menu, Dropdown, Button, Space } from 'antd'
 //Componentes
 import ListContainer from '../../components/ListContainer/ListContainer'
+import ChangePasswordModal from '../../components/Modal/ChangePasswordModal'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
@@ -9,10 +10,11 @@ import Loading from '../../components/Modal/LoadingModal'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
-import { listUsers, deleteUser } from '../../Api/Api'
+import { listUsers, deleteUser, changePassword } from '../../Api/Api'
 
 
-const DropdownButton = ({c_codigousuario, showDeleteModal, updatePermission=false, viewPermission=false, deletePermission=false}) => {
+const DropdownButton = ({c_codigousuario, showDeleteModal, showChangePasswordModal, updatePermission=false, viewPermission=false, deletePermission=false,
+                        changePasswordPermission=false}) => {
     const menu = (
         <Menu key={`Menu${c_codigousuario}`}>
           {viewPermission && <Menu.Item key={`View${c_codigousuario}`} className="btn btn-info">
@@ -30,6 +32,11 @@ const DropdownButton = ({c_codigousuario, showDeleteModal, updatePermission=fals
                     <Space wrap>Editar</Space>
                 </Space>
             </Link>
+          </Menu.Item>}
+          {changePasswordPermission && <Menu.Item key={`Change${c_codigousuario}`} className="btn btn-secondary" onClick={showChangePasswordModal}>
+            <Space direction="horizontal">
+                <Space wrap>Cambiar contraseña</Space>
+            </Space>
           </Menu.Item>}
           { deletePermission && <Menu.Item key={`Delete${c_codigousuario}`} className="btn btn-danger" onClick={showDeleteModal}>
             <Space direction="horizontal">
@@ -58,15 +65,17 @@ const UserList = () => {
     const [open, setOpen] = useState(false);
     const [idElement, setIdElement] = useState(null);
     const [openResponseModal, setOpenResponseModal] = useState(false);
+    const [openChangePassword, setOpenChangePassword] = useState(false);
     const [responseData, setResponseData] = useState({});
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "ACTUALIZAR USUARIO" || item === "AGREGAR USUARIO" || item === "VISUALIZAR USUARIO" || item === "ELIMINAR USUARIO"
+        return item === "ACTUALIZAR USUARIO" || item === "AGREGAR USUARIO" || item === "VISUALIZAR USUARIO" || item === "ELIMINAR USUARIO" || "AMBIAR CONTRASEÑA"
     })
     const registerPermission = userPermisssions.includes("AGREGAR USUARIO");
     const updatePermission = userPermisssions.includes("ACTUALIZAR USUARIO");
     const viewPermission = userPermisssions.includes("VISUALIZAR USUARIO");
+    const changePasswordPermission = userPermisssions.includes("CAMBIAR CONTRASEÑA");
     const deletePermission = userPermisssions.includes("ELIMINAR USUARIO");
     //Constantes
     const columns = [
@@ -106,6 +115,11 @@ const UserList = () => {
         if(response && response.status === 200 && response.body.success && response.body.data) getUsersTable(response.body.data);
     }
 
+    const showChangePasswordModal = (c_codigousuario) => {
+        setIdElement(c_codigousuario);
+        setOpenChangePassword(true);
+    }
+
     const showDeleteModal = (c_codigousuario) => {
         setIdElement(c_codigousuario);
         setOpen(true);
@@ -125,6 +139,19 @@ const UserList = () => {
         setIsLoading(false);
     }
 
+    const handleChangePassword = async (newPassword) => {
+        await setIsLoading(true);
+        /*const response = await changePassword(idElement, {newPassword: newPassword});
+        if(response && response.status === 200) {
+            await getUsers();
+            setResponseData( {title: "Operación exitosa", message: "Se cambió la contraseña con éxito" });
+        } else {
+            setResponseData( {title: "Error al cambiar contraseña", message: response.message });
+        }*/
+        setOpenResponseModal(true);
+        setIsLoading(false);
+    }
+
     //Obtener usuarios para la tabla
     const getUsersTable = (usuarios) => {
         const listUsersTable = usuarios.map((item) => {
@@ -135,8 +162,9 @@ const UserList = () => {
             aux.c_telefono = item.c_telefono
             aux.c_codigoperfil = item.c_codigoperfil
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
-            aux.actions = (<DropdownButton c_codigousuario={item.c_codigousuario} showDeleteModal={()=>showDeleteModal(item.c_codigousuario)}
-                viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
+            aux.actions = (<DropdownButton c_codigousuario={item.c_codigousuario} showDeleteModal={()=>showDeleteModal(item.c_codigousuario)} viewPermission={viewPermission}
+                updatePermission={updatePermission} deletePermission={deletePermission} changePasswordPermission={changePasswordPermission}
+                showChangePasswordModal={()=>showChangePasswordModal(item.c_codigousuario)}/>);
             return aux;
         })
         setUsersTable(listUsersTable);
@@ -161,6 +189,12 @@ const UserList = () => {
                 title={responseData.title}
                 onClose={()=>setOpenResponseModal(false)}
                 message={responseData.message}
+            />
+            <ChangePasswordModal
+                isOpen={openChangePassword}
+                onClose={()=>setOpenChangePassword(false)}
+                handleChangePassword={handleChangePassword}
+                setIdElement={setIdElement}
             />
         </>
     )

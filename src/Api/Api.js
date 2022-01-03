@@ -67,6 +67,12 @@ export const deleteUser = async (c_codigousuario) => {
     const response = await consumer(url, 'post', {});
     return response;
 };
+export const changePassword = async (id, body) => {
+    console.log('---API--- : changePassword');
+    const url = `${port}/user/${id}/changepassword`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
 //Perfiles
 export const listPerfiles = async () => {
     console.log('---API--- : listPerfiles');
@@ -401,10 +407,10 @@ export const deleteDistrito = async (body) => {
     return response;
 };
 //Agencia
-export const listAgencias = async () => {
+export const listAgencias = async (body) => {
     console.log('---API--- : listAgencias');
     const url = `${port}/agencia/list`;
-    const response = await consumer(url, 'get');
+    const response = await consumer(url, 'post', body);
     return response;
 };
 export const listAllAgencias = async () => {
@@ -440,7 +446,7 @@ export const deleteAgencia = async (body) => {
 //Parametro
 export const listParametrosByCompania = async (c_codigocompania) => {
     console.log('---API--- : listParametros');
-    const url = `${port}/${c_codigocompania}/parametros/list`;
+    const url = `${port}/parametros/${c_codigocompania}/list`;
     const response = await consumer(url, 'get');
     return response;
 };
@@ -522,6 +528,18 @@ export const getClienteDinamico = async (body) => {
     console.log('---API--- : getClienteDinamico');
     const url = `${port}/cliente/getClienteDinamico`;
     const response = await consumer(url, 'post', body);
+    return response;
+};
+export const registerCliente = async (body) => {
+    console.log('---API--- : registerCliente');
+    const url = `${port}/cliente/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateCliente = async (body) => {
+    console.log('---API--- : updateCliente');
+    const url = `${port}/cliente/update`;
+    const response = await consumer(url, 'put', body);
     return response;
 };
 //Prestamos

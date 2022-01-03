@@ -49,7 +49,7 @@ const SearchModalCliente = (props) => {
     }, [])
 
     return (
-        <Modal isOpen={isOpen} title="Buscador de cliente" onClose={onClose} modal_class="Modal__container__form">
+        <Modal isOpen={isOpen} title="Buscador de cliente" onClose={onClose} modal_class="Modal__container__search">
             {/*body*/}
             <div className="modal-body">
                 <SearcherComponent

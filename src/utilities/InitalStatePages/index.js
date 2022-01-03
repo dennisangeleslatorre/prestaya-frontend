@@ -45,6 +45,8 @@ import ClienteForm from '../../containers/Cliente/ClienteForm'
 //PRESTAMOS
 import Prestamos from '../../containers/Prestamo/Prestamos'
 import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
+//Cancelaciones
+import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 
 export default{
     initialPages: [
@@ -347,7 +349,7 @@ export default{
             name: 'PRÉSTAMOS'
         },{
             component: PrestamoForm,
-            path: '/nuevoPrestamo',
+            path: '/nuevoPrestamo/:id',
             exact: true,
             name: 'AGREGAR PRÉSTAMO'
         },{
@@ -360,6 +362,11 @@ export default{
             path: '/visualizarPrestamo/:id',
             exact: true,
             name: 'VISUALIZAR PRÉSTAMO'
+        },{
+            component: Cancelaciones,
+            path: '/cancelaciones/:id',
+            exact: true,
+            name: 'CANCELACIONES'
         }
     ]
 }

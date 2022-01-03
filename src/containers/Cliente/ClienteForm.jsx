@@ -12,7 +12,9 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { listCompanias, listTiposDocumento, listPaises, listDepartamentos, listProvincias, listDistritos } from '../../Api/Api'
+import { listCompanias, listTiposDocumento, listPaises, listDepartamentos, listProvincias, listDistritos,
+        getClienteByCodigoCliente, registerCliente, updateCliente } from '../../Api/Api'
+import moment from 'moment'
 
 const ClienteForm = (props) => {
     //Estados
@@ -35,8 +37,8 @@ const ClienteForm = (props) => {
     const [estado, setEstado] = useState("A");
     const [fechaRegistro, setFechaRegistro] = useState({value:"", isValid:null});
     const [fechaInicioOperaciones, setFechaInicioOperaciones] = useState({value:"", isValid:null});
-    const [fechaInactivación, setFechaInactivación] = useState({value:"", isValid:null});
-    const [motivoInactivación, setMotivoInactivación] = useState("");
+    const [fechaInactivacion, setFechaInactivacion] = useState({value:"", isValid:null});
+    const [motivoInactivacion, setMotivoInactivacion] = useState("");
     //Listas
     const [companias, setCompanias] = useState([]);
     const [paises, setPaises] = useState([]);
@@ -109,7 +111,7 @@ const ClienteForm = (props) => {
             c_numerodocumento: numeroDocumento.value,
             c_direccion: direccion.value,
             c_paiscodigo: paisCodigo,
-            c_despartamentocodigo: departamentoCodigo,
+            c_departamentocodigo: departamentoCodigo,
             c_provinciacodigo: provinciaCodigo,
             c_distritocodigo: distritoCodigo,
             c_telefono1: telefono.value,
@@ -119,7 +121,7 @@ const ClienteForm = (props) => {
         if(telefono2.value) data.c_telefono2 = telefono2.value;
         if(fechaInicioOperaciones.value) data.d_fechaInicioOperaciones = fechaInicioOperaciones.value;
         if(estado === "I") {
-            data.c_motivoinactivacion = motivoInactivación;
+            data.c_motivoinactivacion = motivoInactivacion;
         }
         return data;
     }
@@ -129,8 +131,8 @@ const ClienteForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
-        //const response = await registerCliente(data);
-        //(response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el cliente") : prepareNotificationDanger("Error al registrar", response.message);
+        const response = await registerCliente(data);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el cliente") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -139,8 +141,8 @@ const ClienteForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
-        //const response = await updateCliente(data);
-        //(response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el cliente") : prepareNotificationDanger("Error al actualizar", response.message);
+        const response = await updateCliente(data);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el cliente") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
@@ -163,7 +165,27 @@ const ClienteForm = (props) => {
         const response = await getClienteByCodigoCliente({c_compania:c_compania, n_cliente:n_cliente});
         if(response.status === 200) {
             const data = response.body.data;
-            
+            setCompania(data.c_compania);
+            setNCliente({value: data.n_cliente, isValid:true});
+            setTipoDocumento(data.c_tipodocumento);
+            setNumeroDocumento({value: data.c_numerodocumento, isValid:true});
+            setApellidoPaterno({value: data.c_apellidospaterno});
+            setApellidoMaterno({value: data.c_apellidosmaterno})
+            setNombres({value: data.c_nombres});
+            setDireccion({value: data.c_direccion, isValid: true});
+            setPaisCodigo(data.c_paiscodigo);
+            setDepartamentoCodigo(data.c_departamentocodigo);
+            setProvinciaCodigo(data.c_provinciacodigo);
+            setDistritoCodigo(data.c_distritocodigo);
+            setTelefono({value: data.c_telefono1, isValid: true});
+            setTelefono2({value: data.c_telefono2, isValid: true});
+            setCorreoElectronico({value: data.c_correo, isValid: true});
+            setEstado(data.c_estado);
+            setFechaRegistro({value: moment(data.d_fecharegistro).format('DD/MM/yyyy')});
+            setFechaInicioOperaciones({value: moment(data.d_fechaInicioOperaciones).format('yyyy-MM-DD')});
+            if(data.d_fechaInactivacion) setFechaInactivacion({value:data.d_fechaInactivacion});
+            if(data.c_motivoinactivacion) setMotivoInactivacion(data.c_motivoinactivacion);
+
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -259,6 +281,10 @@ const ClienteForm = (props) => {
         }
     }, [tipoDocumento])
 
+    useEffect(() => {
+        if(estado === "A" && !fechaInactivacion.value) setFechaInactivacion({value: moment().format('yyyy-MM-DD')})
+    }, [estado])
+
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
@@ -293,7 +319,7 @@ const ClienteForm = (props) => {
                     optionField="c_descripcion"
                     valueSelected={tipoDocumento}
                     handleChange={setTipoDocumento}
-                    readOnly={readOnlyView}
+                    disabledElement={readOnlyView}
                 />
                 <InputComponent
                     label="N° documento"
@@ -302,9 +328,9 @@ const ClienteForm = (props) => {
                     type="text"
                     placeholder="N° documento"
                     inputId="numeroDocumentoId"
-                    validation="documentNumber"
-                    max={tipoDocumentoSelected.n_numerodigitos}
-                    min={tipoDocumentoSelected.n_numerodigitos}
+                    validation={"textNumber"}
+                    max={tipoDocumentoSelected.n_numerodigitos === 0 ? 250 : tipoDocumentoSelected.n_numerodigitos}
+                    min={tipoDocumentoSelected.n_numerodigitos === 0 ? 1 : tipoDocumentoSelected.n_numerodigitos}
                     readOnly={readOnlyView}
                 />
                 <InputComponent
@@ -434,6 +460,7 @@ const ClienteForm = (props) => {
                     inputId="correoId"
                     validation="email"
                     max={60}
+                    uppercaseOnly={false}
                     readOnly={readOnlyView}
                 />
                 <InputComponent
@@ -462,14 +489,14 @@ const ClienteForm = (props) => {
                     placeholder="Fecha registro"
                     inputId="fechaRegistroId"
                     state={fechaRegistro}
-                    readOnly={readOnlyView}
+                    readOnly={true}
                 />}
                 { estado === "I" && (
                     <>
                         <InputComponent
                             label="Fecha Inactivación"
-                            state={fechaInactivación}
-                            setState={setFechaInactivación}
+                            state={fechaInactivacion}
+                            setState={setFechaInactivacion}
                             type="date"
                             placeholder="Fecha Inactivación"
                             inputId="fechaInactivacionId"
@@ -479,14 +506,29 @@ const ClienteForm = (props) => {
                             inputId="motivoInactivacionId"
                             label="Motivo inactivación"
                             placeholder="Motivo inactivación"
-                            value={motivoInactivación}
-                            setState={setMotivoInactivación}
+                            value={motivoInactivacion}
+                            setState={setMotivoInactivacion}
                             max={60}
                             readOnly={readOnlyView}
                         />
                     </>
                 )}
             </FormContainer>
+            {isLoading === true && <Loading/>}
+            <ConfirmationModal
+                isOpen={open}
+                onClose={()=>setOpen(false)}
+                title={modalAttributes.title}
+                message={modalAttributes.message}
+                onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+                buttonLink={responseData.url}
+            />
         </>
     )
 }

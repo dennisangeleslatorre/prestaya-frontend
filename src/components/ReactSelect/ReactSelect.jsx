@@ -5,7 +5,7 @@ import './ReactSelect.css'
 
 const ReactSelect = (props) => {
     //Propiedades
-    const {labelText, placeholder="Selecciona un item", data=[], inputId, valueSelected, disabledElement=false,
+    const { labelText, placeholder="Selecciona un item", data=[], inputId, valueSelected, disabledElement=false,
             handleElementSelected, classForm="", marginForm="", labelSpace=2, valueField="id", optionField="name",
             isClear=false } = props;
     const [options, setOptions] = useState([]);

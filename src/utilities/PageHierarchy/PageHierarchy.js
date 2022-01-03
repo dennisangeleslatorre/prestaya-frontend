@@ -63,6 +63,25 @@ const pagesArray = [
                         title: 'ELIMINAR PRÉSTAMO',
                         value: 'ELIMINAR PRÉSTAMO',
                         key: 'ELIMINAR PRÉSTAMO'
+                    },{
+                        title: 'CANCELAR PRÉSTAMO',
+                        value: 'CANCELAR PRÉSTAMO',
+                        key: 'CANCELAR PRÉSTAMO',
+                        children: [
+                            {
+                                title: 'CANCELACIONES',
+                                value: 'CANCELACIONES',
+                                key: 'CANCELACIONES'
+                            },{
+                                title: 'CANCELAR',
+                                value: 'CANCELAR',
+                                key: 'CANCELAR'
+                            },{
+                                title: 'ANULAR CANCELACIÓN',
+                                value: 'ANULAR CANCELACIÓN',
+                                key: 'ANULAR CANCELACIÓN'
+                            }
+                        ]
                     }
                 ]
             }
@@ -424,6 +443,10 @@ const pagesArray = [
                         title: 'VISUALIZAR USUARIO',
                         value: 'VISUALIZAR USUARIO',
                         key: 'VISUALIZAR USUARIO'
+                    },{
+                        title: 'CAMBIAR CONTRASEÑA',
+                        value: 'CAMBIAR CONTRASEÑA',
+                        key: 'CAMBIAR CONTRASEÑA'
                     },{
                         title: 'ELIMINAR USUARIO',
                         value: 'ELIMINAR USUARIO',

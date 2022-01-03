@@ -1,8 +1,9 @@
 import React from 'react'
 
-const TextareaComponent = ({inputId, label, placeholder, readOnly, value, setState, max=250, classForm="", labelSpace=2}) => {
+const TextareaComponent = ({inputId, label, placeholder, readOnly, value, setState, max=250, classForm="", labelSpace=2, uppercaseOnly=false}) => {
     const handleOnChange = (e) => {
-        setState(e.target.value);
+        if(uppercaseOnly) setState({...state, value: e.target.value.toUpperCase()});
+        else setState(e.target.value);
     }
     return (
         <div className={`form-group mt-3 ${classForm} row`}>

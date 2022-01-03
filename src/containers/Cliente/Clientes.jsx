@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Table, Divider, Space, Button } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
@@ -9,6 +9,8 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+//Context
+import PagesContext from '../../context/PagesContext/PagesContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getClienteDinamico } from '../../Api/Api'
@@ -115,6 +117,15 @@ const Clientes = () => {
     const [open, setOpen] = useState(false);
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
+    //Contexto
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "ACTUALIZAR CLIENTE" || item === "AGREGAR CLIENTE" || item === "VISUALIZAR CLIENTE" || item === "ELIMINAR CLIENTE"
+    })
+    const registerPermission = userPermisssions.includes("AGREGAR CLIENTE");
+    const updatePermission = userPermisssions.includes("ACTUALIZAR CLIENTE");
+    const viewPermission = userPermisssions.includes("VISUALIZAR CLIENTE");
+    const deletePermission = userPermisssions.includes("ELIMINAR CLIENTE");
 
     //Funciones
     const handleSelectUpdate = () => {
@@ -125,28 +136,36 @@ const Clientes = () => {
             setOpenResponseModal(true);
         }
     }
+    const handleSelectView = () => {
+        if(elementSelected) {
+            history.push(`/visualizarCliente/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
     const handleSelectDelete = async () => {
         if(elementSelected) {
-            await setOpen(false);
-            await setIsLoading(true);
-            const [c_compania, n_cliente] = elementSelected[0].split("-");
-            const response = {}; //await deleteUnidadMedida({c_compania:c_compania, n_cliente:n_cliente});
-            if(response && response.status === 200) {
-                await onHandleSearch();
-                setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el cliente." });
-            } else {
-                setResponseData( {title: "Error al eliminar", message: response.message });
-            }
-            setOpenResponseModal(true);
-            setIsLoading(false);
+            setOpen(true);
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
     }
 
-    const handleOpenDeleteModal = () => {
-        setOpen(true);
+    const handleDelete = async () => {
+        await setOpen(false);
+        await setIsLoading(true);
+        const [c_compania, n_cliente] = elementSelected[0].split("-");
+        const response = {}; //await deleteUnidadMedida({c_compania:c_compania, n_cliente:n_cliente});
+        if(response && response.status === 200) {
+            await onHandleSearch();
+            setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el cliente." });
+        } else {
+            setResponseData( {title: "Error al eliminar", message: response.message || "Ocurrió un problema" });
+        }
+        setOpenResponseModal(true);
+        setIsLoading(false);
     }
 
     const handleOpenSearchModal = async () => {
@@ -325,9 +344,10 @@ const Clientes = () => {
                                     <div className="col-12 col-md-11">
                                         <Divider />
                                         <Space style={{ marginBottom: 16 }}>
-                                            <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>
-                                            <Button onClick={handleSelectUpdate}>Modificar</Button>
-                                            <Button onClick={handleOpenDeleteModal}>Eliminar</Button>
+                                            {registerPermission && <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>}
+                                            {updatePermission && <Button onClick={handleSelectUpdate}>Modificar</Button>}
+                                            {viewPermission && <Button onClick={handleSelectView}>Visualizar</Button>}
+                                            {deletePermission && <Button onClick={handleSelectDelete}>Eliminar</Button>}
                                         </Space>
                                         <Table
                                             classForm
@@ -353,7 +373,7 @@ const Clientes = () => {
                 onClose={()=>setOpen(false)}
                 title={"Aviso de eliminación"}
                 message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
-                onHandleFunction={()=>handleSelectDelete()}
+                onHandleFunction={()=>handleDelete()}
                 buttonClass="btn-danger"
             />
             <ResponseModal

@@ -28,6 +28,10 @@ code {
   color: #10489e;
 }
 
+.btn-secondary {
+  color: #ffff !important;
+}
+
 .btn-danger {
   color: #ffff !important;
 }
@@ -56,6 +60,15 @@ code {
   color: #319602;
 }
 
+.hr-nexxum {
+  border-top: 3px solid rgba(0, 0, 0, 0.1);
+  color: #A01127;
+  border-color: #A01127;
+}
+
+.header-form {
+  margin: 0 0 24px 0 !important;
+}
+
 /*.ant-table-wrapper {
-  
 }*/

@@ -672,7 +672,7 @@ const Prestamos = () => {
                                     <div className="col-12 col-md-11">
                                         <Divider />
                                         <Space style={{ marginBottom: 16 }}>
-                                            <Button onClick={()=>history.push("/nuevoPrestamo")}>Nuevo</Button>
+                                            <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>Nuevo</Button>
                                             <Button onClick={handleSelectUpdate}>Modificar</Button>
                                             <Button onClick={handleOpenDeleteModal}>Eliminar</Button>
                                         </Space>
