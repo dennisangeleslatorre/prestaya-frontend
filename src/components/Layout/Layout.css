@@ -10,6 +10,7 @@
 .c-wrapper-nav-no-collapse {
     margin-left : 223px;
     width: 100%;
+    overflow: scroll;
     /*padding-right: 140px;*/
 }
 
@@ -17,6 +18,7 @@
     margin-left : 83px;
     width: 100%;
     transition: 850ms;
+    overflow: scroll;
 }
 
 .main-header-container {
@@ -30,6 +32,7 @@
     position: flex;
     background-color: #ebedef;
     height: 100vh;
+    width: 100vw;
     overflow-y:scroll;
     padding-bottom: 100px;
 }
