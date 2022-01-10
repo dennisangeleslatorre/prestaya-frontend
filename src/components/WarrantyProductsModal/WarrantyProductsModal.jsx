@@ -6,9 +6,10 @@ import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
 
 const WarrantyProductsModal = (props) => {
-    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, userLogedIn} = props;
+    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, tiposProducto, userLogedIn, newNLine} = props;
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
+    const [tipo, setTipo] = useState("");
     const [unidadMedida, setUnidadMedida] = useState("");
     const [cantidad, setCantidad] = useState({value:1, isValid:null});
     const [pesoBruto, setPesoBruto] = useState({value:"", isValid:null});
@@ -19,11 +20,12 @@ const WarrantyProductsModal = (props) => {
     const [isAlert, setIsAlert] = useState(false);
 
     const validate = () => {
-        if(!descripcion.value || !unidadMedida || !cantidad.value || !pesoBruto.value || !pesoNeto.value || !observaciones || !montoValorTotal.value) return false;
+        if(!descripcion.value || !unidadMedida || !cantidad.value || !pesoBruto.value || !pesoNeto.value || !observaciones || !montoValorTotal.value || !tipo) return false;
         return true;
     }
 
     const cleanProduct = () => {
+        setTipo("");
         setNLinea({value:"", isValid:null});
         setDescripcion({value:"", isValid:null});
         setUnidadMedida("");
@@ -42,7 +44,8 @@ const WarrantyProductsModal = (props) => {
             n_pesobruto: pesoBruto.value,
             n_pesoneto: pesoNeto.value,
             c_observaciones: observaciones,
-            n_montovalortotal: montoValorTotal.value
+            n_montovalortotal: montoValorTotal.value,
+            c_tipoproducto: tipo
         }
         return product;
     }
@@ -50,7 +53,6 @@ const WarrantyProductsModal = (props) => {
     const handleAddProduct = () => {
         if(validate()) {
             const product = prepareProduct();
-            product.c_usuarioregistro = userLogedIn;
             let listProducts = [...productos, product];
             setProductos(listProducts);
             handleClose();
@@ -60,9 +62,16 @@ const WarrantyProductsModal = (props) => {
     }
 
     const handleUpdateProduct = () => {
-        const product = prepareProduct();
-        product.n_linea = nLinea.value;
-        console.log("Editar");
+        if(validate()) {
+            const product = prepareProduct();
+            if(editProduct.n_linea) product.n_linea = editProduct.n_linea;
+            let listProducts = [...productos];
+            listProducts[editProduct.index] = product;
+            setProductos(listProducts);
+            handleClose();
+        } else {
+            setIsAlert(true);
+        }
     }
 
     const handleClose = () => {
@@ -74,20 +83,23 @@ const WarrantyProductsModal = (props) => {
 
     useEffect(() => {
         if(editProduct) {
-            console.log("Elemento");
+            if(editProduct.n_linea) setNLinea({value:editProduct.n_linea, isValid:null});
+            setDescripcion({value:editProduct.c_descripcionproducto, isValid:null});
+            setUnidadMedida(editProduct.c_unidadmedida);
+            setCantidad({value:editProduct.n_cantidad, isValid:null});
+            setPesoBruto({value:editProduct.n_pesobruto, isValid:null});
+            setPesoNeto({value:editProduct.n_pesoneto, isValid:null});
+            setObservaciones(editProduct.c_observaciones);
+            setMontoValorTotal({value:editProduct.n_montovalortotal, isValid:null});
         }
     }, [editProduct])
-
-    useEffect(() => {
-        setPesoNeto({value:pesoBruto.value*cantidad.value})
-    }, [pesoBruto])
 
     return (
         <Modal isOpen={isOpen} title="Producto" onClose={handleClose} modal_class="Modal__container__form">
             <div className="modal-body row">
                 <InputComponent
                     label="Línea"
-                    state={nLinea}
+                    state={ editProduct ? nLinea : newNLine}
                     setState={setNLinea}
                     type="text"
                     placeholder="Línea"
@@ -104,6 +116,17 @@ const WarrantyProductsModal = (props) => {
                     inputId="descripcionId"
                     classForm="col-12 col-lg-6"
                     max={300}
+                />
+                <ReactSelect
+                    inputId="tiposId"
+                    labelText="Tipos de producto"
+                    placeholder="Seleccione un tipo"
+                    valueSelected={tipo}
+                    data={tiposProducto}
+                    handleElementSelected={setTipo}
+                    optionField="c_descripcion"
+                    valueField="c_tipoproducto"
+                    classForm="col-12 col-lg-6"
                 />
                 <ReactSelect
                     inputId="unidadMedidaId"
@@ -134,16 +157,17 @@ const WarrantyProductsModal = (props) => {
                     placeholder="Peso bruto"
                     inputId="pesoBrutoId"
                     classForm="col-12 col-lg-6"
+                    fixedNumber={4}
                 />
                 <InputComponent
                     label="Peso Neto"
                     state={pesoNeto}
                     setState={setPesoNeto}
-                    type="text"
+                    type="number"
                     placeholder="Peso Neto"
                     inputId="PesoNetoId"
-                    readOnly={true}
                     classForm="col-12 col-lg-6"
+                    fixedNumber={4}
                 />
                 <TextareaComponent
                     inputId="observacionesId"

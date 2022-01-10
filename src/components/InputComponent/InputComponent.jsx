@@ -13,18 +13,31 @@ const validations = {
     textWithRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z']{${a},${b}}$`), errorMessage: `Solo se aceptan letras de ${a} a ${b} dígitos` } },
     numberWithRange: (a, b) => { return { expression: new RegExp(`^\\d{${a},${b}}$`), errorMessage: `Solo se aceptan número de ${a} a ${b} dígitos` } },
     numberAndTextWithRange: (a, b) => { return { expression: new RegExp(`^[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d]{${a},${b}}$`), errorMessage: `Solo se aceptan letras y números de ${a} a ${b} dígitos` } },
-    alphanumericRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z0-9]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d\\-\\_\\.\\°]){${a},${b}}$`), errorMessage: `Solo se aceptan caractéres alfanuméricos de ${a} a ${b} dígitos. No puede terminar en espacio.` } },
+    alphanumericRange: (a, b) => { return { expression: new RegExp(`^[\\u00C0-\\u017Fa-zA-Z0-9]*(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1\\d\\-\\_\\.\\°\\(\\)\\#)]){${a},${b}}$`), errorMessage: `Solo se aceptan caractéres alfanuméricos de ${a} a ${b} dígitos. No puede terminar en espacio.` } },
     documentNumber: (a, b) => { return { expression: new RegExp(`^[a-zA-Z0-9]{${a},${b}}$`), errorMessage: `Solo se aceptan números y letras de ${b} dígitos` } }
 }
 
 const InputComponent = (props) => {
 
     const { state, setState, type, label=null, placeholder="", inputId, validation, min, max=250, readOnly, autoComplete="new-text",
-            required=true, uppercaseOnly=true, classForm="", marginForm="", labelSpace=2  } = props;
+            required=true, uppercaseOnly=true, classForm="", marginForm="", labelSpace=2, fixedNumber=2  } = props;
 
     const handleOnChange = (e) => {
-        if(uppercaseOnly) setState({...state, value: e.target.value.toUpperCase()});
-        else setState({...state, value: e.target.value})
+        if(type === "number") {
+            setState({...state, value: e.target.value});
+        }
+        else {
+            if(uppercaseOnly) setState({...state, value: e.target.value.toUpperCase()});
+            else setState({...state, value: e.target.value})
+        }
+    }
+
+    const handleOnBlur = () => {
+        validate();
+        if(type === "number") {
+            let num = Number(state.value)
+            setState({...state, value: num.toFixed(fixedNumber)});
+        }
     }
 
     const validationObject = validation ? validations[validation](min, max) : null;
@@ -49,7 +62,7 @@ const InputComponent = (props) => {
                     id={inputId}
                     onChange={handleOnChange}
                     onKeyUp={validate}
-                    onBlur={validate}
+                    onBlur={handleOnBlur}
                     className={`form-control ${ validation ? (state.isValid ? "input-succes" : "input-error") : ""}`}
                     maxLength={max}
                 />

@@ -58,11 +58,26 @@ const pagesArray = [
                         title: 'VISUALIZAR PRÉSTAMO',
                         value: 'VISUALIZAR PRÉSTAMO',
                         key: 'VISUALIZAR PRÉSTAMO'
-                    }
-                    ,{
-                        title: 'ELIMINAR PRÉSTAMO',
-                        value: 'ELIMINAR PRÉSTAMO',
-                        key: 'ELIMINAR PRÉSTAMO'
+                    },{
+                        title: 'ANULAR PRÉSTAMO',
+                        value: 'ANULAR PRÉSTAMO',
+                        key: 'ANULAR PRÉSTAMO'
+                    },{
+                        title: 'VIGENTE',
+                        value: 'VIGENTE',
+                        key: 'VIGENTE'
+                    },{
+                        title: 'REGRESAR A PENDIENTE',
+                        value: 'REGRESAR A PENDIENTE',
+                        key: 'REGRESAR A PENDIENTE'
+                    },{
+                        title: 'ENTREGAR',
+                        value: 'ENTREGAR',
+                        key: 'ENTREGAR'
+                    },{
+                        title: 'REMATE',
+                        value: 'REMATE',
+                        key: 'REMATE'
                     },{
                         title: 'CANCELAR PRÉSTAMO',
                         value: 'CANCELAR PRÉSTAMO',

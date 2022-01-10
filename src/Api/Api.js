@@ -69,7 +69,7 @@ export const deleteUser = async (c_codigousuario) => {
 };
 export const changePassword = async (id, body) => {
     console.log('---API--- : changePassword');
-    const url = `${port}/user/${id}/changepassword`;
+    const url = `${port}/user/${id}/changePassword`;
     const response = await consumer(url, 'put', body);
     return response;
 };
@@ -543,3 +543,33 @@ export const updateCliente = async (body) => {
     return response;
 };
 //Prestamos
+export const registerPrestamo = async (body) => {
+    console.log('---API--- : registerPrestamo');
+    const url = `${port}/prestamo/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updatePrestamo = async (body) => {
+    console.log('---API--- : updatePrestamo');
+    const url = `${port}/prestamo/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const validateTipos = async (body) => {
+    console.log('---API--- : validateTipos');
+    const url = `${port}/prestamo/validateTipos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const validateUnidades = async (body) => {
+    console.log('---API--- : validateUnidades');
+    const url = `${port}/prestamo/validateUnidades`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getPrestamoDinamico = async (body) => {
+    console.log('---API--- : getPrestamoDinamico');
+    const url = `${port}/prestamo/getPrestamoDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

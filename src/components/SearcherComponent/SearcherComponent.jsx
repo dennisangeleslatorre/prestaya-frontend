@@ -2,7 +2,7 @@ import React from 'react'
 
 const SearcherComponent = (props) => {
     const { classForm="", marginForm="ml-3 mr-3", labelSpace=2, placeholder="", label=null, inputCodeId="inputCodeId", stateCode=null, setStateCode=null, inputId, stateName,
-    setStateName, readOnly=false, autoComplete='new-searcher', onHandleClick, onHandleBlur=null } = props;
+    setStateName, readOnly=false, autoComplete='new-searcher', onHandleClick, onHandleBlur=null, readOnlyCode=false } = props;
     return (
         <div className={`form-group ${marginForm} ${classForm} row`}>
             { label && <label htmlFor={inputId} className={`col-md-${labelSpace} col-form-label label-input`}>{ label }</label> }
@@ -17,6 +17,14 @@ const SearcherComponent = (props) => {
                         onChange={(e) => setStateCode(e.target.value.toUpperCase())}
                         autoComplete="new-code-search"
                     />}
+                    {readOnlyCode && <input
+                        id={inputCodeId}
+                        type="text"
+                        className="form-control col-md-2 col-xs-2"
+                        value = {stateCode}
+                        autoComplete="new-code-search"
+                        readOnly={readOnlyCode}
+                    />}
                     <input
                         id={inputId}
                         onChange={(e) => setStateName(e.target.value.toUpperCase())}
@@ -27,7 +35,7 @@ const SearcherComponent = (props) => {
                         autoComplete={autoComplete}
                         readOnly={readOnly}
                     />
-                    <button type="button" onClick={onHandleClick} className="btn btn-light input-group-text"><i className="bi bi-search"></i></button>
+                    {onHandleClick && <button type="button" onClick={onHandleClick} className="btn btn-light input-group-text"><i className="bi bi-search"></i></button>}
                 </div>
                 {props.children}
             </div>

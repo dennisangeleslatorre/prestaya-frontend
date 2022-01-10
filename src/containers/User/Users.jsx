@@ -8,6 +8,7 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
+import UserContext from '../../context/UserContext/UserContext'
 //Utilities
 import { Link } from 'react-router-dom'
 import { listUsers, deleteUser, changePassword } from '../../Api/Api'
@@ -67,6 +68,9 @@ const UserList = () => {
     const [openResponseModal, setOpenResponseModal] = useState(false);
     const [openChangePassword, setOpenChangePassword] = useState(false);
     const [responseData, setResponseData] = useState({});
+    //Contexto User
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -141,13 +145,13 @@ const UserList = () => {
 
     const handleChangePassword = async (newPassword) => {
         await setIsLoading(true);
-        /*const response = await changePassword(idElement, {newPassword: newPassword});
+        const response = await changePassword(idElement, {c_ultimousuario: userLogedIn, c_clave:newPassword});
         if(response && response.status === 200) {
             await getUsers();
             setResponseData( {title: "Operación exitosa", message: "Se cambió la contraseña con éxito" });
         } else {
             setResponseData( {title: "Error al cambiar contraseña", message: response.message });
-        }*/
+        }
         setOpenResponseModal(true);
         setIsLoading(false);
     }

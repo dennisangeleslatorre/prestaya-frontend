@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Table, Divider, Space, Button } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
@@ -10,9 +10,11 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+//Context
+import PagesContext from '../../context/PagesContext/PagesContext'
 //States
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente,
+import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico,
          listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api'
 
 const columns = [
@@ -162,7 +164,7 @@ const columns = [
     },
     {
         title: 'Departamento',
-        dataIndex: 'c_despartamentocodigo'
+        dataIndex: 'c_departamentocodigo'
     },
     {
         title: 'Provincia',
@@ -214,6 +216,7 @@ const Prestamos = () => {
     //Estados
     //Filtros
     const [compania, setCompania] = useState("");
+    const [nPrestamo, setNPrestamo] = useState({value:""})
     const [estado, setEstado] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
@@ -256,6 +259,22 @@ const Prestamos = () => {
     const [open, setOpen] = useState(false);
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
+    //Contexto
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "ACTUALIZAR PRÉSTAMO" || item === "AGREGAR PRÉSTAMO" || item === "VISUALIZAR PRÉSTAMO" ||
+        item === "ANULAR PRÉSTAMO" || item === "VIGENTE PRÉSTAMO" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
+        item === "ENTREGAR" || item === "REMATE"
+    })
+    const registerPermission = userPermisssions.includes("AGREGAR PRÉSTAMO");
+    const updatePermission = userPermisssions.includes("ACTUALIZAR PRÉSTAMO");
+    const viewPermission = userPermisssions.includes("VISUALIZAR PRÉSTAMO");
+    const cancelPermission = userPermisssions.includes("ANULAR PRÉSTAMO");
+    const currentPermission = userPermisssions.includes("VIGENTE PRÉSTAMO");
+    const returnToPendingPermission = userPermisssions.includes("REGRESAR A PENDIENTE");
+    const cancellationsPermission = userPermisssions.includes("CANCELACIONES");
+    const rematePermission = userPermisssions.includes("REMATE");
+    const entregarPermission = userPermisssions.includes("REMATE");
 
      //funciones
     const handleSelectUpdate = () => {
@@ -266,30 +285,86 @@ const Prestamos = () => {
             setOpenResponseModal(true);
         }
     }
-    const handleSelectDelete = async () => {
+
+    const handleSelectView = () => {
         if(elementSelected) {
-            await setOpen(false);
-            await setIsLoading(true);
-            const [c_compania, c_prestamo] = elementSelected[0].split("-");
-            const response = {}; //await deleteUnidadMedida({c_compania:c_compania, c_prestamo:c_prestamo});
-            if(response && response.status === 200) {
-                await onHandleSearch();
-                setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el prestamo." });
-            } else {
-                setResponseData( {title: "Error al eliminar", message: response.message });
-            }
-            setOpenResponseModal(true);
-            setIsLoading(false);
+            history.push(`/visualizarPrestamo/${elementSelected[0]}`);
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
     }
 
-    //Abrir Modales
-    const handleOpenDeleteModal = () => {
-        setOpen(true);
+    const handleSelectVigente = () => {
+        if(elementSelected) {
+            history.push(`/visualizarPrestamo/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
     }
+
+    const handleSelectAnular = () => {
+        if(elementSelected) {
+            history.push(`/anularPrestamo/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleSelectReturnVigente = () => {
+        if(elementSelected) {
+            setOpen(true);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleReturnVigente = async () => {
+        await setOpen(false);
+        await setIsLoading(true);
+        const [c_compania, c_prestamo] = elementSelected[0].split("-");
+        const response = {}; //await regresarPrestamoAVigente({c_compania:c_compania, n_cliente:c_prestamo});
+        if(response && response.status === 200) {
+            await onHandleSearch();
+            setResponseData( {title: "Operación exitosa", message: "Se realizó la operación con éxito el cliente." });
+        } else {
+            setResponseData( {title: "Error en la operación", message: response.message || "No se pudo realizar la operación" });
+        }
+        setOpenResponseModal(true);
+        setIsLoading(false);
+    }
+
+    const handleSelectCancelar = () => {
+        if(elementSelected) {
+            history.push(`/cancelaciones/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleSelectEntregar = () => {
+        if(elementSelected) {
+            history.push(`/entregarPrestamo/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleSelectRemate = () => {
+        if(elementSelected) {
+            history.push(`/rematePrestamo/${elementSelected[0]}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    //Modales
     const handleOpenSearchModal = async () => {
         setOpenSearchModal(true);
     }
@@ -312,6 +387,7 @@ const Prestamos = () => {
     const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
+        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
         if(codigoCliente) body.n_cliente = codigoCliente;
         if(estado && estado !== "T") body.c_estado = estado;
         if(tipoDocumento && tipoDocumento !== "T") body.c_tipodocumento = tipoDocumento;
@@ -321,20 +397,41 @@ const Prestamos = () => {
         if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
         if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
         if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
-        if(fechaDesembolso.isValid && enabledFechaDesembolso) body.fechaDesembolso = { fechaInicio: fechaDesembolso.fechaInicio, fechaFin: fechaDesembolso.fechaFin };
-        if(fechaRegistro.isValid && enabledFechaRegistro) body.fechaRegistro = { fechaInicio: fechaRegistro.fechaInicio, fechaFin: fechaRegistro.fechaFin };
-        if(fechaVigencia.isValid && enabledFechaVigencia) body.fechaVigencia = { fechaInicio: fechaVigencia.fechaInicio, fechaFin: fechaVigencia.fechaFin };
-        if(fechaRemate.isValid && enabledFechaRemate) body.fechaRemate = { fechaInicio: fechaRemate.fechaInicio, fechaFin: fechaRemate.fechaFin };
-        if(fechaVencimiento.isValid && enabledFechaVencimiento) body.fechaVencimiento = { fechaInicio: fechaVencimiento.fechaInicio, fechaFin: fechaVencimiento.fechaFin };
-        if(fechaCancelacion.isValid && enabledFechaCancelacion) body.fechaCancelacion = { fechaInicio: fechaCancelacion.fechaInicio, fechaFin: fechaCancelacion.fechaFin };
-        if(fechaEntrega.isValid && enabledFechaEntrega) body.fechaEntrega = { fechaInicio: fechaEntrega.fechaInicio, fechaFin: fechaEntrega.fechaFin };
+        if(fechaDesembolso.isValid && enabledFechaDesembolso) {
+            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
+            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
+        }
+        if(fechaRegistro.isValid && enabledFechaRegistro) {
+            body.d_fecharegistroinicio = fechaRegistro.fechaInicio;
+            body.d_fecharegistrofin = fechaRegistro.fechaFin;
+        }
+        if(fechaVigencia.isValid && enabledFechaVigencia) {
+            body.d_fechavigenteinicio = fechaVigencia.fechaInicio;
+            body.d_fechavigentefin = fechaVigencia.fechaFin;
+        }
+        if(fechaRemate.isValid && enabledFechaRemate) {
+            body.d_fechaRemateinicio = fechaRemate.fechaInicio;
+            body.d_fechaRematefin = fechaRemate.fechaFin;
+        }
+        if(fechaVencimiento.isValid && enabledFechaVencimiento) {
+            body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
+            body.d_fechavencimientofin = fechaVencimiento.fechaFin;
+        }
+        if(fechaCancelacion.isValid && enabledFechaCancelacion) {
+            body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
+            body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
+        }
+        if(fechaEntrega.isValid && enabledFechaEntrega) {
+            body.d_fechaentregainicio = fechaEntrega.fechaInicio;
+            body.d_fechaentregafin = fechaEntrega.fechaFin;
+        }
         console.log('body', body)
         return body;
     }
 
     const onHandleSearch = async () => {
         let parametros = prepareBodyToSearch();
-        const response = {}//await getClienteDinamico(parametros);
+        const response = await getPrestamoDinamico(parametros);
         if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
     }
 
@@ -496,6 +593,17 @@ const Prestamos = () => {
                                             labelSpace={3}
                                         >
                                         </SearcherComponent>
+                                        <InputComponent
+                                            state={nPrestamo}
+                                            setState={setNPrestamo}
+                                            type="text"
+                                            label="# Prestamo"
+                                            placeholder="# Prestamo"
+                                            inputId="nPrestamoInput"
+                                            classForm="col-12 col-md-6"
+                                            marginForm="ml-0"
+                                            labelSpace={3}
+                                        />
                                         <SelectComponent
                                             labelText="Tipo documento"
                                             defaultValue="Seleccione un tipo documento"
@@ -669,13 +777,23 @@ const Prestamos = () => {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col" style={{ overflow: 'scroll' }}>
+                                    <div className="col">
                                         <Divider />
                                         <Space style={{ marginBottom: 16 }}>
-                                            <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>Nuevo</Button>
-                                            <Button onClick={handleSelectUpdate}>Modificar</Button>
-                                            <Button onClick={handleOpenDeleteModal}>Eliminar</Button>
+                                            { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>NUEVO</Button>}
+                                            { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}
+                                            { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
+                                            { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
+                                            { currentPermission && <Button onClick={handleSelectVigente}>VIGENTE</Button>}
+                                            { returnToPendingPermission && <Button onClick={handleSelectReturnVigente}>REGRESAR A PENDIENTE</Button>}
+                                            { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
+                                            { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
+                                            { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}
                                         </Space>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col" style={{ overflow: 'scroll' }}>
                                         <Table
                                             classForm
                                             rowSelection={{
@@ -698,9 +816,9 @@ const Prestamos = () => {
                 isOpen={open}
                 onClose={()=>setOpen(false)}
                 title={"Aviso de eliminación"}
-                message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
-                onHandleFunction={()=>handleSelectDelete()}
-                buttonClass="btn-danger"
+                message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
+                onHandleFunction={()=>handleReturnVigente()}
+                buttonClass="btn-success"
             />
             <ResponseModal
                 isOpen={openResponseModal}

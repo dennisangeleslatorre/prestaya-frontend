@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import WarrantyProductsModal from '../WarrantyProductsModal/WarrantyProductsModal'
-import { listUnidadesMedida } from '../../Api/Api'
+import { listTiposProducto, listUnidadesMedida } from '../../Api/Api'
 import moment from 'moment'
 
 const columns = [
@@ -13,6 +13,9 @@ const columns = [
         title: 'Descripción producto',
         dataIndex: 'c_descripcionproducto'
     },{
+        title: 'Tipo producto',
+        dataIndex: 'c_tipoproducto'
+    },,{
         title: 'Unidad Medida',
         dataIndex: 'c_unidadmedida'
     },{
@@ -50,8 +53,10 @@ const WarrantyProductsForm = (props) => {
     //Estados
     const [editProduct, setEditProduct] = useState(null);
     const [elementSelected, setElementSelected] = useState();
+    const [tiposProducto, setTiposProducto] = useState([]);
     const [unidadesMedidas, setUnidadesMedidas] = useState([]);
     const [tableDataProducts, setTableDataProducts] = useState([]);
+    const [newNLine, setNewNLine] = useState({value:1});
     const [showModal, setShowModal] = useState(false);
 
     const handleDeleteProduct = () => {
@@ -68,9 +73,14 @@ const WarrantyProductsForm = (props) => {
 
     const handleUpdateProduct = () => {
         if(elementSelected) {
-            setEditProduct(productos[elementSelected-1]);
+            setEditProduct({...productos[elementSelected], index:elementSelected});
             setShowModal(true);
         }
+    }
+
+    const getTiposProducto = async () => {
+        const response = await listTiposProducto();
+        if(response && response.status === 200) setTiposProducto(response.body.data);
     }
 
     const getUnidadesMedidas = async () => {
@@ -80,6 +90,7 @@ const WarrantyProductsForm = (props) => {
 
     useEffect(async () => {
         await getUnidadesMedidas();
+        await getTiposProducto();
     }, [])
 
     //Atributos de la tabla
@@ -93,7 +104,8 @@ const WarrantyProductsForm = (props) => {
         const listProducts = productos.map((item, index) => {
             let aux = item;
             aux.key = index;
-            aux.c_usuarioregistro = item.n_linea ? item.c_usuarioregistro : "";
+            aux.n_linea = index+1;
+            aux.c_usuarioregistro = item.c_usuarioregistro ? item.c_usuarioregistro : "";
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
             return aux;
@@ -103,28 +115,33 @@ const WarrantyProductsForm = (props) => {
 
     useEffect(() => {
         getDataTable();
+        setNewNLine({value: productos.length+1});
     }, [productos])
 
     return (
         <>
             <HeaderForm title="Productos en garantía" handleNewProduct={()=>setShowModal(true)} />
-            <div className="col-12 col-md-11">
-                <Space style={{ marginBottom: 16 }}>
-                    <Button onClick={handleUpdateProduct}>Modificar</Button>
-                    <Button onClick={handleDeleteProduct}>Eliminar</Button>
-                </Space>
+            <div className="row col-12">
+                <div className="col">
+                    <Space style={{ marginBottom: 16 }}>
+                        <Button onClick={handleUpdateProduct}>Modificar</Button>
+                        <Button onClick={handleDeleteProduct}>Eliminar</Button>
+                    </Space>
+                </div>
             </div>
-            <Table
-                className='mb-5'
-                rowSelection={{
-                    type: "radio",
-                    ...rowSelection,
-                }}
-                columns={columns}
-                dataSource={tableDataProducts}
-                pagination={{ pageSize: 50 }}
-            />
+            <div className="row mx-2 mb-2" style={{ overflow: 'scroll' }}>
+                <Table
+                    rowSelection={{
+                        type: "radio",
+                        ...rowSelection,
+                    }}
+                    columns={columns}
+                    dataSource={tableDataProducts}
+                    pagination={{ pageSize: 50 }}
+                />
+            </div>
             <WarrantyProductsModal
+                newNLine={newNLine}
                 isOpen={showModal}
                 onClose={()=>setShowModal(false)}
                 productos={productos}
@@ -132,6 +149,7 @@ const WarrantyProductsForm = (props) => {
                 editProduct={editProduct}
                 setEditProduct={setEditProduct}
                 unidadesMedidas={unidadesMedidas}
+                tiposProducto={tiposProducto}
                 userLogedIn={userLogedIn}
             />
         </>

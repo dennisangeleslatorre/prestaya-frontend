@@ -344,7 +344,7 @@ export default{
             name: 'VISUALIZAR CLIENTE'
         },{
             component: Prestamos,
-            path: '/prestamo',
+            path: '/prestamos',
             exact: true,
             name: 'PRÉSTAMOS'
         },{
@@ -362,6 +362,26 @@ export default{
             path: '/visualizarPrestamo/:id',
             exact: true,
             name: 'VISUALIZAR PRÉSTAMO'
+        },{
+            component: PrestamoForm,
+            path: '/anularPrestamo/:id',
+            exact: true,
+            name: 'ANULAR PRÉSTAMO'
+        },{
+            component: PrestamoForm,
+            path: '/vigentePrestamo/:id',
+            exact: true,
+            name: '"VIGENTE PRÉSTAMO'
+        },{
+            component: PrestamoForm,
+            path: '/entregarPrestamo/:id',
+            exact: true,
+            name: 'ENTREGAR'
+        },{
+            component: PrestamoForm,
+            path: '/rematePrestamo/:id',
+            exact: true,
+            name: 'REMATE'
         },{
             component: Cancelaciones,
             path: '/cancelaciones/:id',

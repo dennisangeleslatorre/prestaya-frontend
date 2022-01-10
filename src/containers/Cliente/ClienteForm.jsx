@@ -93,7 +93,7 @@ const ClienteForm = (props) => {
     }
 
     const validate = () => {
-        if( !compania || !nCliente.value || !apellidoPaterno.value || !apellidoMaterno.value || !nombres.value || !direccion.value || !paisCodigo ||
+        if( !compania || !apellidoPaterno.value || !apellidoMaterno.value || !nombres.value || !direccion.value || !paisCodigo ||
             !departamentoCodigo || !provinciaCodigo || !distritoCodigo || !telefono.isValid || !telefono2.isValid || !correoElectronico.isValid ||
             !numeroDocumento.isValid ) return false;
         return true;
@@ -102,7 +102,6 @@ const ClienteForm = (props) => {
     const prepareData = () => {
         const data = {
             c_compania: compania,
-            n_cliente: nCliente.value,
             c_apellidospaterno: apellidoPaterno.value,
             c_apellidosmaterno: apellidoMaterno.value,
             c_nombres: nombres.value,
@@ -140,6 +139,7 @@ const ClienteForm = (props) => {
         setOpen(false);
         await setIsLoading(true);
         const data = prepareData();
+        data.n_cliente = nCliente.value;
         data.c_ultimousuario = userLogedIn;
         const response = await updateCliente(data);
         (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el cliente") : prepareNotificationDanger("Error al actualizar", response.message);
@@ -300,16 +300,15 @@ const ClienteForm = (props) => {
                     valueField="c_compania"
                     disabledElement={readOnlyCode}
                 />
-                <InputComponent
+                { urlFragment !== "nuevoCliente" && <InputComponent
                     label="Código del cliente"
                     state={nCliente}
                     setState={setNCliente}
                     type="text"
                     placeholder="Código del cliente"
                     inputId="clienteCodigoId"
-                    validation="number"
-                    readOnly={readOnlyCode}
-                />
+                    readOnly={true}
+                />}
                 <SelectComponent
                     labelText="Tipo documento"
                     defaultValue="Seleccione un tipo documento"

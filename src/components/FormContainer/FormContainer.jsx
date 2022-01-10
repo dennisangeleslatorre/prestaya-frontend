@@ -3,7 +3,7 @@ import Alert from '../Alert/Alert'
 
 const FormContainer = (props) => {
     const { buttonAttributes={label:"", class:""}, handleClick=null, isAlert=false, view, goList,
-    notification={title:"", type:"", message:""} } = props;
+    notification={title:"", type:"", message:""}, showButton=true, textButtonReturn="Cancelar" } = props;
 
     const handleSubmit = () => {
         handleClick();
@@ -19,8 +19,8 @@ const FormContainer = (props) => {
                                 <div className="mb-3" onSubmit={handleSubmit}>
                                     {props.children}
                                     <div className="text-center">
-                                        <button onClick={handleSubmit} className={buttonAttributes.class}>{buttonAttributes.label}</button>
-                                        {!view && <button onClick={goList} className="btn btn-light btn-form ml-2">Cancelar</button>}
+                                    {showButton && <button onClick={handleSubmit} className={buttonAttributes.class}>{buttonAttributes.label}</button>}
+                                        {!view && <button onClick={goList} className="btn btn-light btn-form ml-2">{textButtonReturn}</button>}
                                     </div>
                                 </div>
                                 {/*Alerta*/}

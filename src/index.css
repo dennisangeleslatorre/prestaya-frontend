@@ -70,5 +70,14 @@ code {
   margin: 0 0 24px 0 !important;
 }
 
-/*.ant-table-wrapper {
-}*/
+
+.ant-btn, .ant-btn:active, .ant-btn:focus {
+  border: 1px solid !important;
+}
+
+.ant-table-thead > tr > th {
+  color: rgb(255 255 255 / 85%) !important;
+  font-weight: 500;
+  border: 1px solid darkgray;
+  background-color: #10489e !important;
+}

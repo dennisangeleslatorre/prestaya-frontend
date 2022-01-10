@@ -341,7 +341,7 @@ const Clientes = () => {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col" style={{ overflow: 'scroll' }}>
+                                    <div className="col">
                                         <Divider />
                                         <Space style={{ marginBottom: 16 }}>
                                             {registerPermission && <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>}
@@ -349,6 +349,10 @@ const Clientes = () => {
                                             {viewPermission && <Button onClick={handleSelectView}>Visualizar</Button>}
                                             {deletePermission && <Button onClick={handleSelectDelete}>Eliminar</Button>}
                                         </Space>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col" style={{ overflow: 'scroll' }}>
                                         <Table
                                             classForm
                                             rowSelection={{

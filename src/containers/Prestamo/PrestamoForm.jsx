@@ -16,7 +16,7 @@ import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
-    getClienteByCodigoCliente, registerCliente, updateCliente, listParametrosByCompania } from '../../Api/Api'
+    getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 
 const estados = [
@@ -70,6 +70,7 @@ const PrestamoForm = (props) => {
     const [fechaEntrega, setFechaEntrega] = useState({value:""});
     const [personaRecoge, setPersonaRecoge] = useState({value:"", isValid:null});
     const [tipoDocumentoEntrega, setTipoDocumentoEntrega] = useState("");
+    //Falta establecer el tipo de documento seleccionado al selecionar
     const [tipoDocumentoSelected, setTipoDocumentoSelected] = useState({});
     const [numeroDocumentoEntrega, setNumeroDocumentoEntrega] = useState({value:"", isValid:null});
     const [telefonoEntrega, setTelefonoEntrega] = useState({value:"", isValid:null});
@@ -129,13 +130,44 @@ const PrestamoForm = (props) => {
     }
 
     const validate = () => {
+        if(!compania || !codigoCliente || !nombreCliente || !tipoDocumento || !numeroDocumento.value || !direccion.value || !paisCodigo ||
+            !departamentoCodigo || !provinciaCodigo || !distritoCodigo || !telefono.value || !moneda || !montoPrestamo.value || !tasaInteres.value ||
+            !montoIntereses.value || !montoTotalPrestamo.value || !fechaDesembolso.value || !plazoDias.value || !fechaVencimiento.value ||
+            !montoInteresDiario.value ) return false;
         return true;
     }
 
     const prepareData = () => {
         const data = {
+            c_compania: compania,
+            n_cliente: codigoCliente,
+            c_nombrecompleto: nombreCliente,
+            c_tipodocumento: tipoDocumento,
+            c_numerodocumento: numeroDocumento.value,
+            c_direccioncliente: direccion.value,
+            c_paiscodigo: paisCodigo,
+            c_departamentocodigo: departamentoCodigo,
+            c_provinciacodigo: provinciaCodigo,
+            c_distritocodigo: distritoCodigo,
+            c_telefono1: telefono.value,
+            c_monedaprestamo: moneda,
+            n_montoprestamo: montoPrestamo.value,
+            n_tasainteres: tasaInteres.value,
+            n_montointereses: montoIntereses.value,
+            n_montototalprestamo: montoTotalPrestamo.value,
+            d_fechadesembolso: fechaDesembolso.value,
+            n_diasplazo: plazoDias.value,
+            d_fechavencimiento: fechaVencimiento.value,
+            n_montointeresesdiario: montoInteresDiario.value,
+            c_observacionesregistro: observacionesRegistro
         }
         return data;
+    }
+
+    const prepareProducts = () => {
+        const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}'`)
+        .reduce((acc, cv) => `${acc}||${cv}`)
+        return aux;
     }
 
     const handleOpenSearchModal = async () => {
@@ -147,8 +179,22 @@ const PrestamoForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
-        const response = await registerPrestamo(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el prestamo") : prepareNotificationDanger("Error al registrar", response.message);
+        data.c_usuarioregpendiente = userLogedIn;
+        //Validamos que los tipos de documento existan  esten activos
+        console.log("productos", productos);
+        const tiposProductos = productos.map((item) => `'${item.c_tipoproducto}'`);
+        const unidadesMedidas = productos.map((item) => `'${item.c_unidadmedida}'`);
+        const responseValidateTipos = await validateTipos({ids: `${tiposProductos}`});
+        if( responseValidateTipos && responseValidateTipos.status === 200 ) {
+            const responseValidateMedidas = await validateUnidades({ids: `${unidadesMedidas}`});
+            if( responseValidateMedidas && responseValidateMedidas.status === 200 ) {
+                const productosGarantia = productos.length !== 0 ? prepareProducts() : "";
+                const response = await registerPrestamo({prestamo:data, productos:productosGarantia});
+                (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el prestamo") : prepareNotificationDanger("Error al registrar", response.message);
+            } else
+                prepareNotificationDanger("Error al registrar", responseValidateMedidas.message);
+        } else
+            prepareNotificationDanger("Error al registrar", responseValidateTipos.message);
         setIsLoading(false);
     }
 
@@ -180,6 +226,33 @@ const PrestamoForm = (props) => {
         const [c_compania, c_prestamo] = elementId.split('-');
         const response = await getPrestamoByCodigoPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response.status === 200) {
+            const data = response.body.data;
+            /*setCompania();
+            setNPrestamo({value:});
+            setAgencia();
+            setEstado();
+            setCodigoCliente();
+            setNombreCliente();
+            setClienteSeleccionado();
+            setTipoDocumento();
+            setNumeroDocumento({value:});
+            setDireccion({value:});
+            setPaisCodigo();
+            setDepartamentoCodigo();
+            setProvinciaCodigo();
+            setDistritoCodigo();
+            setTelefono({value:});
+            setMoneda();
+            setMontoPrestamo({value:});
+            setTasaInteres({value:});
+            setMontoIntereses({value:});
+            setMontoTotalPrestamo({value:});
+            setFechaDesembolso({value:});
+            setPlazoDias({value:});
+            setFechaVencimiento({value:});
+            setMontoInteresDiario({value:});
+            setObservacionesRegistro({value:});
+            setProductos();*/
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -206,7 +279,7 @@ const PrestamoForm = (props) => {
             const data = response.body.data;
             const tasaInteres = data.find((item) => item.c_parametrocodigo === "PACO000001");
             const plazoDias = data.find((item) => item.c_parametrocodigo === "PACO000002");
-            setTasaInteres({value:tasaInteres.n_valornumero, isValid:true});
+            setTasaInteres({value:Number(tasaInteres.n_valornumero).toFixed(2), isValid:true});
             setPlazoDias({value:parseInt(plazoDias.n_valornumero), isValid:true});
         }
     }
@@ -269,10 +342,10 @@ const PrestamoForm = (props) => {
 
     useEffect(() => {
         if(urlFragment === "nuevoPrestamo" && companias.length !== 0) setCompania(elementId)
-        else {
+        /*else {
             const [c_compania, c_prestamo] = elementId.split('-');
             setCompania(c_compania);
-        }
+        }*/
     }, [companias])
 
     useEffect(() => {
@@ -280,6 +353,7 @@ const PrestamoForm = (props) => {
             setCodigoCliente(clienteSeleccionado.n_cliente);
             setNombreCliente(clienteSeleccionado.c_nombrescompleto);
             setNumeroDocumento({value: clienteSeleccionado.c_numerodocumento});
+            setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setTelefono({value: clienteSeleccionado.c_telefono1});
             setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setPaisCodigo(clienteSeleccionado.c_paiscodigo);
@@ -292,8 +366,8 @@ const PrestamoForm = (props) => {
 
     useEffect(() => {
         const calc = Number(montoPrestamo.value) * Number(tasaInteres.value) / 100;
-        setMontoIntereses({value:calc})
-        setMontoTotalPrestamo({value:Number(montoPrestamo.value) + calc})
+        setMontoIntereses({value:calc.toFixed(2)})
+        setMontoTotalPrestamo({value:(Number(montoPrestamo.value) + calc).toFixed(2)})
     }, [montoPrestamo, tasaInteres])
 
     useEffect(() => {
@@ -307,7 +381,7 @@ const PrestamoForm = (props) => {
 
     useEffect(() => {
         if( plazoDias.isValid && montoIntereses.value ) {
-            setMontoInteresDiario({value: Number(montoIntereses.value)/Number(plazoDias.value)});
+            setMontoInteresDiario({value: (Number(montoIntereses.value)/Number(plazoDias.value)).toFixed(2)});
         }
     }, [montoIntereses, plazoDias])
 
@@ -483,18 +557,19 @@ const PrestamoForm = (props) => {
                         label="Monto Préstamo"
                         state={montoPrestamo}
                         setState={setMontoPrestamo}
-                        type="text"
+                        type="number"
                         placeholder="Monto Préstamo"
                         inputId="montoPrestamoId"
                         validation="decimalNumber"
                         readOnly={readOnlyView}
                         classForm="col-12 col-lg-6"
+                        fixedNumber={2}
                     />
                     <InputComponent
                         label="Tasa interés"
                         state={tasaInteres}
                         setState={setTasaInteres}
-                        type="text"
+                        type="number"
                         placeholder="Tasa interés"
                         inputId="tasaInteresId"
                         validation="decimalNumber"
@@ -505,7 +580,7 @@ const PrestamoForm = (props) => {
                         label="Monto intereses"
                         state={montoIntereses}
                         setState={setMontoIntereses}
-                        type="text"
+                        type="number"
                         placeholder="Tasa interés"
                         inputId="tasaInteresId"
                         readOnly={true}
@@ -515,7 +590,7 @@ const PrestamoForm = (props) => {
                         label="Mnt. Total P."
                         state={montoTotalPrestamo}
                         setState={setMontoTotalPrestamo}
-                        type="text"
+                        type="number"
                         placeholder="Monto total préstamo"
                         inputId="montoTotalPrestamoId"
                         readOnly={true}
