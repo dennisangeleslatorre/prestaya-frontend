@@ -1,5 +1,5 @@
 //USUARIO
-import MiPerfil from '../../containers/MiPerfil/MiPerfil'
+import Home from '../../containers/Home/Home'
 import Users from '../../containers/User/Users'
 import UserForm from '../../containers/User/UserForm'
 //PERFIL
@@ -51,17 +51,17 @@ import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 export default{
     initialPages: [
         {
-            component: MiPerfil,
-            path: '/miPerfil',
+            component: Home,
+            path: '/home',
             exact: true,
-            name: 'MI PERFIL'
+            name: 'HOME'
         }],
     allPages: [
         {
-            component: MiPerfil,
-            path: '/miPerfil',
+            component: Home,
+            path: '/home',
             exact: true,
-            name: 'MI PERFIL'
+            name: 'HOME'
         },{
             component: Perfiles,
             path: '/perfiles',

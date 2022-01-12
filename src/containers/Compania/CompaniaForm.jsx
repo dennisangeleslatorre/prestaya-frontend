@@ -227,7 +227,7 @@ const CompaniaForm = (props) => {
                     type="text"
                     placeholder="Código de compañía"
                     inputId="companiaCodigoId"
-                    validation="textWithRange"
+                    validation="numberAndTextWithRange"
                     min={1}
                     max={8}
                     readOnly={readOnlyCode}

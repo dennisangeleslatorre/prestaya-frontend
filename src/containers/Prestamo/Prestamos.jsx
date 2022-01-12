@@ -32,7 +32,7 @@ const columns = [
     },
     {
         title: 'Nombre Completo',
-        dataIndex: 'c_nombrecompleto'
+        dataIndex: 'c_nombrescompleto'
     },
     {
         title: 'Tipo Doc',
@@ -263,14 +263,14 @@ const Prestamos = () => {
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "ACTUALIZAR PRÉSTAMO" || item === "AGREGAR PRÉSTAMO" || item === "VISUALIZAR PRÉSTAMO" ||
-        item === "ANULAR PRÉSTAMO" || item === "VIGENTE PRÉSTAMO" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
+        item === "ANULAR PRÉSTAMO" || item === "VIGENTE" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
         item === "ENTREGAR" || item === "REMATE"
     })
     const registerPermission = userPermisssions.includes("AGREGAR PRÉSTAMO");
     const updatePermission = userPermisssions.includes("ACTUALIZAR PRÉSTAMO");
     const viewPermission = userPermisssions.includes("VISUALIZAR PRÉSTAMO");
     const cancelPermission = userPermisssions.includes("ANULAR PRÉSTAMO");
-    const currentPermission = userPermisssions.includes("VIGENTE PRÉSTAMO");
+    const currentPermission = userPermisssions.includes("VIGENTE");
     const returnToPendingPermission = userPermisssions.includes("REGRESAR A PENDIENTE");
     const cancellationsPermission = userPermisssions.includes("CANCELACIONES");
     const rematePermission = userPermisssions.includes("REMATE");
@@ -433,6 +433,7 @@ const Prestamos = () => {
         let parametros = prepareBodyToSearch();
         const response = await getPrestamoDinamico(parametros);
         if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+        else getDataForTable([]);
     }
 
     const onHandleClickSearch = async () => {
@@ -830,6 +831,7 @@ const Prestamos = () => {
                 isOpen={openSearchModal}
                 onClose={()=>setOpenSearchModal(false)}
                 setClienteObtained={setClienteSeleccionado}
+                compania={compania}
             />
         </>
     )

@@ -75,7 +75,7 @@ const Parametros = () => {
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'c_compania', label: 'Compañía', sortVar:1 },
+        {name:'companyname', label: 'Compañía', sortVar:1 },
         {name:'c_parametrocodigo', label: 'Código', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
         {name:'c_tipovalor', label: 'Tipo valor', sortVar:1 },
@@ -89,7 +89,7 @@ const Parametros = () => {
 
     //campos de filtro
     const fieldsFilter= [
-        { name: 'c_compania' },
+        { name: 'companyname' },
         { name: 'c_parametrocodigo' },
         { name: 'c_descripcion' },
         { name: 'c_tipovalor' },
@@ -137,7 +137,7 @@ const Parametros = () => {
     const getParametrosTable = (parametros) => {
         const listParametrosTable = parametros.map((item) => {
             let aux = {};
-            aux.c_compania = item.c_compania;
+            aux.companyname = item.companyname;
             aux.c_parametrocodigo = item.c_parametrocodigo;
             aux.c_descripcion = item.c_descripcion;
             aux.c_tipovalor = item.c_tipovalor;

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import WarrantyProductsModal from '../WarrantyProductsModal/WarrantyProductsModal'
-import { listTiposProducto, listUnidadesMedida } from '../../Api/Api'
+import ResponseModal from '../../components/Modal/ResponseModal'
+//Servicios
+import { listTiposProducto, listUnidadesMedida, listAllTiposProducto } from '../../Api/Api'
 import moment from 'moment'
 
 const columns = [
@@ -14,7 +16,7 @@ const columns = [
         dataIndex: 'c_descripcionproducto'
     },{
         title: 'Tipo producto',
-        dataIndex: 'c_tipoproducto'
+        dataIndex: 'c_tipoproducto_name'
     },,{
         title: 'Unidad Medida',
         dataIndex: 'c_unidadmedida'
@@ -49,38 +51,59 @@ const columns = [
 ]
 
 const WarrantyProductsForm = (props) => {
-    const { productos=[], setProductos, readOnly=false, userLogedIn } = props;
+    const { productos=[], setProductos, readOnly=false, userLogedIn, warrantyProductUpdateList, setWarrantyProductUpdateList, warrantyProductRemovalList, setWarrantyProductRemovalList } = props;
     //Estados
     const [editProduct, setEditProduct] = useState(null);
     const [elementSelected, setElementSelected] = useState();
     const [tiposProducto, setTiposProducto] = useState([]);
+    const [allTiposProductos, setAllTiposProductos] = useState([]);
     const [unidadesMedidas, setUnidadesMedidas] = useState([]);
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [newNLine, setNewNLine] = useState({value:1});
     const [showModal, setShowModal] = useState(false);
+    //Response
+    const [openResponseModal , setOpenResponseModal ] = useState(false);
+    const [responseData, setResponseData] = useState({});
 
     const handleDeleteProduct = () => {
         if(elementSelected) {
             let listProducts = [...productos];
             const productAux = productos[elementSelected];
-            if(productAux.n_linea) {
-                console.log("Agregar a la lsta de eliminacion")
+            if(productAux.c_usuarioregistro) {
+                const auxDeletedList = [...warrantyProductRemovalList, productos[elementSelected].n_linea];
+                setWarrantyProductRemovalList(auxDeletedList);
             }
             listProducts.splice(elementSelected, 1);
             setProductos(listProducts);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
         }
     }
 
     const handleUpdateProduct = () => {
         if(elementSelected) {
-            setEditProduct({...productos[elementSelected], index:elementSelected});
+            let editProductAux = {...productos[elementSelected]};
+            editProductAux.n_cantidad = Number(editProductAux.n_cantidad).toFixed(1);
+            editProductAux.n_pesobruto = Number(editProductAux.n_pesobruto).toFixed(4);
+            editProductAux.n_pesoneto = Number(editProductAux.n_pesoneto).toFixed(4);
+            editProductAux.n_montovalortotal = Number(editProductAux.n_montovalortotal).toFixed(2);
+            setEditProduct({...editProductAux, index:elementSelected});
             setShowModal(true);
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
         }
     }
 
     const getTiposProducto = async () => {
         const response = await listTiposProducto();
         if(response && response.status === 200) setTiposProducto(response.body.data);
+    }
+
+    const getAllListTiposProductos = async () => {
+        const response = await listAllTiposProducto();
+        if(response && response.status === 200) setAllTiposProductos(response.body.data);
     }
 
     const getUnidadesMedidas = async () => {
@@ -91,6 +114,7 @@ const WarrantyProductsForm = (props) => {
     useEffect(async () => {
         await getUnidadesMedidas();
         await getTiposProducto();
+        await getAllListTiposProductos();
     }, [])
 
     //Atributos de la tabla
@@ -104,7 +128,12 @@ const WarrantyProductsForm = (props) => {
         const listProducts = productos.map((item, index) => {
             let aux = item;
             aux.key = index;
+            aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
             aux.n_linea = index+1;
+            aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
+            aux.n_pesobruto = Number(item.n_pesobruto).toFixed(4);
+            aux.n_pesoneto = Number(item.n_pesoneto).toFixed(4);
+            aux.n_montovalortotal = Number(item.n_montovalortotal).toFixed(2);
             aux.c_usuarioregistro = item.c_usuarioregistro ? item.c_usuarioregistro : "";
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
@@ -151,6 +180,14 @@ const WarrantyProductsForm = (props) => {
                 unidadesMedidas={unidadesMedidas}
                 tiposProducto={tiposProducto}
                 userLogedIn={userLogedIn}
+                warrantyProductUpdateList={warrantyProductUpdateList}
+                setWarrantyProductUpdateList={setWarrantyProductUpdateList}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     )

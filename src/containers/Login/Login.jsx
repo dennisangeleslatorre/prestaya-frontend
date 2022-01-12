@@ -28,7 +28,7 @@ const Login = (props) => {
     const isAuth = getUserAuth();
     let history = useHistory();
     const { changePages } = props;
-    const goToProfile = () => { history.push('/miPerfil') } ;
+    const goToProfile = () => { history.push('/home') } ;
 
     const handleSetData = (keys, user) => {
         login(() => {
@@ -79,7 +79,7 @@ const Login = (props) => {
     }, [user])
 
     return (
-        isAuth ? <Redirect to='/miPerfil' /> : <>
+        isAuth ? <Redirect to='/home' /> : <>
             <div className="justify-content-center" >
                 <div className="container">
                     <div className="row justify-content-center">
@@ -98,7 +98,7 @@ const Login = (props) => {
                                             state={username}
                                             setState={setUsername}
                                             type="text"
-                                            placeholder="Correo electrónico"
+                                            placeholder="Usuario"
                                             inputId="userId"
                                         />
                                     </div>

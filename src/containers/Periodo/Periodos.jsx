@@ -70,7 +70,7 @@ const Periodos = () => {
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'c_compania', label: 'Compañía', sortVar:1 },
+        {name:'companyname', label: 'Compañía', sortVar:1 },
         {name:'c_tipoperiodo', label: 'Tipo', sortVar:1 },
         {name:'c_periodo', label: 'Periodo', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:1 },
@@ -84,7 +84,7 @@ const Periodos = () => {
 
     //campos de filtro
     const fieldsFilter= [
-        { name: 'c_compania' },
+        { name: 'companyname' },
         { name: 'c_tipoperiodo' },
         { name: 'c_periodo' },
         { name: 'c_estado' },
@@ -132,7 +132,7 @@ const Periodos = () => {
     const getPeriodosTable = (periodos) => {
         const listPeriodosTable = periodos.map((item) => {
             let aux = {};
-            aux.c_compania = item.c_compania;
+            aux.companyname = item.companyname;
             aux.c_tipoperiodo = item.c_tipoperiodo;
             aux.c_periodo = item.c_periodo;
             aux.c_descripcion = item.c_descripcion;

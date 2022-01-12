@@ -364,7 +364,7 @@ const ClienteForm = (props) => {
                 />
                 <InputComponent
                     label="Nombre completo"
-                    state={{value: `${nombres.value} ${apellidoPaterno.value} ${apellidoMaterno.value}`}}
+                    state={{value: `${apellidoPaterno.value} ${apellidoMaterno.value} ${nombres.value}`}}
                     type="text"
                     placeholder="Nombre completo"
                     inputId="nombreCompletoId"

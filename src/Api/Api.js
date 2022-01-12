@@ -543,6 +543,12 @@ export const updateCliente = async (body) => {
     return response;
 };
 //Prestamos
+export const getPrestamoByCodigoPrestamo = async (body) => {
+    console.log('---API--- : getPrestamoByCodigoPrestamo');
+    const url = `${port}/prestamo/getPrestamoByCodigoPrestamo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const registerPrestamo = async (body) => {
     console.log('---API--- : registerPrestamo');
     const url = `${port}/prestamo/register`;
@@ -570,6 +576,13 @@ export const validateUnidades = async (body) => {
 export const getPrestamoDinamico = async (body) => {
     console.log('---API--- : getPrestamoDinamico');
     const url = `${port}/prestamo/getPrestamoDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Productos
+export const getProductosByPrestamo = async (body) => {
+    console.log('---API--- : getProductosByPrestamo');
+    const url = `${port}/prestamoproducto/getProductosByPrestamo`;
     const response = await consumer(url, 'post', body);
     return response;
 };

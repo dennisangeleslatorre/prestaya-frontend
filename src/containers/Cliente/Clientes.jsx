@@ -201,6 +201,7 @@ const Clientes = () => {
         let parametros = prepareBodyToSearch();
         const response = await getClienteDinamico(parametros);
         if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+        else getDataForTable([]);
     }
 
     const onHandleClickSearch = async () => {
@@ -389,6 +390,7 @@ const Clientes = () => {
                 isOpen={openSearchModal}
                 onClose={()=>setOpenSearchModal(false)}
                 setClienteObtained={setClienteSeleccionado}
+                compania={compania}
             />
         </>
     )

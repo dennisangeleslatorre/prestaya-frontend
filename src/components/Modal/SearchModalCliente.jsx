@@ -6,7 +6,7 @@ import Spinner from '../Spinner/Spinner'
 import { getClienteDinamico } from '../../Api/Api';
 
 const SearchModalCliente = (props) => {
-    const {isOpen, onClose, setClienteObtained} = props;
+    const {isOpen, onClose, setClienteObtained, compania} = props;
     const [nameCliente, setNameCliente] = useState("");
     const [tableData, setTableData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ const SearchModalCliente = (props) => {
     const handleSearchCliente = async () => {
         if(nameCliente.length >= 3) {
             await setIsLoading(true)
-            const response = await getClienteDinamico({c_nombrescompleto: nameCliente});
+            const response = await getClienteDinamico({c_nombrescompleto: nameCliente, c_compania:compania});
             if(response && response.status === 200 && response.body) getClientesToTable(response.body.data);
             setIsLoading(false);
         }

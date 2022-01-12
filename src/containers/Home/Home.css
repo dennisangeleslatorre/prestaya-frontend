@@ -1,0 +1,7 @@
+.img__logo__home {
+    width: 100%;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    max-height: 100px;
+    object-fit: contain;
+}

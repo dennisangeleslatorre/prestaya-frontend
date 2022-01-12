@@ -6,7 +6,7 @@ import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
 
 const WarrantyProductsModal = (props) => {
-    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, tiposProducto, userLogedIn, newNLine} = props;
+    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, tiposProducto, userLogedIn, newNLine, warrantyProductUpdateList, setWarrantyProductUpdateList} = props;
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState("");
@@ -63,8 +63,16 @@ const WarrantyProductsModal = (props) => {
 
     const handleUpdateProduct = () => {
         if(validate()) {
-            const product = prepareProduct();
+            let product = prepareProduct();
             if(editProduct.n_linea) product.n_linea = editProduct.n_linea;
+            if(editProduct.c_usuarioregistro) {
+                const auxUpdatedList = [...warrantyProductUpdateList, editProduct.n_linea];
+                setWarrantyProductUpdateList(auxUpdatedList);
+                product.c_usuarioregistro = editProduct.c_usuarioregistro;
+            }
+            if(editProduct.d_fecharegistro) product.d_fecharegistro = editProduct.d_fecharegistro;
+            if(editProduct.c_ultimousuario) product.c_ultimousuario = editProduct.c_ultimousuario;
+            if(editProduct.d_ultimafechamodificacion) product.d_ultimafechamodificacion = editProduct.d_ultimafechamodificacion;
             let listProducts = [...productos];
             listProducts[editProduct.index] = product;
             setProductos(listProducts);
@@ -84,6 +92,7 @@ const WarrantyProductsModal = (props) => {
     useEffect(() => {
         if(editProduct) {
             if(editProduct.n_linea) setNLinea({value:editProduct.n_linea, isValid:null});
+            setTipo(editProduct.c_tipoproducto);
             setDescripcion({value:editProduct.c_descripcionproducto, isValid:null});
             setUnidadMedida(editProduct.c_unidadmedida);
             setCantidad({value:editProduct.n_cantidad, isValid:null});

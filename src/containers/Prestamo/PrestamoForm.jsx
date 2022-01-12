@@ -16,8 +16,10 @@ import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
-    getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades } from '../../Api/Api'
+        getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
+        getProductosByPrestamo } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
+import moment from 'moment'
 
 const estados = [
     { name: 'PENDIENTE', value: 'PE' },
@@ -61,6 +63,9 @@ const PrestamoForm = (props) => {
     const [montoInteresDiario, setMontoInteresDiario] = useState({value:"0.0", required:null});
     const [observacionesRegistro, setObservacionesRegistro] = useState("");
     const [productos, setProductos] = useState([]);
+    //Listas
+    const [warrantyProductUpdateList, setWarrantyProductUpdateList] = useState([]);
+    const [warrantyProductRemovalList, setWarrantyProductRemovalList] = useState([]);
     //Anular
     const [observacionesAnular, setObservacionesAnular] = useState("");
     //Vigencia
@@ -141,7 +146,7 @@ const PrestamoForm = (props) => {
         const data = {
             c_compania: compania,
             n_cliente: codigoCliente,
-            c_nombrecompleto: nombreCliente,
+            c_nombrescompleto: nombreCliente,
             c_tipodocumento: tipoDocumento,
             c_numerodocumento: numeroDocumento.value,
             c_direccioncliente: direccion.value,
@@ -155,8 +160,8 @@ const PrestamoForm = (props) => {
             n_tasainteres: tasaInteres.value,
             n_montointereses: montoIntereses.value,
             n_montototalprestamo: montoTotalPrestamo.value,
-            d_fechadesembolso: fechaDesembolso.value,
             n_diasplazo: plazoDias.value,
+            d_fechadesembolso: fechaDesembolso.value,
             d_fechavencimiento: fechaVencimiento.value,
             n_montointeresesdiario: montoInteresDiario.value,
             c_observacionesregistro: observacionesRegistro
@@ -164,9 +169,15 @@ const PrestamoForm = (props) => {
         return data;
     }
 
-    const prepareProducts = () => {
+    const prepareProducts = (productos) => {
         const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}'`)
-        .reduce((acc, cv) => `${acc}||${cv}`)
+        .reduce((acc, cv) => `${acc}|${cv}`)
+        return aux;
+    }
+
+    const prepareProductsToUpdate = (productos) => {
+        const aux = productos.map((item)=>`'${item.n_linea}','${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}'`)
+        .reduce((acc, cv) => `${acc}|${cv}`)
         return aux;
     }
 
@@ -180,15 +191,14 @@ const PrestamoForm = (props) => {
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         data.c_usuarioregpendiente = userLogedIn;
-        //Validamos que los tipos de documento existan  esten activos
-        console.log("productos", productos);
+        //Buscar los ids para validar si estan activos
         const tiposProductos = productos.map((item) => `'${item.c_tipoproducto}'`);
         const unidadesMedidas = productos.map((item) => `'${item.c_unidadmedida}'`);
         const responseValidateTipos = await validateTipos({ids: `${tiposProductos}`});
         if( responseValidateTipos && responseValidateTipos.status === 200 ) {
             const responseValidateMedidas = await validateUnidades({ids: `${unidadesMedidas}`});
             if( responseValidateMedidas && responseValidateMedidas.status === 200 ) {
-                const productosGarantia = productos.length !== 0 ? prepareProducts() : "";
+                const productosGarantia = productos.length !== 0 ? prepareProducts(productos) : "";
                 const response = await registerPrestamo({prestamo:data, productos:productosGarantia});
                 (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el prestamo") : prepareNotificationDanger("Error al registrar", response.message);
             } else
@@ -198,13 +208,48 @@ const PrestamoForm = (props) => {
         setIsLoading(false);
     }
 
+    const validateWithServices = async () => {
+        //Buscar los ids para validar si estan activos
+        const tiposProductos = productos.map((item) => `'${item.c_tipoproducto}'`);
+        const unidadesMedidas = productos.map((item) => `'${item.c_unidadmedida}'`);
+        const responseValidateTipos = await validateTipos({ids: `${tiposProductos}`});
+        if( responseValidateTipos && responseValidateTipos.status === 200 ) {
+            const responseValidateMedidas = await validateUnidades({ids: `${unidadesMedidas}`});
+            if( responseValidateMedidas && responseValidateMedidas.status === 200 ) {
+                return true;
+            }
+            prepareNotificationDanger("Error al registrar", responseValidateMedidas.message);
+            return false;
+        }
+        prepareNotificationDanger("Error al registrar", responseValidateTipos.message);
+        return false;
+    }
+
+    const setCreatedAndUpdatedItems = (arrayItems) => {
+        let createdItems = [];
+        let updatedItems = [];
+        arrayItems.forEach(item => {
+            if(!item.c_usuarioregistro) createdItems.push(item);
+            if(warrantyProductUpdateList.includes(item.n_linea)) updatedItems.push(item);
+        })
+        return {createdItems: createdItems, updatedItems: updatedItems};
+    }
+
     const handleUpdate = async () => {
         setOpen(false);
         await setIsLoading(true);
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
-        const response = await updatePrestamo(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el prestamo") : prepareNotificationDanger("Error al actualizar", response.message);
+        data.c_prestamo = nPrestamo.value;
+        //Separar entre productos nuevos y actualizados
+        const {createdItems, updatedItems} = setCreatedAndUpdatedItems(productos);
+        if( await validateWithServices()) {
+            const nuevosProductosGarantia = createdItems.length !== 0 ? prepareProducts(createdItems) : "";
+            const actulizarProductosGarantia = updatedItems.length !== 0 ? prepareProductsToUpdate(updatedItems) : "";
+            const eliminarProductosGarntia = warrantyProductRemovalList.length !== 0 ? warrantyProductRemovalList.map(item => `'${item}'`).reduce((acc, cv) => `${acc},${cv}`) : "";
+            const response = await updatePrestamo({prestamo:data, nuevosProductos:nuevosProductosGarantia, actualizarProductos:actulizarProductosGarantia, eliminarProductos:eliminarProductosGarntia});
+            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el prestamo") : prepareNotificationDanger("Error al actualizar", response.message);
+        }
         setIsLoading(false);
     }
 
@@ -227,32 +272,73 @@ const PrestamoForm = (props) => {
         const response = await getPrestamoByCodigoPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response.status === 200) {
             const data = response.body.data;
-            /*setCompania();
-            setNPrestamo({value:});
+            //Actualizar
+            setCompania(data.c_compania);
+            setNPrestamo({value:data.c_prestamo});
             setAgencia();
-            setEstado();
-            setCodigoCliente();
-            setNombreCliente();
+            setEstado(data.c_estado);
+            setCodigoCliente(data.n_cliente);
+            setNombreCliente(data.c_nombrescompleto);
             setClienteSeleccionado();
-            setTipoDocumento();
-            setNumeroDocumento({value:});
-            setDireccion({value:});
-            setPaisCodigo();
-            setDepartamentoCodigo();
-            setProvinciaCodigo();
-            setDistritoCodigo();
-            setTelefono({value:});
-            setMoneda();
-            setMontoPrestamo({value:});
-            setTasaInteres({value:});
-            setMontoIntereses({value:});
-            setMontoTotalPrestamo({value:});
-            setFechaDesembolso({value:});
-            setPlazoDias({value:});
-            setFechaVencimiento({value:});
-            setMontoInteresDiario({value:});
-            setObservacionesRegistro({value:});
-            setProductos();*/
+            setTipoDocumento(data.c_tipodocumento);
+            setNumeroDocumento({value:data.c_numerodocumento});
+            setDireccion({value:data.c_direccioncliente});
+            setPaisCodigo(data.c_paiscodigo);
+            setDepartamentoCodigo(data.c_departamentocodigo);
+            setProvinciaCodigo(data.c_provinciacodigo);
+            setDistritoCodigo(data.c_distritocodigo);
+            setTelefono({value:data.c_telefono1});
+            setMoneda(data.c_monedaprestamo);
+            setMontoPrestamo({value:Number(data.n_montoprestamo).toFixed(2), isValid:true});
+            setTasaInteres({value:Number(data.n_tasainteres).toFixed(2), isValid:true});
+            setMontoIntereses({value:Number(data.n_montointereses).toFixed(2)});
+            setMontoTotalPrestamo({value:Number(data.n_montototalprestamo).toFixed(2)});
+            setFechaDesembolso({value:moment(data.d_fechadesembolso).format('yyyy-MM-DD')});
+            setPlazoDias({value:data.n_diasplazo, isValid:true});
+            setFechaVencimiento({value:moment(data.d_fechavencimiento).format('yyyy-MM-DD')});
+            setMontoInteresDiario({value:Number(data.n_montointeresesdiario).toFixed(2)});
+            setObservacionesRegistro(data.c_observacionesregistro);
+            //Recojo
+            setPersonaRecoge({value:data.c_nombrepersonarecogio});
+            setTipoDocumentoEntrega(data.c_tipodocumentopr);
+            setNumeroDocumentoEntrega({value:data.c_numerodocumentopr});
+            setObservacionesEntrega(data.c_observacionesentrega);
+            setTelefonoEntrega({value:data.c_telefonopr});
+            setFechaEntrega({value:data.d_fechaentrega})
+            //Anulacion
+            setObservacionesAnular(data.c_observacionesanula);
+            //Remate
+            setObservacionesRemate(data.c_observacionesremate);
+            setFechaRemate({value:data.d_fechaRemate});
+            //Vigente
+            setObservacionesVigencia(data.c_observacionesvigente);
+            //Auditoria
+            //data.c_usuarioregistro
+            //data.d_fecharegistro
+
+            //data.c_ultimousuario
+            //data.d_ultimafechamodificacion
+
+            //data.c_usuarioregpendiente
+            //data.d_fecharegpendiente
+
+            //data,c_usuariovigente
+            //data.d_fechavigente
+
+            //data.c_usuarioEntrega
+            //data.d_fechaEntregaUS
+
+            //data.c_usuarioRemate
+            //data.d_fechaRemateUS
+
+            //data.c_usuarioanulacion
+            //data.d_fechaanulacion
+
+            //data.c_usuariocancelacion
+            //data.d_fechacancelacion
+
+            const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
+            if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) setProductos(responseProducts.body.data);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -341,11 +427,7 @@ const PrestamoForm = (props) => {
     }, [])
 
     useEffect(() => {
-        if(urlFragment === "nuevoPrestamo" && companias.length !== 0) setCompania(elementId)
-        /*else {
-            const [c_compania, c_prestamo] = elementId.split('-');
-            setCompania(c_compania);
-        }*/
+        if(urlFragment === "nuevoPrestamo" && companias.length !== 0) setCompania(elementId);
     }, [companias])
 
     useEffect(() => {
@@ -702,7 +784,7 @@ const PrestamoForm = (props) => {
                         setState={setNumeroDocumentoEntrega}
                         type="text"
                         placeholder="N° documento"
-                        inputId="numeroDocumentoId"
+                        inputId="numeroDocumentoEntregaId"
                         validation={urlFragment==="entregaPrestamo" ? "textNumber" : null}
                         max={tipoDocumentoSelected.n_numerodigitos === 0 ? 250 : tipoDocumentoSelected.n_numerodigitos}
                         min={tipoDocumentoSelected.n_numerodigitos === 0 ? 1 : tipoDocumentoSelected.n_numerodigitos}
@@ -769,6 +851,10 @@ const PrestamoForm = (props) => {
                         productos={productos}
                         setProductos={setProductos}
                         userLogedIn={userLogedIn}
+                        warrantyProductUpdateList={warrantyProductUpdateList}
+                        setWarrantyProductUpdateList={setWarrantyProductUpdateList}
+                        warrantyProductRemovalList={warrantyProductRemovalList}
+                        setWarrantyProductRemovalList={setWarrantyProductRemovalList}
                     />
                 </div>
             </FormContainer>
@@ -791,6 +877,7 @@ const PrestamoForm = (props) => {
                 isOpen={openSearchModal}
                 onClose={()=>setOpenSearchModal(false)}
                 setClienteObtained={setClienteSeleccionado}
+                compania={compania}
             />
         </>
     )

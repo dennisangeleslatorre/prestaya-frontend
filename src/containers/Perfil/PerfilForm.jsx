@@ -19,7 +19,7 @@ const PerfilForm = (props) => {
     //Estados
     const [perfil, setPerfil] = useState({value: "", isValid:null});
     const [codigo, setCodigo] = useState({value: "", isValid:null});
-    const [paginas, setPaginas] = useState(['MI PERFIL']);
+    const [paginas, setPaginas] = useState(['HOME']);
     const [estado, setEstado] = useState("A");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});

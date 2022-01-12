@@ -210,6 +210,7 @@ const UserForm = (props) => {
                     inputId="CorreoId"
                     validation="email"
                     max={60}
+                    uppercaseOnly={false}
                     readOnly={readOnlyView}
                 />
                 { urlFragment === "nuevoUsuario" && <InputComponent

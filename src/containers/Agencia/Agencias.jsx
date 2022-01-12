@@ -70,7 +70,7 @@ const Agencias = () => {
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'c_compania', label: 'Compañía', sortVar:1 },
+        {name:'companyname', label: 'Compañía', sortVar:1 },
         {name:'c_agencia', label: 'Agencia', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:1 },
@@ -83,7 +83,7 @@ const Agencias = () => {
     //campos de filtro
     const fieldsFilter= [
         { name: 'c_agencia' },
-        { name: 'c_compania' },
+        { name: 'companyname' },
         { name: 'c_descripcion' },
         { name: 'c_estado' }
     ];
@@ -128,7 +128,7 @@ const Agencias = () => {
     const getAgenciasTable = (agencias) => {
         const listAgenciasTable = agencias.map((item) => {
             let aux = {};
-            aux.c_compania = item.c_compania;
+            aux.companyname = item.companyname;
             aux.c_agencia = item.c_agencia;
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
