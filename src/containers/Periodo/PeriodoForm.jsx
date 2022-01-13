@@ -6,6 +6,7 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
+import PeriodoInputComponent from '../../components/PeriodoInputComponent/PeriodoInputComponent'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
@@ -16,7 +17,7 @@ import { getPeriodosByCodigoPeriodos, registerPeriodo, updatePeriodo, listCompan
 const PeriodoForm = (props) => {
     const [compania, setCompania] = useState("");
     const [tipoPeriodo, setTipoPeriodo] = useState("PECO000001");
-    const [periodo, setPeriodo] = useState({value:"", isValid:null});
+    const [periodo, setPeriodo] = useState("");
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
     //Estados del formulario
@@ -62,7 +63,7 @@ const PeriodoForm = (props) => {
     }
 
     const validate = () => {
-        if(!compania || !tipoPeriodo  || !periodo.isValid) return false;
+        if(!compania || !tipoPeriodo  || !periodo) return false;
         return true;
     }
 
@@ -70,7 +71,7 @@ const PeriodoForm = (props) => {
         const data = {
             c_compania: compania,
             c_tipoperiodo: tipoPeriodo,
-            c_periodo: periodo.value,
+            c_periodo: periodo.replace("-", ""),
             c_estado: estado
         }
         return data;
@@ -117,7 +118,7 @@ const PeriodoForm = (props) => {
             const data = response.body.data;
             setCompania(data.c_compania);
             setTipoPeriodo(data.c_tipoperiodo);
-            setPeriodo({value:data.c_periodo, isValid: true});
+            setPeriodo(data.c_periodo);
             setEstado(data.c_estado);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
@@ -167,15 +168,12 @@ const PeriodoForm = (props) => {
                     handleChange={setTipoPeriodo}
                     disabledElement={readOnlyCode}
                 />
-                <InputComponent
+                <PeriodoInputComponent
                     label="Período"
-                    state={periodo}
+                    value={periodo}
                     setState={setPeriodo}
-                    type="text"
                     placeholder="Período"
                     inputId="periodoId"
-                    validation="number"
-                    max={6}
                     readOnly={readOnlyCode}
                 />
                 <SelectComponent
