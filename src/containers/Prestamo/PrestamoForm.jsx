@@ -114,7 +114,7 @@ const PrestamoForm = (props) => {
         editarPrestamo: {label:"Actualizar", class:"btn btn-warning btn-form"},
         visualizarPrestamo: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
-    const readOnlyView = urlFragment === "visualizarPrestamo" ? true : false;
+    const readOnlyView = (urlFragment !== "nuevoPrestamo" && urlFragment !== "editarPrestamo") ? true : false;
     const readOnlyCode = urlFragment !== "nuevoPrestamo" ? true : false;
 
     const formFunctions = {
@@ -530,6 +530,7 @@ const PrestamoForm = (props) => {
                         onHandleClick={handleOpenSearchModal}
                         onHandleBlur={findClienteByCode}
                         readOnly={true}
+                        readOnlyCode={readOnlyView}
                         classForm="col-12 col-lg-6"
                         marginForm=""
                     />
@@ -855,6 +856,7 @@ const PrestamoForm = (props) => {
                         setWarrantyProductUpdateList={setWarrantyProductUpdateList}
                         warrantyProductRemovalList={warrantyProductRemovalList}
                         setWarrantyProductRemovalList={setWarrantyProductRemovalList}
+                        readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
                     />
                 </div>
             </FormContainer>

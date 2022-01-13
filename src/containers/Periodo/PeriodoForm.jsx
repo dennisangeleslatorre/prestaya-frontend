@@ -15,7 +15,7 @@ import { getPeriodosByCodigoPeriodos, registerPeriodo, updatePeriodo, listCompan
 
 const PeriodoForm = (props) => {
     const [compania, setCompania] = useState("");
-    const [tipoPeriodo, setTipoPeriodo] = useState({value:"", isValid:null});
+    const [tipoPeriodo, setTipoPeriodo] = useState("PECO000001");
     const [periodo, setPeriodo] = useState({value:"", isValid:null});
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
@@ -62,14 +62,14 @@ const PeriodoForm = (props) => {
     }
 
     const validate = () => {
-        if(!compania || !tipoPeriodo.isValid  || !periodo.isValid) return false;
+        if(!compania || !tipoPeriodo  || !periodo.isValid) return false;
         return true;
     }
 
     const prepareData = () => {
         const data = {
             c_compania: compania,
-            c_tipoperiodo: tipoPeriodo.value,
+            c_tipoperiodo: tipoPeriodo,
             c_periodo: periodo.value,
             c_estado: estado
         }
@@ -116,7 +116,7 @@ const PeriodoForm = (props) => {
         if(response.status === 200) {
             const data = response.body.data;
             setCompania(data.c_compania);
-            setTipoPeriodo({value:data.c_tipoperiodo, isValid: true});
+            setTipoPeriodo(data.c_tipoperiodo);
             setPeriodo({value:data.c_periodo, isValid: true});
             setEstado(data.c_estado);
         }else {
@@ -156,17 +156,16 @@ const PeriodoForm = (props) => {
                     valueField="c_compania"
                     disabledElement={readOnlyCode}
                 />
-                <InputComponent
-                    label="Tipo de período"
-                    state={tipoPeriodo}
-                    setState={setTipoPeriodo}
-                    type="text"
-                    placeholder="Tipo de período"
-                    inputId="periodocodigoId"
-                    validation="numberAndTextWithRange"
-                    min={1}
-                    max={10}
-                    readOnly={readOnlyCode}
+                <SelectComponent
+                    labelText="Tipo de período"
+                    defaultValue="Seleccione un tipo"
+                    items={[{name: "Periodo para controlar los cierres de mes", value:"PECO000001"}]}
+                    selectId="tipoId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={tipoPeriodo}
+                    handleChange={setTipoPeriodo}
+                    disabledElement={readOnlyCode}
                 />
                 <InputComponent
                     label="Período"
@@ -177,7 +176,7 @@ const PeriodoForm = (props) => {
                     inputId="periodoId"
                     validation="number"
                     max={6}
-                    readOnly={readOnlyView}
+                    readOnly={readOnlyCode}
                 />
                 <SelectComponent
                     labelText="Estado"

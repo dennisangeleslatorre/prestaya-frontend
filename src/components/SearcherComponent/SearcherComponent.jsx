@@ -8,7 +8,7 @@ const SearcherComponent = (props) => {
             { label && <label htmlFor={inputId} className={`col-md-${labelSpace} col-form-label label-input`}>{ label }</label> }
             <div className={ label ? `col-12 col-md-${12-labelSpace}` : `col-md-${14-labelSpace}`}>
                 <div className="input-group">
-                    {onHandleBlur && <input
+                    {(!readOnlyCode && onHandleBlur) && <input
                         id={inputCodeId}
                         onBlur={onHandleBlur}
                         type="text"
@@ -35,7 +35,7 @@ const SearcherComponent = (props) => {
                         autoComplete={autoComplete}
                         readOnly={readOnly}
                     />
-                    {onHandleClick && <button type="button" onClick={onHandleClick} className="btn btn-light input-group-text"><i className="bi bi-search"></i></button>}
+                    {onHandleClick && <button type="button" onClick={onHandleClick} disabled={readOnlyCode} className="btn btn-light input-group-text"><i className="bi bi-search"></i></button>}
                 </div>
                 {props.children}
             </div>

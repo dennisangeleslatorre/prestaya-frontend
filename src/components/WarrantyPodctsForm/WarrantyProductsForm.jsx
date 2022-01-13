@@ -149,15 +149,15 @@ const WarrantyProductsForm = (props) => {
 
     return (
         <>
-            <HeaderForm title="Productos en garantía" handleNewProduct={()=>setShowModal(true)} />
-            <div className="row col-12">
+            <HeaderForm title="Productos en garantía" handleNewProduct={()=>setShowModal(true)} readOnly={readOnly}/>
+            {!readOnly && <div className="row col-12">
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
                         <Button onClick={handleUpdateProduct}>Modificar</Button>
                         <Button onClick={handleDeleteProduct}>Eliminar</Button>
                     </Space>
                 </div>
-            </div>
+            </div>}
             <div className="row mx-2 mb-2" style={{ overflow: 'scroll' }}>
                 <Table
                     rowSelection={{

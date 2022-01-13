@@ -128,7 +128,7 @@ const columns = [
     },
     {
         title: 'Estado',
-        dataIndex: 'c_estado'
+        dataIndex: 'estadoName'
     },
     {
         title: 'F. Entrega',
@@ -445,6 +445,7 @@ const Prestamos = () => {
     const getDataForTable = (clientes) => {
         const listAux = clientes.map((item) => {
             item.key = `${item.c_compania}-${item.c_prestamo}`;
+            item.estadoName = estados.find(estado => estado.value === item.c_estado).name;
             return item;
         })
         setPrestamosToTable(listAux);
