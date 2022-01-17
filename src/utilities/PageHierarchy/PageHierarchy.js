@@ -63,9 +63,9 @@ const pagesArray = [
                         value: 'ANULAR PRÉSTAMO',
                         key: 'ANULAR PRÉSTAMO'
                     },{
-                        title: 'VIGENTE',
-                        value: 'VIGENTE',
-                        key: 'VIGENTE'
+                        title: 'VIGENTE PRÉSTAMO',
+                        value: 'VIGENTE PRÉSTAMO',
+                        key: 'VIGENTE PRÉSTAMO'
                     },{
                         title: 'REGRESAR A PENDIENTE',
                         value: 'REGRESAR A PENDIENTE',

@@ -579,6 +579,53 @@ export const getPrestamoDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//ANULAR
+export const anularPrestamo = async (body) => {
+    console.log('---API--- : anularPrestamo');
+    const url = `${port}/prestamo/anularPrestamo`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+//VIGENTE
+export const updtVigentePrestamo = async (body) => {
+    console.log('---API--- : updtVigentePrestamo');
+    const url = `${port}/prestamo/updtVigentePrestamo`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+//RETORNAR PENDIENTE
+export const validarRetornarPendiente = async (body) => {
+    console.log('---API--- : validarRetornarPendiente');
+    const url = `${port}/prestamo/validarRetornarPendiente`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const retornarPendiente = async (body) => {
+    console.log('---API--- : retornarPendiente');
+    const url = `${port}/prestamo/retornarPendiente`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+//REMATE
+export const validarEstadoRemate = async (body) => {
+    console.log('---API--- : validarEstadoRemate');
+    const url = `${port}/prestamo/validarEstadoRemate`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const cambiarEstadoRemate = async (body) => {
+    console.log('---API--- : cambiarEstadoRemate');
+    const url = `${port}/prestamo/cambiarEstadoRemate`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+//ENTREGAR
+export const cambiarEstadoEntregar = async (body) => {
+    console.log('---API--- : cambiarEstadoEntregar');
+    const url = `${port}/prestamo/cambiarEstadoEntregar`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');
@@ -586,3 +633,4 @@ export const getProductosByPrestamo = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//Cancelaciones

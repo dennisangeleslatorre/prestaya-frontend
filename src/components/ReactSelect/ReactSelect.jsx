@@ -29,7 +29,6 @@ const ReactSelect = (props) => {
     }
 
     useEffect(() => {
-        //console.log("valueSelected", valueSelected);
         if(options.length !== 0 && valueSelected) {
             intialValue(valueSelected);
         }

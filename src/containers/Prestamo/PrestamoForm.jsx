@@ -11,13 +11,15 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+import AuditTableComponent from '../../components/AuditTableComponent/AuditTableComponent'
+import HeaderForm from '../../components/HeaderForm/HeaderForm'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo } from '../../Api/Api'
+        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 
@@ -82,6 +84,17 @@ const PrestamoForm = (props) => {
     //Remate
     const [fechaRemate, setFechaRemate] = useState({value:""});
     const [observacionesRemate, setObservacionesRemate] = useState("");
+    //Auditoria
+    const [usuarioRegistro, setUsuarioRegistro] = useState("");
+    const [fechaRegistro, setFechaRegistro] = useState("");
+    const [ultimoUsuario, setUltimoUsuario] = useState("");
+    const [fechaModificacion, setFechaModificacion] = useState("");
+    const [usuarioEntrega, setUsuarioEntrega] = useState("");
+    const [fechaEntregaUS, setFechaEntregaUS] = useState("");
+    const [usuarioRemate, setUsuarioRemate] = useState("");
+    const [fechaRemateUS, setFechaRemateUS] = useState("");
+    const [usuarioAnulacion, setUsuarioAnulacion] = useState("");
+    const [fechaAnulacion, setFechaAnulacion] = useState("");
     //Listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -91,7 +104,6 @@ const PrestamoForm = (props) => {
     const [distritos, setDistritos] = useState([]);
     const [tiposDocumentos, setTiposDocumentos] = useState([]);
     //Estado del formulario
-    const [firstLoad, setfirstLoad] = useState(true);
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
@@ -112,14 +124,21 @@ const PrestamoForm = (props) => {
     const buttonTypes = {
         nuevoPrestamo: {label:"Guardar", class:"btn btn-primary btn-form"},
         editarPrestamo: {label:"Actualizar", class:"btn btn-warning btn-form"},
-        visualizarPrestamo: {label:"Ir a lista", class:"btn btn-info btn-form"}
+        visualizarPrestamo: {label:"Ir a lista", class:"btn btn-info btn-form"},
+        anularPrestamo: {label:"Anular", class:"btn btn-danger btn-form"},
+        vigentePrestamo: {label:"Guardar vigente", class:"btn btn-primary btn-form"},
+        entregarPrestamo: {label:"Entregar", class:"btn btn-primary btn-form"},
+        rematePrestamo: {label:"Remate", class:"btn btn-primary btn-form"},
     }
     const readOnlyView = (urlFragment !== "nuevoPrestamo" && urlFragment !== "editarPrestamo") ? true : false;
-    const readOnlyCode = urlFragment !== "nuevoPrestamo" ? true : false;
 
     const formFunctions = {
         nuevoPrestamo: ()=> handleRegister(),
-        editarPrestamo: ()=> handleUpdate()
+        editarPrestamo: ()=> handleUpdate(),
+        anularPrestamo: ()=> handleAnular(),
+        vigentePrestamo: ()=> handleVigente(),
+        entregarPrestamo: ()=> handleEntregar(),
+        rematePrestamo: ()=> handleRemate()
     }
 
     const prepareNotificationSuccess = (message) => {
@@ -138,7 +157,7 @@ const PrestamoForm = (props) => {
         if(!compania || !codigoCliente || !nombreCliente || !tipoDocumento || !numeroDocumento.value || !direccion.value || !paisCodigo ||
             !departamentoCodigo || !provinciaCodigo || !distritoCodigo || !telefono.value || !moneda || !montoPrestamo.value || !tasaInteres.value ||
             !montoIntereses.value || !montoTotalPrestamo.value || !fechaDesembolso.value || !plazoDias.value || !fechaVencimiento.value ||
-            !montoInteresDiario.value ) return false;
+            !montoInteresDiario.value || !agencia ) return false;
         return true;
     }
 
@@ -164,7 +183,8 @@ const PrestamoForm = (props) => {
             d_fechadesembolso: fechaDesembolso.value,
             d_fechavencimiento: fechaVencimiento.value,
             n_montointeresesdiario: montoInteresDiario.value,
-            c_observacionesregistro: observacionesRegistro
+            c_observacionesregistro: observacionesRegistro,
+            c_agencia: agencia
         }
         return data;
     }
@@ -200,7 +220,7 @@ const PrestamoForm = (props) => {
             if( responseValidateMedidas && responseValidateMedidas.status === 200 ) {
                 const productosGarantia = productos.length !== 0 ? prepareProducts(productos) : "";
                 const response = await registerPrestamo({prestamo:data, productos:productosGarantia});
-                (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el prestamo") : prepareNotificationDanger("Error al registrar", response.message);
+                (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
             } else
                 prepareNotificationDanger("Error al registrar", responseValidateMedidas.message);
         } else
@@ -248,7 +268,92 @@ const PrestamoForm = (props) => {
             const actulizarProductosGarantia = updatedItems.length !== 0 ? prepareProductsToUpdate(updatedItems) : "";
             const eliminarProductosGarntia = warrantyProductRemovalList.length !== 0 ? warrantyProductRemovalList.map(item => `'${item}'`).reduce((acc, cv) => `${acc},${cv}`) : "";
             const response = await updatePrestamo({prestamo:data, nuevosProductos:nuevosProductosGarantia, actualizarProductos:actulizarProductosGarantia, eliminarProductos:eliminarProductosGarntia});
-            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el prestamo") : prepareNotificationDanger("Error al actualizar", response.message);
+            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo") : prepareNotificationDanger("Error al actualizar", response.message);
+        }
+        setIsLoading(false);
+    }
+
+    //Funciones adicionales
+    const handleAnular = async () => {
+        setOpen(false);
+        await setIsLoading(true);
+        if(observacionesAnular) {
+            const [c_compania, c_prestamo] = elementId.split('-');
+            const data = {
+                c_compania: c_compania,
+                c_prestamo: c_prestamo,
+                c_estado: "AN",
+                c_usuarioanulacion: userLogedIn
+            }
+            const response = await anularPrestamo(data);
+            (response && response.status === 200) ? prepareNotificationSuccess("Se anulo con éxito el préstamo") : prepareNotificationDanger("Error al anular", response.message);
+        } else {
+            prepareNotificationDanger("Error al anular", "Favor de llenar el campo de Observaciones Anular");
+        }
+        setIsLoading(false);
+    }
+
+    const handleVigente = async () => {
+        setOpen(false);
+        await setIsLoading(true);
+        if(observacionesVigencia) {
+            const [c_compania, c_prestamo] = elementId.split('-');
+            const data = {
+                c_compania: c_compania,
+                c_prestamo: c_prestamo,
+                c_estado: "VI",
+                c_usuariovigente: userLogedIn,
+                c_observacionesvigente: observacionesVigencia
+            }
+            const response = await updtVigentePrestamo(data);
+            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Vigente") : prepareNotificationDanger("Error al actualizar", response.message);
+        } else {
+            prepareNotificationDanger("Error", "Favor de llenar el campo de Observaciones Vigencia");
+        }
+        setIsLoading(false);
+    }
+
+    const handleEntregar = async () => {
+        setOpen(false);
+        await setIsLoading(true);
+        if(!fechaEntrega.value || !personaRecoge.value || !tipoDocumentoEntrega || !numeroDocumentoEntrega.isValid || !telefonoEntrega.isValid || !observacionesEntrega) {
+            prepareNotificationDanger("Error", "Favor de llenar los campos activos");
+        } else {
+            const [c_compania, c_prestamo] = elementId.split('-');
+            const data = {
+                c_compania: c_compania,
+                c_prestamo: c_prestamo,
+                c_usuarioEntrega: userLogedIn,
+                d_fechaentrega: fechaEntrega.value,
+                c_nombrepersonarecogio: personaRecoge.value,
+                c_tipodocumentopr: tipoDocumentoEntrega,
+                c_numerodocumentopr: numeroDocumentoEntrega.value,
+                c_telefonopr: telefonoEntrega.value,
+                c_observacionesentrega: observacionesEntrega
+            }
+            console.log("Entrega", data);
+            const response = await cambiarEstadoEntregar(data);
+            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Entregado") : prepareNotificationDanger("Error al actualizar", response.message);
+        }
+        setIsLoading(false);
+    }
+
+    const handleRemate = async () => {
+        setOpen(false);
+        await setIsLoading(true);
+        if(fechaRemate.value && observacionesRemate) {
+            const [c_compania, c_prestamo] = elementId.split('-');
+            const data = {
+                c_compania: c_compania,
+                c_prestamo: c_prestamo,
+                c_usuarioRemate: userLogedIn,
+                d_fechaRemate: fechaRemate.value,
+                c_observacionesremate: observacionesRemate
+            }
+            const response = await cambiarEstadoRemate(data);
+            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
+        } else {
+            prepareNotificationDanger("Error", "Favor de llenar los campos activos");
         }
         setIsLoading(false);
     }
@@ -259,6 +364,10 @@ const PrestamoForm = (props) => {
                 setOpen(true);
                 if(urlFragment === "nuevoPrestamo") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
                 if(urlFragment === "editarPrestamo") setModalAttributes({title:"Aviso de actualización", message:"¿Seguro que desea actualizar este elemento?"});
+                if(urlFragment === "anularPrestamo") setModalAttributes({title:"Aviso de anulación", message:"¿Seguro que desea cambiar el estado a anulado?"});
+                if(urlFragment === "vigentePrestamo") setModalAttributes({title:"Aviso de vigente", message:"¿Seguro que desea cambiar el estado a vigente?"});
+                if(urlFragment === "entregarPrestamo") setModalAttributes({title:"Aviso de entrega", message:"¿Seguro que desea cambiar el estado a entregado?"});
+                if(urlFragment === "rematePrestamo") setModalAttributes({title:"Aviso de remate", message:"¿Seguro que desea cambiar el estado a remate?"});
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
@@ -273,9 +382,10 @@ const PrestamoForm = (props) => {
         if(response.status === 200) {
             const data = response.body.data;
             //Actualizar
+            setAgencia(data.c_agencia);
             setCompania(data.c_compania);
             setNPrestamo({value:data.c_prestamo});
-            setAgencia();
+            setAgencia(data.c_agencia);
             setEstado(data.c_estado);
             setCodigoCliente(data.n_cliente);
             setNombreCliente(data.c_nombrescompleto);
@@ -299,26 +409,28 @@ const PrestamoForm = (props) => {
             setMontoInteresDiario({value:Number(data.n_montointeresesdiario).toFixed(2)});
             setObservacionesRegistro(data.c_observacionesregistro);
             //Recojo
-            setPersonaRecoge({value:data.c_nombrepersonarecogio});
-            setTipoDocumentoEntrega(data.c_tipodocumentopr);
-            setNumeroDocumentoEntrega({value:data.c_numerodocumentopr});
-            setObservacionesEntrega(data.c_observacionesentrega);
-            setTelefonoEntrega({value:data.c_telefonopr});
-            setFechaEntrega({value:data.d_fechaentrega})
+            setPersonaRecoge({value:data.c_nombrepersonarecogio || ""});
+            setTipoDocumentoEntrega(data.c_tipodocumentopr || "");
+            setNumeroDocumentoEntrega({value:data.c_numerodocumentopr || ""});
+            setObservacionesEntrega(data.c_observacionesentrega || "");
+            setTelefonoEntrega({value:data.c_telefonopr || ""});
+            setFechaEntrega({value:data.d_fechaentrega || ""})
             //Anulacion
-            setObservacionesAnular(data.c_observacionesanula);
+            setObservacionesAnular(data.c_observacionesanula || "");
             //Remate
-            setObservacionesRemate(data.c_observacionesremate);
-            setFechaRemate({value:data.d_fechaRemate});
+            setObservacionesRemate(data.c_observacionesremate || "");
+            setFechaRemate({value:moment(data.d_fechaRemate).format('yyyy-MM-DD') || ""});
             //Vigente
-            setObservacionesVigencia(data.c_observacionesvigente);
+            setObservacionesVigencia(data.c_observacionesvigente || "");
             //Auditoria
             //data.c_usuarioregistro
-            //data.d_fecharegistro
-
+            //data.c_usuarioregistro
+            setUsuarioRegistro(data.c_usuarioregistro);
+            setFechaRegistro(moment(data.d_fecharegistro).format('DD/MM/yyy'));
             //data.c_ultimousuario
             //data.d_ultimafechamodificacion
-
+            setUltimoUsuario(data.c_ultimousuario);
+            setFechaModificacion(moment(data.d_ultimafechamodificacion).format('DD/MM/yyy'));
             //data.c_usuarioregpendiente
             //data.d_fecharegpendiente
 
@@ -327,13 +439,16 @@ const PrestamoForm = (props) => {
 
             //data.c_usuarioEntrega
             //data.d_fechaEntregaUS
-
+            setUsuarioEntrega(data.c_usuarioEntrega);
+            if(data.d_fechaEntregaUS) setFechaEntregaUS(moment(data.d_fechaEntregaUS).format('DD/MM/yyy'));
             //data.c_usuarioRemate
             //data.d_fechaRemateUS
-
+            setUsuarioRemate(data.c_usuarioRemate);
+            if(data.d_fechaRemateUS) setFechaRemateUS(moment(data.d_fechaRemateUS).format('DD/MM/yyy'));
             //data.c_usuarioanulacion
             //data.d_fechaanulacion
-
+            setUsuarioAnulacion(data.c_usuarioanulacion);
+            if(data.d_fechaanulacion) setFechaAnulacion(moment(data.d_fechaanulacion).format('DD/MM/yyy'));
             //data.c_usuariocancelacion
             //data.d_fechacancelacion
 
@@ -371,7 +486,8 @@ const PrestamoForm = (props) => {
     }
 
     const getAgencias = async () => {
-        const response = await listAgencias({c_compania: compania});
+        const companyCode = urlFragment === "nuevoPrestamo" ? elementId : elementId.split('-')[0];
+        const response = await listAgencias({c_compania: companyCode});
         if(response && response.status === 200) setAgencias(response.body.data);
     }
 
@@ -405,15 +521,11 @@ const PrestamoForm = (props) => {
         if(response && response.status === 200) setDistritos(response.body.data);
     }
 
-    useEffect(() => {
-        if(!firstLoad) setAgencia("");
-        if(compania) getAgencias();
-    }, [compania])
-
     useEffect(async () => {
         await setIsLoading(true);
         if(urlFragment === "nuevoPrestamo") await getParameters();
         await getCompanias();
+        await getAgencias();
         await getTiposDocumento();
         await getPaises();
         await getDepartamentos();
@@ -422,7 +534,6 @@ const PrestamoForm = (props) => {
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoPrestamo") await getData();
         else setEstado("PE")
-        setfirstLoad(false);
         setIsLoading(false);
     }, [])
 
@@ -467,10 +578,17 @@ const PrestamoForm = (props) => {
         }
     }, [montoIntereses, plazoDias])
 
+    useEffect(() => {
+        if(tipoDocumentoEntrega) {
+            const aux = tiposDocumentos.find((item) => item.c_tipodocumento === tipoDocumentoEntrega);
+            setTipoDocumentoSelected(aux);
+        }
+    }, [tipoDocumentoEntrega])
+
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
-            goList={()=>history.push("/prestamos")} view={readOnlyView}>
+            goList={()=>history.push("/prestamos")} view={false}>
                 <div className="row">
                     <ReactSelect
                         inputId="companiaCodeId"
@@ -503,7 +621,7 @@ const PrestamoForm = (props) => {
                         handleElementSelected={setAgencia}
                         optionField="c_descripcion"
                         valueField="c_agencia"
-                        disabledElement={readOnlyCode}
+                        disabledElement={readOnlyView}
                         classForm="col-12 col-lg-6"
                     />
                     <SelectComponent
@@ -751,7 +869,7 @@ const PrestamoForm = (props) => {
                         value={observacionesVigencia}
                         setState={setObservacionesVigencia}
                         max={500}
-                        readOnly={urlFragment!=="vigenciaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="vigentePrestamo" ? true : false}
                         classForm="col-12"
                         labelSpace={1}
                     />
@@ -764,7 +882,7 @@ const PrestamoForm = (props) => {
                         placeholder="Persona recoge"
                         inputId="nombresId"
                         max={180}
-                        readOnly={urlFragment!=="entregaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12 col-lg-6"
                     />
                     <SelectComponent
@@ -776,7 +894,7 @@ const PrestamoForm = (props) => {
                         optionField="c_descripcion"
                         valueSelected={tipoDocumentoEntrega}
                         handleChange={setTipoDocumentoEntrega}
-                        disabledElement={urlFragment!=="entregaPrestamo" ? true : false}
+                        disabledElement={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12 col-lg-6"
                     />
                     <InputComponent
@@ -786,10 +904,10 @@ const PrestamoForm = (props) => {
                         type="text"
                         placeholder="N° documento"
                         inputId="numeroDocumentoEntregaId"
-                        validation={urlFragment==="entregaPrestamo" ? "textNumber" : null}
+                        validation={urlFragment==="entregarPrestamo" ? "textNumber" : null}
                         max={tipoDocumentoSelected.n_numerodigitos === 0 ? 250 : tipoDocumentoSelected.n_numerodigitos}
                         min={tipoDocumentoSelected.n_numerodigitos === 0 ? 1 : tipoDocumentoSelected.n_numerodigitos}
-                        readOnly={urlFragment!=="entregaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12 col-lg-6"
                     />
                     <InputComponent
@@ -799,9 +917,9 @@ const PrestamoForm = (props) => {
                         type="text"
                         placeholder="Teléfono"
                         inputId="telefonoId"
-                        validation={urlFragment==="entregaPrestamo" ? "phone" : null}
+                        validation={urlFragment==="entregarPrestamo" ? "phone" : null}
                         max={20}
-                        readOnly={urlFragment!=="entregaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12 col-lg-6"
                     />
                     <InputComponent
@@ -811,7 +929,7 @@ const PrestamoForm = (props) => {
                         type="date"
                         placeholder="Fecha entrega"
                         inputId="fechaEntregaId"
-                        readOnly={urlFragment!=="entregaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12 col-lg-6"
                     />
                     <TextareaComponent
@@ -821,7 +939,7 @@ const PrestamoForm = (props) => {
                         value={observacionesEntrega}
                         setState={setObservacionesEntrega}
                         max={500}
-                        readOnly={urlFragment!=="entregaPrestamo" ? true : false}
+                        readOnly={urlFragment!=="entregarPrestamo" ? true : false}
                         classForm="col-12"
                         labelSpace={1}
                     />
@@ -857,6 +975,19 @@ const PrestamoForm = (props) => {
                         warrantyProductRemovalList={warrantyProductRemovalList}
                         setWarrantyProductRemovalList={setWarrantyProductRemovalList}
                         readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
+                    />
+                    <HeaderForm title="Datos de auditoria"/>
+                    <AuditTableComponent
+                        c_usuarioregistro={usuarioRegistro}
+                        d_fecharegistro={fechaRegistro}
+                        c_ultimousuario={ultimoUsuario}
+                        d_ultimafechamodificacion={fechaModificacion}
+                        c_usuarioEntrega={usuarioEntrega}
+                        d_fechaEntregaUS={fechaEntregaUS}
+                        c_usuarioRemate={usuarioRemate}
+                        d_fechaRemateUS={fechaRemateUS}
+                        c_usuarioanulacion={usuarioAnulacion}
+                        d_fechaanulacion={fechaAnulacion}
                     />
                 </div>
             </FormContainer>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Divider, Space, Button } from 'antd'
+import { Table, Divider, Space, Button, message } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -14,8 +14,8 @@ import Loading from '../../components/Modal/LoadingModal'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //States
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico,
-         listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api'
+import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
+    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate } from '../../Api/Api'
 
 const columns = [
     {
@@ -210,6 +210,11 @@ const estados = [
     { name: 'ANULADO', value: 'AN' }
 ]
 
+const monedas = [
+    { name: 'LOCAL', value: 'L' },
+    { name: 'EXTERIOR', value: 'E' }
+]
+
 const Prestamos = () => {
     //Navegacion
     let history = useHistory();
@@ -253,6 +258,7 @@ const Prestamos = () => {
     const [companias, setCompanias] = useState([]);
     const [tiposDocumentos, setTiposDocumentos] = useState([]);
     const [elementSelected, setElementSelected] = useState(null);
+    const [elementSelectedRows, setElementSelectedRows] = useState(null);
     const [prestamosToTable, setPrestamosToTable] = useState([]);
     const [responseData, setResponseData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -263,23 +269,27 @@ const Prestamos = () => {
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "ACTUALIZAR PRÉSTAMO" || item === "AGREGAR PRÉSTAMO" || item === "VISUALIZAR PRÉSTAMO" ||
-        item === "ANULAR PRÉSTAMO" || item === "VIGENTE" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
+        item === "ANULAR PRÉSTAMO" || item === "VIGENTE PRÉSTAMO" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
         item === "ENTREGAR" || item === "REMATE"
     })
     const registerPermission = userPermisssions.includes("AGREGAR PRÉSTAMO");
     const updatePermission = userPermisssions.includes("ACTUALIZAR PRÉSTAMO");
     const viewPermission = userPermisssions.includes("VISUALIZAR PRÉSTAMO");
     const cancelPermission = userPermisssions.includes("ANULAR PRÉSTAMO");
-    const currentPermission = userPermisssions.includes("VIGENTE");
+    const currentPermission = userPermisssions.includes("VIGENTE PRÉSTAMO");
     const returnToPendingPermission = userPermisssions.includes("REGRESAR A PENDIENTE");
     const cancellationsPermission = userPermisssions.includes("CANCELACIONES");
     const rematePermission = userPermisssions.includes("REMATE");
     const entregarPermission = userPermisssions.includes("REMATE");
 
-     //funciones
+    //funciones
     const handleSelectUpdate = () => {
         if(elementSelected) {
-            history.push(`/editarPrestamo/${elementSelected[0]}`);
+            if(elementSelectedRows[0].c_estado === "PE") history.push(`/editarPrestamo/${elementSelected[0]}`);
+            else {
+                setResponseData({title:"Aviso", message:"El estado del préstamo debe ser pendiente."})
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
@@ -297,7 +307,11 @@ const Prestamos = () => {
 
     const handleSelectVigente = () => {
         if(elementSelected) {
-            history.push(`/visualizarPrestamo/${elementSelected[0]}`);
+            if(elementSelectedRows[0].c_estado === "PE") history.push(`/vigentePrestamo/${elementSelected[0]}`);
+            else {
+                setResponseData({title:"Aviso", message:"El estado del préstamo debe ser pendiente."})
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
@@ -306,16 +320,28 @@ const Prestamos = () => {
 
     const handleSelectAnular = () => {
         if(elementSelected) {
-            history.push(`/anularPrestamo/${elementSelected[0]}`);
+            if(elementSelectedRows[0].c_estado === "PE") history.push(`/anularPrestamo/${elementSelected[0]}`);
+            else {
+                setResponseData({title:"Aviso", message:"El estado del préstamo debe ser pendiente."})
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
     }
 
-    const handleSelectReturnVigente = () => {
+    const handleSelectReturnVigente = async () => {
         if(elementSelected) {
-            setOpen(true);
+            const [c_compania, c_prestamo] = elementSelected[0].split("-");
+            const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
+            if(responseValidate.status === 200) {
+                setOpen(true);
+            } else {
+                const message = responseValidate.body ? responseValidate.body.message : "Error al validar el préstamo";
+                setResponseData({title:"Aviso", message:message});
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
@@ -326,7 +352,7 @@ const Prestamos = () => {
         await setOpen(false);
         await setIsLoading(true);
         const [c_compania, c_prestamo] = elementSelected[0].split("-");
-        const response = {}; //await regresarPrestamoAVigente({c_compania:c_compania, n_cliente:c_prestamo});
+        const response = await retornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response && response.status === 200) {
             await onHandleSearch();
             setResponseData( {title: "Operación exitosa", message: "Se realizó la operación con éxito el cliente." });
@@ -348,16 +374,29 @@ const Prestamos = () => {
 
     const handleSelectEntregar = () => {
         if(elementSelected) {
-            history.push(`/entregarPrestamo/${elementSelected[0]}`);
+            if(elementSelectedRows[0].c_estado === "CA") history.push(`/entregarPrestamo/${elementSelected[0]}`);
+            else {
+                setResponseData({title:"Aviso", message:"El estado del préstamo debe ser cancelado."})
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
     }
 
-    const handleSelectRemate = () => {
+    const handleSelectRemate = async () => {
         if(elementSelected) {
-            history.push(`/rematePrestamo/${elementSelected[0]}`);
+            const [c_compania, c_prestamo] = elementSelected[0].split("-");
+            const responseValidate = await validarEstadoRemate({c_compania:c_compania, c_prestamo:c_prestamo});
+            console.log('responseValidate', responseValidate);
+            if(responseValidate.status === 200) {
+                history.push(`/rematePrestamo/${elementSelected[0]}`);
+            } else {
+                const message = responseValidate.body ? responseValidate.body.message : "Error al validar el préstamo";
+                setResponseData({title:"Aviso", message:message});
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
@@ -446,6 +485,7 @@ const Prestamos = () => {
         const listAux = clientes.map((item) => {
             item.key = `${item.c_compania}-${item.c_prestamo}`;
             item.estadoName = estados.find(estado => estado.value === item.c_estado).name;
+            item.c_monedaprestamo = monedas.find(moneda => moneda.value === item.c_monedaprestamo).name;
             return item;
         })
         setPrestamosToTable(listAux);
@@ -454,7 +494,10 @@ const Prestamos = () => {
     //Atributos de la tabla
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-          setElementSelected(selectedRowKeys);
+            //console.log("selectedRowKeys", selectedRowKeys);
+            //console.log("selectedRows", selectedRows);
+            setElementSelected(selectedRowKeys);
+            setElementSelectedRows(selectedRows);
         }
     };
 
@@ -817,7 +860,7 @@ const Prestamos = () => {
             <ConfirmationModal
                 isOpen={open}
                 onClose={()=>setOpen(false)}
-                title={"Aviso de eliminación"}
+                title={"Aviso de retorno"}
                 message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
                 onHandleFunction={()=>handleReturnVigente()}
                 buttonClass="btn-success"
