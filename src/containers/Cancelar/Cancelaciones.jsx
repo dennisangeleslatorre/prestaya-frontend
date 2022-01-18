@@ -9,28 +9,20 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
+import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate'
 
 const Cancelaciones = (props) => {
     //Estados del formulario
     const [isLoading, setIsLoading] = useState(false);
-    const [openResponseModal, setOpenResponseModal] = useState(false);
-    const [responseData, setResponseData] = useState({});
-
+    const [fechaDesembolsoPrestamo, setFechaDesembolsoPrestamo] = useState("");
+    const elementId = props.match.params.id;
     return (
         <>
             <FormContainer showButton={false} view={false} textButtonReturn="Ir Prestamos" goList={()=>history.push("/prestamos")}>
-                <FormDataPrestamo setIsLoading={setIsLoading}/>
-                <FormCancelaciones/>
+                <FormDataPrestamo setIsLoading={setIsLoading} elementId={elementId} setFechaDesembolsoPrestamo={setFechaDesembolsoPrestamo}/>
+                <FormCancelaciones elementId={elementId} fechaDesembolsoPrestamo={fechaDesembolsoPrestamo}/>
             </FormContainer>
             {isLoading === true && <Loading/>}
-            <ResponseModal
-                isOpen={openResponseModal}
-                title={responseData.title}
-                onClose={()=>setOpenResponseModal(false)}
-                message={responseData.message}
-                buttonLink={responseData.url}
-            />
         </>
     )
 }

@@ -31,6 +31,16 @@
     border-radius: 0.3rem;
   }
 
+  .Modal__container__form__cancellation {
+    position: relative;
+    top: 5rem;
+    background-color: #ffffff;
+    width: 75%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    margin-bottom: 3rem;
+  }
+
   .Modal__close-button {
     position: absolute;
     top: 0;

@@ -626,6 +626,25 @@ export const cambiarEstadoEntregar = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+//CANCELAR
+export const getCancelacionesByCodigoPrestamo = async (body) => {
+    console.log('---API--- : getCancelacionesByCodigoPrestamo');
+    const url = `${port}/prestamo/getCancelacionesByCodigoPrestamo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const cancelarPrestamo = async (body) => {
+    console.log('---API--- : cancelarPrestamo');
+    const url = `${port}/prestamo/cancelarPrestamo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const anularCancelacion = async (body) => {
+    console.log('---API--- : anularCancelacion');
+    const url = `${port}/prestamo/anularCancelacion`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');

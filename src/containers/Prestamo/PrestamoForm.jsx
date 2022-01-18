@@ -382,14 +382,13 @@ const PrestamoForm = (props) => {
         if(response.status === 200) {
             const data = response.body.data;
             //Actualizar
-            setAgencia(data.c_agencia);
             setCompania(data.c_compania);
             setNPrestamo({value:data.c_prestamo});
             setAgencia(data.c_agencia);
             setEstado(data.c_estado);
             setCodigoCliente(data.n_cliente);
             setNombreCliente(data.c_nombrescompleto);
-            setClienteSeleccionado();
+            //setClienteSeleccionado();
             setTipoDocumento(data.c_tipodocumento);
             setNumeroDocumento({value:data.c_numerodocumento});
             setDireccion({value:data.c_direccioncliente});

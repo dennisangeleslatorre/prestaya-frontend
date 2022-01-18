@@ -5,7 +5,8 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 //Functions
-import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api'
+import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, getPrestamoByCodigoPrestamo } from '../../Api/Api'
+import moment from 'moment'
 
 const estados = [
     { name: 'PENDIENTE', value: 'PE' },
@@ -21,7 +22,7 @@ const monedas = [
     { name: 'EXTERIOR', value: 'E' }
 ]
 
-const FormDataPrestamo = ({setIsLoading}) => {
+const FormDataPrestamo = ({setIsLoading, elementId, setFechaDesembolsoPrestamo}) => {
     const [compania, setCompania] = useState("");
     const [nPrestamo, setNPrestamo] = useState({value:"", isValid:null});
     const [estado, setEstado] = useState("");
@@ -53,10 +54,35 @@ const FormDataPrestamo = ({setIsLoading}) => {
     const [tiposDocumentos, setTiposDocumentos] = useState([]);
 
     const getPrestamoByCodigo = async () => {
-        //const response = await get
-        /*if(response && response.status === 200) {
-
-        };*/
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await getPrestamoByCodigoPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response.status === 200 && response.body && response.body.data) {
+            const data = response.body.data;
+            setFechaDesembolsoPrestamo(data.d_fechadesembolso);
+            //setAgencia(data.c_agencia);
+            setCompania(data.c_compania);
+            setNPrestamo({value:data.c_prestamo});
+            setEstado(data.c_estado);
+            setCodigoCliente(data.n_cliente);
+            setNombreCliente(data.c_nombrescompleto);
+            setTipoDocumento(data.c_tipodocumento);
+            setNumeroDocumento({value:data.c_numerodocumento});
+            setDireccion({value:data.c_direccioncliente});
+            setPaisCodigo(data.c_paiscodigo);
+            setDepartamentoCodigo(data.c_departamentocodigo);
+            setProvinciaCodigo(data.c_provinciacodigo);
+            setDistritoCodigo(data.c_distritocodigo);
+            setTelefono({value:data.c_telefono1});
+            setMoneda(data.c_monedaprestamo);
+            setMontoPrestamo({value:Number(data.n_montoprestamo).toFixed(2), isValid:true});
+            setTasaInteres({value:Number(data.n_tasainteres).toFixed(2), isValid:true});
+            setMontoIntereses({value:Number(data.n_montointereses).toFixed(2)});
+            setMontoTotalPrestamo({value:Number(data.n_montototalprestamo).toFixed(2)});
+            setFechaDesembolso({value:moment(data.d_fechadesembolso).format('yyyy-MM-DD')});
+            setPlazoDias({value:data.n_diasplazo, isValid:true});
+            setFechaVencimiento({value:moment(data.d_fechavencimiento).format('yyyy-MM-DD')});
+            setMontoInteresDiario({value:Number(data.n_montointeresesdiario).toFixed(2)});
+        }
     }
 
     const getCompanias = async () => {
@@ -91,13 +117,13 @@ const FormDataPrestamo = ({setIsLoading}) => {
 
     useEffect(async () => {
         await setIsLoading(true);
-        await getPrestamoByCodigo();
         await getCompanias();
         await getTiposDocumento();
         await getPaises();
         await getDepartamentos();
         await getProvincias();
         await getDistritos();
+        await getPrestamoByCodigo();
         setIsLoading(false);
     }, [])
 

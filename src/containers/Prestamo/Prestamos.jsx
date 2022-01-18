@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Divider, Space, Button, message } from 'antd'
+import { Table, Divider, Space, Button } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -481,8 +481,8 @@ const Prestamos = () => {
         setIsLoading(false);
     }
 
-    const getDataForTable = (clientes) => {
-        const listAux = clientes.map((item) => {
+    const getDataForTable = (prestamos) => {
+        const listAux = prestamos.map((item) => {
             item.key = `${item.c_compania}-${item.c_prestamo}`;
             item.estadoName = estados.find(estado => estado.value === item.c_estado).name;
             item.c_monedaprestamo = monedas.find(moneda => moneda.value === item.c_monedaprestamo).name;

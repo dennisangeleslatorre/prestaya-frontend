@@ -2,6 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import CancellationModal from '../CancellationModal/CancellationModal'
+import ConfirmationModal from '../../components/Modal/ConfirmationModal'
+import ResponseModal from '../../components/Modal/ResponseModal'
+import Loading from '../../components/Modal/LoadingModal'
+//Api
+import { getCancelacionesByCodigoPrestamo, anularCancelacion, listParametrosByCompania } from '../../Api/Api'
+import moment from 'moment'
 
 const columns = [
     {
@@ -9,7 +15,7 @@ const columns = [
         dataIndex: 'n_linea'
     },{
         title: 'Fecha Vencimiento',
-        dataIndex: 'd_fechavencimiento'
+        dataIndex: 'd_fechavencimiento_format'
     },{
         title: 'Monto Prestamo',
         dataIndex: 'n_montoprestamo'
@@ -21,7 +27,7 @@ const columns = [
         dataIndex: 'c_tipocancelacion'
     },{
         title: 'Fecha Cancelación',
-        dataIndex: 'd_fechacancelacion'
+        dataIndex: 'd_fechacancelacion_format'
     },{
         title: 'Dias Transcurridos',
         dataIndex: 'n_diastranscurridos'
@@ -51,36 +57,110 @@ const columns = [
         dataIndex: 'c_usuarioregistro'
     },{
         title: 'F, Registro',
-        dataIndex: 'd_fecharegistro'
+        dataIndex: 'd_fecharegistro_format'
     },{
         title: 'U. Usuario',
         dataIndex: 'c_ultimousuario'
     },{
         title: 'U. Fecha Modificación',
-        dataIndex: 'd_ultimafechamodificacion'
+        dataIndex: 'd_ultimafechamodificacion_format'
     }
 ]
 
 const FormCancelaciones = (props) => {
+    const { elementId, fechaDesembolsoPrestamo } = props;
     //Estados
     const [tableCancelaciones, setTableCancelaciones] = useState([]);
     const [openCancellationModal, setOpenCancellationModal] = useState(false);
+    const [ultimaCancelacion, setUltimaCancelacion] = useState(null);
+    const [fechaDesembolsoCancelacion, setfechaDesembolsoCancelacion] = useState("");
+    const [diasComisionParametros, setDiasComisionParametros] = useState(0);
+    const [montoComisionParametros, setMontoComisionParametros] = useState(0);
+    //Estados del forulario
+    const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [responseData, setResponseData] = useState({});
+    const [openResponseModal , setOpenResponseModal ] = useState(false);
+
+    const getParameters = async () => {
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await listParametrosByCompania(c_compania);
+        if(response && response.status === 200) {
+            const data = response.body.data;
+            const dias = data.find((item) => item.c_parametrocodigo === "PACO000004");
+            const montos = data.find((item) => item.c_parametrocodigo === "PACO000009");
+            console.log("dias", dias)
+            console.log("montos", montos)
+            setDiasComisionParametros(parseInt(dias.n_valornumero));
+            setMontoComisionParametros(parseInt(montos.n_valornumero));
+        }
+    }
+
+    const getCancelaciones = async () => {
+        await setIsLoading(true);
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await getCancelacionesByCodigoPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200 && response.body.data) {
+            const cancelaciones = response.body.data;
+            const nLineaPosition = cancelaciones.length-1;
+            setUltimaCancelacion(cancelaciones[nLineaPosition]);
+            getDataForTable(cancelaciones);
+        }
+        else getDataForTable([]);
+        setIsLoading(false);
+    }
+
+    const getDataForTable = (cancelaciones) => {
+        const listAux = cancelaciones.map((item, index) => {
+            item.key = index;
+            item.d_fechavencimiento_format = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy') : "";
+            item.d_fechacancelacion_format = item.d_fechacancelacion ? moment(item.d_fechacancelacion).format('DD/MM/yyyy') : "";
+            item.d_fecharegistro_format = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss');
+            item.d_ultimafechamodificacion_format = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:MM:ss');
+            item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
+            item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
+            item.n_montointeresesdiario = item.n_montointeresesdiario ? Number(item.n_montointeresesdiario).toFixed(2) : "";
+            item.n_montointeresescancelar = item.n_montointeresescancelar ? Number(item.n_montointeresescancelar).toFixed(2) : "";
+            item.n_montoprestamocancelar = item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar).toFixed(2) : "";
+            item.n_montocomisioncancelar = item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar).toFixed(2) : "";
+            item.n_montototalcancelar = item.n_montototalcancelar ? Number(item.n_montototalcancelar).toFixed(2) : "";
+            return item;
+        })
+        setTableCancelaciones(listAux);
+    }
 
     const handleAddCancelacion = () => {
+        const nLineaPosition = tableCancelaciones.length-1;
+        if(nLineaPosition > 0) {
+            setfechaDesembolsoCancelacion(tableCancelaciones[nLineaPosition-1].d_fechacancelacion);
+            console.log('d_fechacancelacion', tableCancelaciones[nLineaPosition-1].d_fechacancelacion)
+        } else {
+            setfechaDesembolsoCancelacion(fechaDesembolsoPrestamo);
+            console.log('fechaDesembolsoPrestamo', fechaDesembolsoPrestamo)
+        }
         //Abrimos el modal
         setOpenCancellationModal(true);
     }
 
-    const handleDeleteCancelacion = () => {
-
+    const handleDeleteCancelacion = async () => {
+        await setIsLoading(true);
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await anularCancelacion({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200) {
+            setResponseData({title:"Operación", message:"Se anuló la cancelación con éxito"});
+            setOpenResponseModal(true);
+        }  else {
+            const message = response.body ? response.body.message : "Error al anular el préstamo";
+            setResponseData({title:"Aviso", message:message});
+            setOpenResponseModal(true);
+        }
+        setIsLoading(false);
     }
 
-    //Atributos de la tabla
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-          setElementSelected(selectedRowKeys);
-        }
-    };
+    useEffect(async () => {
+        await getParameters();
+        await getCancelaciones();
+    }, [])
 
     return (
         <>
@@ -89,16 +169,12 @@ const FormCancelaciones = (props) => {
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
                         <Button onClick={handleAddCancelacion}>CANCELAR</Button>
-                        <Button onClick={handleDeleteCancelacion}>ANULAR CANCELACIÓN</Button>
+                        <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button>
                     </Space>
                 </div>
             </div>
             <div className="row mx-2 mb-2" style={{ overflow: 'scroll' }}>
                 <Table
-                    rowSelection={{
-                        type: "radio",
-                        ...rowSelection,
-                    }}
                     columns={columns}
                     dataSource={tableCancelaciones}
                     pagination={{ pageSize: 50 }}
@@ -107,7 +183,30 @@ const FormCancelaciones = (props) => {
             <CancellationModal
                 isOpen={openCancellationModal}
                 onClose={()=>setOpenCancellationModal(false)}
+                elementId={elementId}
+                ultimaCancelacion={ultimaCancelacion}
+                setResponseData={setResponseData}
+                setOpenResponseModal={setOpenResponseModal}
+                fechaDesembolsoCancelacion={fechaDesembolsoCancelacion}
+                diasComisionParametros={diasComisionParametros}
+                montoComisionParametros={montoComisionParametros}
+                getCancelaciones={getCancelaciones}
             />
+            <ConfirmationModal
+                isOpen={open}
+                onClose={()=>setOpen(false)}
+                title={"Aviso de anulación"}
+                message={"¿Seguro que desea anular la última cancelación?."}
+                onHandleFunction={()=>handleDeleteCancelacion()}
+                buttonClass="btn-danger"
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
+            />
+            {isLoading === true && <Loading/>}
         </>
     )
 }

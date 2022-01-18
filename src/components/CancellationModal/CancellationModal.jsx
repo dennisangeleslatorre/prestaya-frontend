@@ -1,44 +1,95 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
+//Api
+import { cancelarPrestamo } from '../../Api/Api'
+import moment from 'moment'
+//Contexto
+import UserContext from '../../context/UserContext/UserContext'
 
 const CancellationModal = (props) => {
-    const {isOpen, onClose} = props;
-    const notification = {title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"};
+    const {isOpen, onClose, elementId, ultimaCancelacion, setResponseData, setOpenResponseModal, fechaDesembolsoCancelacion, diasComisionParametros,
+            montoComisionParametros, getCancelaciones} = props;
+    const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
     //Estados
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
-    const [fechaVencimiento, setFechaVencimiento] = useState({value:"", required:null});
+    const [fechaVencimiento, setFechaVencimiento] = useState({value:"", isValid:null});
     const [montoPrestamo, setMontoPrestamo] = useState({value:"0.0", isValid:true});
     const [montoIntereses, setMontoIntereses] = useState({value:"0.0", isValid:true});
     const [tipoCancelacion, setTipoCancelacion] = useState("");
-    const [fechaCancelacion, setFechaCancelacion] = useState({value:"", required:null});
-    const [diasTranscurridos, setDiasTranscurridos] = useState({value:"", required:null});
-    const [montoInteresDiario, setMontoInteresDiario] = useState({value:"0.0", required:null});
-    const [interesCancelar, setInteresCancelar] = useState({value:"0.0", required:null});
-    const [montoComision, setMontoComision] = useState({value:"0.0", required:null});
-    const [montoToalCancelar, setMontoToalCancelar] = useState({value:"0.0", required:null});
+    const [fechaCancelacion, setFechaCancelacion] = useState({value:"", isValid:null});
+    const [diasTranscurridos, setDiasTranscurridos] = useState({value:"", isValid:null});
+    const [montoInteresDiario, setMontoInteresDiario] = useState({value:"0.0", isValid:null});
+    const [interesCancelar, setInteresCancelar] = useState({value:"0.0", isValid:null});
+    const [montoPrestamoCancelar, setMontoPrestamoCancelar] = useState({value:"0.0", isValid:null});
+    const [montoComision, setMontoComision] = useState({value:"0.0", isValid:null});
+    const [montoTotalCancelar, setMontoTotalCancelar] = useState({value:"0.0", isValid:null});
     const [observaciones, setObservaciones] = useState("");
-    const [estado, setEstado] = useState("");
+    //Usuario
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //validate
     const validate = () => {
-        //if() return false;
+        if(!nLinea || !fechaVencimiento || !montoPrestamo || !montoIntereses || !tipoCancelacion || !fechaCancelacion || !diasTranscurridos || !montoInteresDiario ||
+            !interesCancelar || !montoComision || !montoTotalCancelar || !observaciones) return false;
         return true;
     }
     const cleanCancellation = () => {
-        
+        setNLinea({value:"", isValid:null});
+        setFechaVencimiento({value:"", isValid:null});
+        setMontoPrestamo({value:"0.0", isValid:true});
+        setMontoIntereses({value:"0.0", isValid:true});
+        setTipoCancelacion("");
+        setFechaCancelacion({value:"", isValid:null});
+        setDiasTranscurridos({value:"", isValid:null});
+        setMontoInteresDiario({value:"0.0", isValid:null});
+        setInteresCancelar({value:"0.0", isValid:null});
+        setMontoPrestamoCancelar({value:"0.0", isValid:null});
+        setMontoComision({value:"0.0", isValid:null});
+        setMontoTotalCancelar({value:"0.0", isValid:null});
+        setObservaciones("");
     }
 
     const prepareCancellation = () => {
-        
+        const [c_compania, c_prestamo] = elementId.split('-');
+        return {
+            c_compania:c_compania,
+            c_prestamo:c_prestamo,
+            n_linea:nLinea.value,
+            c_tipocancelacion:tipoCancelacion,
+            d_fechacancelacion:fechaCancelacion.value,
+            n_diastranscurridos:diasTranscurridos.value,
+
+            n_montointeresescancelar:interesCancelar.value,
+            n_montoprestamocancelar:montoPrestamoCancelar.value,
+            n_montocomisioncancelar:montoComision.value,
+            n_montototalcancelar:montoTotalCancelar.value,
+
+            c_observacionescancelar:observaciones,
+            c_ultimousuario:userLogedIn
+        }
     }
 
-    const handleAddCancellation = () => {
-        
+    const handleSaveCancellation = async () => {
+        if(validate()) {
+            const body = prepareCancellation();
+            const response = await cancelarPrestamo(body)
+            if(response && response.status === 200) {
+                handleClose();
+                setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
+                setOpenResponseModal(true);
+                getCancelaciones();
+            } else {
+                setIsAlert(true);
+                setNotification({...notification, message:"Error al consumir el servicio"})
+            }
+        } else
+            setIsAlert(true);
     }
 
     const handleClose = () => {
@@ -47,8 +98,50 @@ const CancellationModal = (props) => {
         setIsAlert(false);
     }
 
+    useEffect(() => {
+        if(isOpen && ultimaCancelacion) {
+            setNLinea({value:ultimaCancelacion.n_linea, isValid:null});
+            setFechaVencimiento({value:moment(ultimaCancelacion.d_fechavencimiento).format('yyyy-MM-DD')});
+            setMontoPrestamo({value:ultimaCancelacion.n_montoprestamo, isValid:true});
+            setMontoIntereses({value:ultimaCancelacion.n_montointereses, isValid:true});
+            //setTipoCancelacion(ultimaCancelacion.c_tipocancelacion);
+            //setFechaCancelacion({value:ultimaCancelacion.d_fechacancelacion, isValid:null});
+
+            setMontoInteresDiario({value:ultimaCancelacion.n_montointeresesdiario, isValid:null});
+            //setMontoPrestamoCancelar({value:ultimaCancelacion.n_montoprestamocancelar, isValid:null});
+            //setMontoComision({value:ultimaCancelacion.n_montocomisioncancelar, isValid:null});
+            //setMontoTotalCancelar({value:ultimaCancelacion.n_montototalcancelar, isValid:null});
+
+            //setObservaciones(ultimaCancelacion.c_observacionescancelar);
+        }
+    }, [isOpen])
+
+    useEffect(() => {
+        console.log('fechaDesembolsoCancelacion', fechaDesembolsoCancelacion)
+        if(fechaDesembolsoCancelacion && fechaCancelacion.value) {
+            const diferenciaDias = moment(fechaCancelacion.value).diff(moment(fechaDesembolsoCancelacion), 'days');
+            console.log('diferenciaDias', diferenciaDias);
+            setDiasTranscurridos({value:diferenciaDias});
+        }
+    }, [fechaCancelacion])
+
+    useEffect(() => {
+        if(diasTranscurridos.value && Number(diasTranscurridos.value) > 0) {
+            const montoInteresACancelar = Number(diasTranscurridos.value)*Number(montoInteresDiario.value)
+            setInteresCancelar({value:Number(montoInteresACancelar).toFixed(2)});
+        }
+        if(diasTranscurridos.value && Number(diasTranscurridos.value) <= Number(diasComisionParametros)) {
+            setMontoComision({value:montoComisionParametros})
+        }
+    }, [diasTranscurridos])
+
+    useEffect(() => {
+        const total = Number(interesCancelar.value) + Number(montoPrestamoCancelar.value) + Number(montoComision.value);
+        setMontoTotalCancelar({value: total.toFixed(2)})
+    }, [interesCancelar, montoPrestamoCancelar, montoComision])
+
     return (
-        <Modal isOpen={isOpen} title="Cancelaciones" onClose={onClose} modal_class="Modal__container__form">
+        <Modal isOpen={isOpen} title="Cancelaciones" onClose={handleClose} modal_class="Modal__container__form__cancellation">
             <div className="modal-body row">
                 <InputComponent
                     label="Línea"
@@ -84,17 +177,17 @@ const CancellationModal = (props) => {
                     label="Monto intereses"
                     state={montoIntereses}
                     setState={setMontoIntereses}
-                    type="text"
+                    type="number"
                     placeholder="Tasa interés"
                     inputId="tasaInteresId"
                     readOnly={true}
                     classForm="col-12 col-lg-6"
                 />
                 <SelectComponent
-                    labelText="Estado"
-                    defaultValue="Seleccione un estado"
+                    labelText="Tipo de cancelación"
+                    defaultValue="Seleccione un tipo"
                     items={[{value:"C", name:"CANCELACIÓN"}, {value:"A", name:"AMORTIZACIÓN"}, {value:"R", name:"RENOVACIÓN"}]}
-                    selectId="estadoId"
+                    selectId="tipoCancelaciónId"
                     valueField="value"
                     optionField="name"
                     valueSelected={tipoCancelacion}
@@ -119,7 +212,6 @@ const CancellationModal = (props) => {
                     type="text"
                     placeholder="Días transcurridos"
                     inputId="plazoDiaId"
-                    validation="number"
                     readOnly={true}
                     classForm="col-12 col-lg-6"
                 />
@@ -127,7 +219,7 @@ const CancellationModal = (props) => {
                     label="Mnt. interés Diario"
                     state={montoInteresDiario}
                     setState={setMontoInteresDiario}
-                    type="text"
+                    type="number"
                     placeholder="Mnt. interés Diario"
                     inputId="montoInteresDiarioId"
                     readOnly={true}
@@ -137,7 +229,7 @@ const CancellationModal = (props) => {
                     label="Mnt. Interes a Cancelar"
                     state={interesCancelar}
                     setState={setInteresCancelar}
-                    type="text"
+                    type="number"
                     placeholder="Mnt. Interes a Cancelar"
                     inputId="montoInteresCancelarId"
                     readOnly={true}
@@ -145,9 +237,9 @@ const CancellationModal = (props) => {
                 />
                 <InputComponent
                     label="Mnto Prestamo a Cancelar"
-                    state={interesCancelar}
-                    setState={setInteresCancelar}
-                    type="text"
+                    state={montoPrestamoCancelar}
+                    setState={setMontoPrestamoCancelar}
+                    type="number"
                     placeholder="Mnto Prestamo a Cancelar"
                     inputId="montoPrestamoCancelarId"
                     readOnly={false}
@@ -157,7 +249,7 @@ const CancellationModal = (props) => {
                     label="Mnt. Comisión"
                     state={montoComision}
                     setState={setMontoComision}
-                    type="text"
+                    type="number"
                     placeholder="Mnt. Comisión"
                     inputId="montoComisionId"
                     readOnly={false}
@@ -165,9 +257,9 @@ const CancellationModal = (props) => {
                 />
                 <InputComponent
                     label="Mnto Total Cancelar"
-                    state={montoToalCancelar}
-                    setState={setMontoToalCancelar}
-                    type="text"
+                    state={montoTotalCancelar}
+                    setState={setMontoTotalCancelar}
+                    type="number"
                     placeholder="Mnt. Comisión"
                     inputId="Mnto Total Cancelar"
                     readOnly={true}
@@ -183,18 +275,6 @@ const CancellationModal = (props) => {
                     classForm="col-12"
                     labelSpace={1}
                 />
-                <SelectComponent
-                    labelText="Estado"
-                    defaultValue="Seleccione un estado"
-                    items={[{value:"PE", name:"PENDIENTE"}, {value:"CA", name:"CANCELADO"}, {value:"RE", name:"REMATE"}]}
-                    selectId="estadoId"
-                    valueField="value"
-                    optionField="name"
-                    valueSelected={estado}
-                    handleChange={setEstado}
-                    classForm="col-12 col-lg-6"
-                    disabledElement={true}
-                />
             </div>
             {/*Alerta*/}
             { isAlert === true && <Alert
@@ -203,8 +283,8 @@ const CancellationModal = (props) => {
                 mainMessage={notification.message}
             /> }
             <div className="modal-footer justify-content-center">
-                <button onClick={handleAddCancellation} className="btn btn-primary">
-                    Agregar
+                <button onClick={handleSaveCancellation} className="btn btn-primary">
+                    Guardar
                 </button>
             </div>
         </Modal>
