@@ -2,6 +2,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Dotenv = require('dotenv-webpack');
 const path = require("path");
+const webpack = require('webpack');
 
 /** @type {import('webpack').Configuration} */
 module.exports = {
@@ -38,8 +39,17 @@ module.exports = {
   },
   resolve: {
     extensions: [".js", ".json", ".jsx"],
+    alias: {
+      process: 'process/browser',
+      stream: "stream-browserify",
+      zlib: "browserify-zlib"
+    }
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: "./public/index.html",

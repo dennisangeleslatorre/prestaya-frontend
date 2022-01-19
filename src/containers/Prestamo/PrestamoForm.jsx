@@ -19,7 +19,7 @@ import UserContext from '../../context/UserContext/UserContext'
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar } from '../../Api/Api'
+        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 
@@ -283,6 +283,7 @@ const PrestamoForm = (props) => {
                 c_compania: c_compania,
                 c_prestamo: c_prestamo,
                 c_estado: "AN",
+                c_observacionesanula: observacionesAnular,
                 c_usuarioanulacion: userLogedIn
             }
             const response = await anularPrestamo(data);
@@ -331,7 +332,6 @@ const PrestamoForm = (props) => {
                 c_telefonopr: telefonoEntrega.value,
                 c_observacionesentrega: observacionesEntrega
             }
-            console.log("Entrega", data);
             const response = await cambiarEstadoEntregar(data);
             (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Entregado") : prepareNotificationDanger("Error al actualizar", response.message);
         }
@@ -358,7 +358,7 @@ const PrestamoForm = (props) => {
         setIsLoading(false);
     }
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if(urlFragment !== "visualizarPrestamo") {
             if(validate()) {
                 setOpen(true);
@@ -367,7 +367,14 @@ const PrestamoForm = (props) => {
                 if(urlFragment === "anularPrestamo") setModalAttributes({title:"Aviso de anulación", message:"¿Seguro que desea cambiar el estado a anulado?"});
                 if(urlFragment === "vigentePrestamo") setModalAttributes({title:"Aviso de vigente", message:"¿Seguro que desea cambiar el estado a vigente?"});
                 if(urlFragment === "entregarPrestamo") setModalAttributes({title:"Aviso de entrega", message:"¿Seguro que desea cambiar el estado a entregado?"});
-                if(urlFragment === "rematePrestamo") setModalAttributes({title:"Aviso de remate", message:"¿Seguro que desea cambiar el estado a remate?"});
+                if(urlFragment === "rematePrestamo") {
+                    const [c_compania, c_prestamo] = elementId.split('-');
+                    const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
+                    console.log("Resposne validate", response)
+                    let message = '¿Seguro que desea cambiar el estado a remate?';
+                    if(response.status !== 200) message = `${message} ${response.message ? response.message : ""}`
+                    setModalAttributes({title:"Aviso de remate", message:message});
+                }
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }

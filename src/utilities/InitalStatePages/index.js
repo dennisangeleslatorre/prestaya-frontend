@@ -45,6 +45,8 @@ import ClienteForm from '../../containers/Cliente/ClienteForm'
 //PRESTAMOS
 import Prestamos from '../../containers/Prestamo/Prestamos'
 import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
+//FORMATO PRÉSTAMO
+import Contrato from '../../containers/Contrato/Contrato'
 //Cancelaciones
 import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 
@@ -371,7 +373,7 @@ export default{
             component: PrestamoForm,
             path: '/vigentePrestamo/:id',
             exact: true,
-            name: '"VIGENTE PRÉSTAMO'
+            name: 'VIGENTE PRÉSTAMO'
         },{
             component: PrestamoForm,
             path: '/entregarPrestamo/:id',
@@ -382,6 +384,11 @@ export default{
             path: '/rematePrestamo/:id',
             exact: true,
             name: 'REMATE'
+        },{
+            component: Contrato,
+            path: '/contratoPrestamo/:id',
+            exact: true,
+            name: 'FORMATO PRÉSTAMO'
         },{
             component: Cancelaciones,
             path: '/cancelaciones/:id',

@@ -13,7 +13,8 @@ import Loading from '../../components/Modal/LoadingModal'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //States
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getClienteDinamico } from '../../Api/Api'
+import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getClienteDinamico, deleteCliente } from '../../Api/Api'
+import moment from 'moment'
 
 const columns = [
     {
@@ -157,7 +158,7 @@ const Clientes = () => {
         await setOpen(false);
         await setIsLoading(true);
         const [c_compania, n_cliente] = elementSelected[0].split("-");
-        const response = {}; //await deleteUnidadMedida({c_compania:c_compania, n_cliente:n_cliente});
+        const response = await deleteCliente({c_compania:c_compania, n_cliente:n_cliente});
         if(response && response.status === 200) {
             await onHandleSearch();
             setResponseData( {title: "Operación exitosa", message: "Se eliminó con éxito el cliente." });
@@ -213,6 +214,10 @@ const Clientes = () => {
     const getDataForTable = (clientes) => {
         const listAux = clientes.map((item) => {
             item.key = `${item.c_compania}-${item.n_cliente}`;
+            item.d_fechaInicioOperaciones = moment(item.d_fechaInicioOperaciones).format('DD/MM/yyyy');
+            item.d_fechaInactivacion = moment(item.d_fechaInactivacion).format('DD/MM/yyyy HH:MM:ss');
+            item.d_fecharegistro = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss');
+            item.d_ultimafechamodificacion = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:MM:ss');
             return item;
         })
         setClientsToTable(listAux);

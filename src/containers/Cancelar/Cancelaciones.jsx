@@ -3,15 +3,13 @@ import React, { useContext, useEffect, useState } from 'react'
 import FormDataPrestamo from '../../components/FormDataPrestamo/FormDataPrestamo'
 import FormContainer from '../../components/FormContainer/FormContainer'
 import FormCancelaciones from '../../components/FormCancelaciones/FormCancelaciones'
-import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
-//Context
-import UserContext from '../../context/UserContext/UserContext'
 //Functions
-import { useLocation, useHistory } from 'react-router'
-import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate'
+import { useHistory } from 'react-router'
 
 const Cancelaciones = (props) => {
+    //Navegacion
+    let history = useHistory();
     //Estados del formulario
     const [isLoading, setIsLoading] = useState(false);
     const [fechaDesembolsoPrestamo, setFechaDesembolsoPrestamo] = useState("");

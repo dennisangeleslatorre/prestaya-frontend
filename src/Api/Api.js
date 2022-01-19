@@ -542,6 +542,12 @@ export const updateCliente = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const deleteCliente = async (body) => {
+    console.log('---API--- : deleteCliente');
+    const url = `${port}/cliente/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Prestamos
 export const getPrestamoByCodigoPrestamo = async (body) => {
     console.log('---API--- : getPrestamoByCodigoPrestamo');
@@ -607,6 +613,12 @@ export const retornarPendiente = async (body) => {
     return response;
 };
 //REMATE
+export const validarFechaRemate = async (body) => {
+    console.log('---API--- : validarFechaRemate');
+    const url = `${port}/prestamo/validarFechaRemate`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const validarEstadoRemate = async (body) => {
     console.log('---API--- : validarEstadoRemate');
     const url = `${port}/prestamo/validarEstadoRemate`;

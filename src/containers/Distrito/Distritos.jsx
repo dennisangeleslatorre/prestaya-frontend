@@ -10,6 +10,7 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 //Utilities
 import { Link } from 'react-router-dom'
 import { listAllDistritos, deleteDistrito } from '../../Api/Api'
+import moment from 'moment'
 
 const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
@@ -139,9 +140,9 @@ const Distritos = () => {
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro ? (new Date(item.d_fecharegistro)).toLocaleString("en-US") : "";
+            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? (new Date(item.d_ultimafechamodificacion)).toLocaleString("en-US") : "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
             const keyCodes = {
                 c_departamentocodigo: item.c_departamentocodigo,
                 c_paiscodigo: item.c_paiscodigo,

@@ -67,6 +67,18 @@ const columns = [
     }
 ]
 
+const tipoCancelaciones = {
+    'C': 'CANCELACIÓN',
+    'A': 'AMORTIZACIÓN',
+    'C': 'CANCELACIÓN'
+}
+
+const estados = {
+    'PE': 'PENDIENTE',
+    'CA': 'CANCELADO',
+    'RE': 'REMATE'
+}
+
 const FormCancelaciones = (props) => {
     const { elementId, fechaDesembolsoPrestamo } = props;
     //Estados
@@ -124,6 +136,8 @@ const FormCancelaciones = (props) => {
             item.n_montoprestamocancelar = item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar).toFixed(2) : "";
             item.n_montocomisioncancelar = item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar).toFixed(2) : "";
             item.n_montototalcancelar = item.n_montototalcancelar ? Number(item.n_montototalcancelar).toFixed(2) : "";
+            item.c_tipocancelacion = tipoCancelaciones[item.c_tipocancelacion];
+            item.c_estado = estados[item.c_estado];
             return item;
         })
         setTableCancelaciones(listAux);

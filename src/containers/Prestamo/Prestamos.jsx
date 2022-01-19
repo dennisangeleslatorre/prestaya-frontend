@@ -16,6 +16,7 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
     listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate } from '../../Api/Api'
+import moment from 'moment'
 
 const columns = [
     {
@@ -307,6 +308,7 @@ const Prestamos = () => {
 
     const handleSelectVigente = () => {
         if(elementSelected) {
+            console.log("Vigente", elementSelected[0]);
             if(elementSelectedRows[0].c_estado === "PE") history.push(`/vigentePrestamo/${elementSelected[0]}`);
             else {
                 setResponseData({title:"Aviso", message:"El estado del préstamo debe ser pendiente."})
@@ -338,7 +340,7 @@ const Prestamos = () => {
             if(responseValidate.status === 200) {
                 setOpen(true);
             } else {
-                const message = responseValidate.body ? responseValidate.body.message : "Error al validar el préstamo";
+                const message = responseValidate ? responseValidate.message : "Error al validar el préstamo";
                 setResponseData({title:"Aviso", message:message});
                 setOpenResponseModal(true);
             }
@@ -389,11 +391,10 @@ const Prestamos = () => {
         if(elementSelected) {
             const [c_compania, c_prestamo] = elementSelected[0].split("-");
             const responseValidate = await validarEstadoRemate({c_compania:c_compania, c_prestamo:c_prestamo});
-            console.log('responseValidate', responseValidate);
             if(responseValidate.status === 200) {
                 history.push(`/rematePrestamo/${elementSelected[0]}`);
             } else {
-                const message = responseValidate.body ? responseValidate.body.message : "Error al validar el préstamo";
+                const message = responseValidate.message ? responseValidate.message : "Error al validar el préstamo";
                 setResponseData({title:"Aviso", message:message});
                 setOpenResponseModal(true);
             }
@@ -486,6 +487,13 @@ const Prestamos = () => {
             item.key = `${item.c_compania}-${item.c_prestamo}`;
             item.estadoName = estados.find(estado => estado.value === item.c_estado).name;
             item.c_monedaprestamo = monedas.find(moneda => moneda.value === item.c_monedaprestamo).name;
+            item.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechavigente = item.d_fechavigente ? moment(item.d_fechavigente).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:MM:ss') : "";
             return item;
         })
         setPrestamosToTable(listAux);

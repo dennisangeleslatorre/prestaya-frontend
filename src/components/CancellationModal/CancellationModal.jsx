@@ -33,12 +33,20 @@ const CancellationModal = (props) => {
     //Usuario
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
+    //Logica tipo cancelacion
+    const validacionesFuncion =  {
+        C: () => montoPrestamo.value === montoPrestamoCancelar.value ? "OK" : "Se debe cancelar el total del monto de préstamo",
+        A: () => (montoPrestamoCancelar.value < montoPrestamo.value && montoPrestamoCancelar.value > 0) ? "OK" : "El monto del préstamo a cancelar debe ser mayor a 0 y menor al monto prestado",
+        R: () => montoPrestamoCancelar.value === 0 ? "OK" : "El monto del préstamo a cancelar debe ser 0"
+    }
+
     //validate
     const validate = () => {
         if(!nLinea || !fechaVencimiento || !montoPrestamo || !montoIntereses || !tipoCancelacion || !fechaCancelacion || !diasTranscurridos || !montoInteresDiario ||
             !interesCancelar || !montoComision || !montoTotalCancelar || !observaciones) return false;
         return true;
     }
+
     const cleanCancellation = () => {
         setNLinea({value:"", isValid:null});
         setFechaVencimiento({value:"", isValid:null});
@@ -77,16 +85,21 @@ const CancellationModal = (props) => {
 
     const handleSaveCancellation = async () => {
         if(validate()) {
-            const body = prepareCancellation();
-            const response = await cancelarPrestamo(body)
-            if(response && response.status === 200) {
-                handleClose();
-                setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
-                setOpenResponseModal(true);
-                getCancelaciones();
+            if(validacionesFuncion[tipoCancelacion]() === "OK" ) {
+                const body = prepareCancellation();
+                const response = await cancelarPrestamo(body)
+                if(response && response.status === 200) {
+                    handleClose();
+                    setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
+                    setOpenResponseModal(true);
+                    getCancelaciones();
+                } else {
+                    setIsAlert(true);
+                    setNotification({...notification, message:"Error al consumir el servicio"})
+                }
             } else {
+                setNotification({...notification, message:validacionesFuncion[tipoCancelacion]()})
                 setIsAlert(true);
-                setNotification({...notification, message:"Error al consumir el servicio"})
             }
         } else
             setIsAlert(true);
@@ -104,15 +117,7 @@ const CancellationModal = (props) => {
             setFechaVencimiento({value:moment(ultimaCancelacion.d_fechavencimiento).format('yyyy-MM-DD')});
             setMontoPrestamo({value:ultimaCancelacion.n_montoprestamo, isValid:true});
             setMontoIntereses({value:ultimaCancelacion.n_montointereses, isValid:true});
-            //setTipoCancelacion(ultimaCancelacion.c_tipocancelacion);
-            //setFechaCancelacion({value:ultimaCancelacion.d_fechacancelacion, isValid:null});
-
             setMontoInteresDiario({value:ultimaCancelacion.n_montointeresesdiario, isValid:null});
-            //setMontoPrestamoCancelar({value:ultimaCancelacion.n_montoprestamocancelar, isValid:null});
-            //setMontoComision({value:ultimaCancelacion.n_montocomisioncancelar, isValid:null});
-            //setMontoTotalCancelar({value:ultimaCancelacion.n_montototalcancelar, isValid:null});
-
-            //setObservaciones(ultimaCancelacion.c_observacionescancelar);
         }
     }, [isOpen])
 
@@ -131,9 +136,10 @@ const CancellationModal = (props) => {
             setInteresCancelar({value:Number(montoInteresACancelar).toFixed(2)});
         }
         if(diasTranscurridos.value && Number(diasTranscurridos.value) <= Number(diasComisionParametros)) {
-            setMontoComision({value:montoComisionParametros})
+            if(tipoCancelacion === "C") setMontoComision({value:montoComisionParametros})
+            else setMontoComision({value:"0.0"})
         }
-    }, [diasTranscurridos])
+    }, [diasTranscurridos, tipoCancelacion])
 
     useEffect(() => {
         const total = Number(interesCancelar.value) + Number(montoPrestamoCancelar.value) + Number(montoComision.value);

@@ -79,6 +79,10 @@ const pagesArray = [
                         value: 'REMATE',
                         key: 'REMATE'
                     },{
+                        title: 'FORMATO PRÉSTAMO',
+                        value: 'FORMATO PRÉSTAMO',
+                        key: 'FORMATO PRÉSTAMO'
+                    },{
                         title: 'CANCELAR PRÉSTAMO',
                         value: 'CANCELAR PRÉSTAMO',
                         key: 'CANCELAR PRÉSTAMO',
