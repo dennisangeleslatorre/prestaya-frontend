@@ -5,6 +5,8 @@ import CancellationModal from '../CancellationModal/CancellationModal'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+//Context
+import PagesContext from '../../context/PagesContext/PagesContext'
 //Api
 import { getCancelacionesByCodigoPrestamo, anularCancelacion, listParametrosByCompania } from '../../Api/Api'
 import moment from 'moment'
@@ -70,7 +72,7 @@ const columns = [
 const tipoCancelaciones = {
     'C': 'CANCELACIÓN',
     'A': 'AMORTIZACIÓN',
-    'C': 'CANCELACIÓN'
+    'R': 'RENOVACIÓN'
 }
 
 const estados = {
@@ -80,7 +82,7 @@ const estados = {
 }
 
 const FormCancelaciones = (props) => {
-    const { elementId, fechaDesembolsoPrestamo } = props;
+    const { elementId, fechaDesembolsoPrestamo, estadoPrestamo } = props;
     //Estados
     const [tableCancelaciones, setTableCancelaciones] = useState([]);
     const [openCancellationModal, setOpenCancellationModal] = useState(false);
@@ -93,6 +95,13 @@ const FormCancelaciones = (props) => {
     const [open, setOpen] = useState(false);
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal ] = useState(false);
+    //Contexto
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "CANCELAR" || item === "ANULAR CANCELACIÓN"
+    })
+    const cancelarPermission = userPermisssions.includes("CANCELAR");
+    const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
 
     const getParameters = async () => {
         const [c_compania, c_prestamo] = elementId.split('-');
@@ -144,27 +153,35 @@ const FormCancelaciones = (props) => {
     }
 
     const handleAddCancelacion = () => {
-        const nLineaPosition = tableCancelaciones.length-1;
-        if(nLineaPosition > 0) {
-            setfechaDesembolsoCancelacion(tableCancelaciones[nLineaPosition-1].d_fechacancelacion);
-            console.log('d_fechacancelacion', tableCancelaciones[nLineaPosition-1].d_fechacancelacion)
+        if(ultimaCancelacion.c_tipocancelacion !== 'C') {
+            const nLineaPosition = tableCancelaciones.length-1;
+            if(nLineaPosition > 0) {
+                setfechaDesembolsoCancelacion(tableCancelaciones[nLineaPosition-1].d_fechacancelacion);
+                console.log('d_fechacancelacion', tableCancelaciones[nLineaPosition-1].d_fechacancelacion)
+            } else {
+                setfechaDesembolsoCancelacion(fechaDesembolsoPrestamo);
+                console.log('fechaDesembolsoPrestamo', fechaDesembolsoPrestamo)
+            }
+            //Abrimos el modal
+            setOpenCancellationModal(true);
         } else {
-            setfechaDesembolsoCancelacion(fechaDesembolsoPrestamo);
-            console.log('fechaDesembolsoPrestamo', fechaDesembolsoPrestamo)
+            setResponseData({title: "Aviso", message:"Se canceló por completo el préstamo"})
+            setOpenResponseModal(true);
         }
-        //Abrimos el modal
-        setOpenCancellationModal(true);
     }
 
     const handleDeleteCancelacion = async () => {
         await setIsLoading(true);
+        //Cerramos el modal de confirmacion
+        setOpen(false)
         const [c_compania, c_prestamo] = elementId.split('-');
         const response = await anularCancelacion({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response && response.status === 200) {
-            setResponseData({title:"Operación", message:"Se anuló la cancelación con éxito"});
+            await getCancelaciones();
+            setResponseData({title:"Operación exitosa", message:"Se anuló la cancelación con éxito"});
             setOpenResponseModal(true);
         }  else {
-            const message = response.body ? response.body.message : "Error al anular el préstamo";
+            const message = response ? response.message : "Error al anular el préstamo";
             setResponseData({title:"Aviso", message:message});
             setOpenResponseModal(true);
         }
@@ -182,8 +199,8 @@ const FormCancelaciones = (props) => {
             <div className="row col-12">
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
-                        <Button onClick={handleAddCancelacion}>CANCELAR</Button>
-                        <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button>
+                        { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button>}
+                        { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button>}
                     </Space>
                 </div>
             </div>

@@ -386,7 +386,7 @@ export default{
             name: 'REMATE'
         },{
             component: Contrato,
-            path: '/contratoPrestamo/:id',
+            path: '/formatoPrestamo/:id',
             exact: true,
             name: 'FORMATO PRÉSTAMO'
         },{

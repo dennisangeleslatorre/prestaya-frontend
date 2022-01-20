@@ -17,6 +17,7 @@ const TipoProductoForm = (props) => {
     const [tipoProducto, setTipoProducto] = useState({value: "", isValid:null});
     const [descripcion, setDescripcion] = useState({value: "", isValid:null});
     const [estado, setEstado] = useState("A");
+    const [flagPeso, setflagPeso] = useState("N");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +61,7 @@ const TipoProductoForm = (props) => {
     }
 
     const validate = () => {
-        if(!tipoProducto.isValid || !descripcion.isValid) return false;
+        if(!tipoProducto.isValid || !descripcion.isValid || !flagPeso) return false;
         return true;
     }
 
@@ -68,7 +69,8 @@ const TipoProductoForm = (props) => {
         const data = {
             c_tipoproducto: tipoProducto.value.toUpperCase(),
             c_descripcion: descripcion.value,
-            c_estado: estado
+            c_estado: estado,
+            c_flagpeso: flagPeso
         }
         return data;
     }
@@ -114,6 +116,7 @@ const TipoProductoForm = (props) => {
             setTipoProducto({value:data.c_tipoproducto, isValid: true});
             setDescripcion({value:data.c_descripcion, isValid: true});
             setEstado(data.c_estado);
+            setflagPeso(data.c_flagpeso);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -162,6 +165,17 @@ const TipoProductoForm = (props) => {
                     optionField="name"
                     valueSelected={estado}
                     handleChange={setEstado}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag Peso"
+                    defaultValue="Seleccione un flag"
+                    items={[{name: "NO OBLIGATORIO", value:"N"}, {name: "OBLIGATORIO", value:"S"}]}
+                    selectId="estadoId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagPeso}
+                    handleChange={setflagPeso}
                     disabledElement={readOnlyView}
                 />
             </FormContainer>

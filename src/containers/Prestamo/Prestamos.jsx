@@ -271,7 +271,7 @@ const Prestamos = () => {
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "ACTUALIZAR PRÉSTAMO" || item === "AGREGAR PRÉSTAMO" || item === "VISUALIZAR PRÉSTAMO" ||
         item === "ANULAR PRÉSTAMO" || item === "VIGENTE PRÉSTAMO" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
-        item === "ENTREGAR" || item === "REMATE"
+        item === "ENTREGAR" || item === "REMATE" || item === "FORMATO PRÉSTAMO"
     })
     const registerPermission = userPermisssions.includes("AGREGAR PRÉSTAMO");
     const updatePermission = userPermisssions.includes("ACTUALIZAR PRÉSTAMO");
@@ -281,7 +281,8 @@ const Prestamos = () => {
     const returnToPendingPermission = userPermisssions.includes("REGRESAR A PENDIENTE");
     const cancellationsPermission = userPermisssions.includes("CANCELACIONES");
     const rematePermission = userPermisssions.includes("REMATE");
-    const entregarPermission = userPermisssions.includes("REMATE");
+    const entregarPermission = userPermisssions.includes("ENTREGAR");
+    const formatoPrestamoPermission = userPermisssions.includes("FORMATO PRÉSTAMO");
 
     //funciones
     const handleSelectUpdate = () => {
@@ -398,6 +399,15 @@ const Prestamos = () => {
                 setResponseData({title:"Aviso", message:message});
                 setOpenResponseModal(true);
             }
+        } else {
+            setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleSelectFormato = () => {
+        if(elementSelected) {
+            history.push(`/formatoPrestamo/${elementSelected[0]}`);
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
@@ -842,6 +852,7 @@ const Prestamos = () => {
                                             { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
                                             { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
                                             { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}
+                                            { formatoPrestamoPermission && <Button onClick={handleSelectFormato}>FORMATO PRÉSTAMO</Button>}
                                         </Space>
                                     </div>
                                 </div>

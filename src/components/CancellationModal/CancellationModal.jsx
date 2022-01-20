@@ -35,9 +35,9 @@ const CancellationModal = (props) => {
     const userLogedIn = getUserData().c_codigousuario;
     //Logica tipo cancelacion
     const validacionesFuncion =  {
-        C: () => montoPrestamo.value === montoPrestamoCancelar.value ? "OK" : "Se debe cancelar el total del monto de préstamo",
-        A: () => (montoPrestamoCancelar.value < montoPrestamo.value && montoPrestamoCancelar.value > 0) ? "OK" : "El monto del préstamo a cancelar debe ser mayor a 0 y menor al monto prestado",
-        R: () => montoPrestamoCancelar.value === 0 ? "OK" : "El monto del préstamo a cancelar debe ser 0"
+        C: () => Number(montoPrestamo.value) === Number(montoPrestamoCancelar.value) ? "OK" : "Se debe cancelar el total del monto de préstamo",
+        A: () => (Number(montoPrestamoCancelar.value) < Number(montoPrestamo.value) && Number(montoPrestamoCancelar.value) > 0) ? "OK" : "El monto del préstamo a cancelar debe ser mayor a 0 y menor al monto prestado",
+        R: () => Number(montoPrestamoCancelar.value) === 0 ? "OK" : "El monto del préstamo a cancelar debe ser 0"
     }
 
     //validate
@@ -85,11 +85,14 @@ const CancellationModal = (props) => {
 
     const handleSaveCancellation = async () => {
         if(validate()) {
+            /*console.log('montoPrestamoCancelar.value', montoPrestamoCancelar.value);
+            console.log('montoPrestamo.value', montoPrestamo.value);
+            console.log('ASDAS', (montoPrestamoCancelar.value < montoPrestamo.value && montoPrestamoCancelar.value > 0))*/
             if(validacionesFuncion[tipoCancelacion]() === "OK" ) {
                 const body = prepareCancellation();
                 const response = await cancelarPrestamo(body)
                 if(response && response.status === 200) {
-                    handleClose();
+                    await handleClose();
                     setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
                     setOpenResponseModal(true);
                     getCancelaciones();

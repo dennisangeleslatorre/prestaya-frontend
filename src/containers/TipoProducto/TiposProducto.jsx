@@ -74,6 +74,7 @@ const TiposProducto = () => {
         {name:'c_tipoproducto', label: 'Tipo de producto', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:0 },
+        {name:'c_flagpeso', label: 'Peso', sortVar:0 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
@@ -130,6 +131,7 @@ const TiposProducto = () => {
             aux.c_tipoproducto = item.c_tipoproducto;
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
+            aux.c_flagpeso = item.c_flagpeso === "S" ? "OBLIGATORIO" : "NO OBLIGATORIO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";

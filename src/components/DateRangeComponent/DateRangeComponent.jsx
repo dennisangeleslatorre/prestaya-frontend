@@ -1,6 +1,7 @@
 import React from 'react'
 import { Checkbox } from 'antd';
 import { useEffect } from 'react';
+import moment from 'moment';
 
 const MessageComponent = ({message, classComponent}) => (
     <div className={classComponent}>
@@ -16,11 +17,14 @@ const DateRangeComponent = (props) => {
     }
 
     const validateRangeDate = () => {
-        const fechaInicio = new Date(state.fechaInicio).getTime();
+        /*const fechaInicio = new Date(state.fechaInicio).getTime();
         const fechaFin    = new Date(state.fechaFin).getTime();
-        const diff = fechaFin - fechaInicio;
+        const diff = fechaFin - fechaInicio;*/
+        const diff2 = moment(state.fechaFin).diff(moment(state.fechaInicio), 'days');
+        //console.log('diff', diff);
+        //console.log('diff2', diff2);
         //const diffDias = diff/(1000*60*60*24);
-        return diff;
+        return diff2;
     }
 
     const isValidFunction = (fechaInicio, fechaFin) => {

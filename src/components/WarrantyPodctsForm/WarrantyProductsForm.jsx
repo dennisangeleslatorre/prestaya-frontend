@@ -128,6 +128,8 @@ const WarrantyProductsForm = (props) => {
         const listProducts = productos.map((item, index) => {
             let aux = item;
             aux.key = index;
+            //console.log('allTiposProductos', allTiposProductos);
+            //console.log("asldasd", allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto));
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
             aux.n_linea = index+1;
             aux.n_cantidad = Number(item.n_cantidad).toFixed(0);

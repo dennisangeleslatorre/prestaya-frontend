@@ -13,12 +13,13 @@ const Cancelaciones = (props) => {
     //Estados del formulario
     const [isLoading, setIsLoading] = useState(false);
     const [fechaDesembolsoPrestamo, setFechaDesembolsoPrestamo] = useState("");
+    const [estadoPrestamo, setEstadoPrestamo] = useState("");
     const elementId = props.match.params.id;
     return (
         <>
             <FormContainer showButton={false} view={false} textButtonReturn="Ir Prestamos" goList={()=>history.push("/prestamos")}>
-                <FormDataPrestamo setIsLoading={setIsLoading} elementId={elementId} setFechaDesembolsoPrestamo={setFechaDesembolsoPrestamo}/>
-                <FormCancelaciones elementId={elementId} fechaDesembolsoPrestamo={fechaDesembolsoPrestamo}/>
+                <FormDataPrestamo setIsLoading={setIsLoading} elementId={elementId} setFechaDesembolsoPrestamo={setFechaDesembolsoPrestamo} setEstadoPrestamo={setEstadoPrestamo}/>
+                <FormCancelaciones elementId={elementId} fechaDesembolsoPrestamo={fechaDesembolsoPrestamo} estadoPrestamo={estadoPrestamo}/>
             </FormContainer>
             {isLoading === true && <Loading/>}
         </>

@@ -10,18 +10,26 @@ const WarrantyProductsModal = (props) => {
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState("");
+    const [tipoSelected, setTipoSelected] = useState({});
     const [unidadMedida, setUnidadMedida] = useState("");
     const [cantidad, setCantidad] = useState({value:1, isValid:null});
-    const [pesoBruto, setPesoBruto] = useState({value:"", isValid:null});
-    const [pesoNeto, setPesoNeto] = useState({value:"", isValid:null});
+    const [pesoBruto, setPesoBruto] = useState({value:"0", isValid:null});
+    const [pesoNeto, setPesoNeto] = useState({value:"0", isValid:null});
     const [observaciones, setObservaciones] = useState("");
     const [montoValorTotal, setMontoValorTotal] = useState({value:"", isValid:null});
-    const notification = {title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"};
+    const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
 
     const validate = () => {
-        if(!descripcion.value || !unidadMedida || !cantidad.value || !pesoBruto.value || !pesoNeto.value || !observaciones || !montoValorTotal.value || !tipo) return false;
+        if(!descripcion.value || !unidadMedida || !cantidad.value || !observaciones || !montoValorTotal.value || !tipo) return false;
         return true;
+    }
+
+    const validatePeso = () => {
+        if(tipoSelected.c_flagpeso === "S") {
+            if( pesoBruto.value && pesoNeto.value && Number(pesoBruto.value) > 0 && Number(pesoNeto.value) > 0) return true;
+            return false;
+        } return true;
     }
 
     const cleanProduct = () => {
@@ -30,8 +38,8 @@ const WarrantyProductsModal = (props) => {
         setDescripcion({value:"", isValid:null});
         setUnidadMedida("");
         setCantidad({value:1, isValid:null});
-        setPesoBruto({value:"", isValid:null});
-        setPesoNeto({value:"", isValid:null});
+        setPesoBruto({value:"0", isValid:null});
+        setPesoNeto({value:"0", isValid:null});
         setObservaciones("");
         setMontoValorTotal({value:"", isValid:null});
     }
@@ -52,10 +60,15 @@ const WarrantyProductsModal = (props) => {
 
     const handleAddProduct = () => {
         if(validate()) {
-            const product = prepareProduct();
-            let listProducts = [...productos, product];
-            setProductos(listProducts);
-            handleClose();
+            if(validatePeso()) {
+                const product = prepareProduct();
+                let listProducts = [...productos, product];
+                setProductos(listProducts);
+                handleClose();
+            } else {
+                setNotification({...notification, message:"Para este tipo el peso es obligatorio"})
+                setIsAlert(true);
+            }
         } else {
             setIsAlert(true);
         }
@@ -63,20 +76,25 @@ const WarrantyProductsModal = (props) => {
 
     const handleUpdateProduct = () => {
         if(validate()) {
-            let product = prepareProduct();
-            if(editProduct.n_linea) product.n_linea = editProduct.n_linea;
-            if(editProduct.c_usuarioregistro) {
-                const auxUpdatedList = [...warrantyProductUpdateList, editProduct.n_linea];
-                setWarrantyProductUpdateList(auxUpdatedList);
-                product.c_usuarioregistro = editProduct.c_usuarioregistro;
+            if(validatePeso()) {
+                let product = prepareProduct();
+                if(editProduct.n_linea) product.n_linea = editProduct.n_linea;
+                if(editProduct.c_usuarioregistro) {
+                    const auxUpdatedList = [...warrantyProductUpdateList, editProduct.n_linea];
+                    setWarrantyProductUpdateList(auxUpdatedList);
+                    product.c_usuarioregistro = editProduct.c_usuarioregistro;
+                }
+                if(editProduct.d_fecharegistro) product.d_fecharegistro = editProduct.d_fecharegistro;
+                if(editProduct.c_ultimousuario) product.c_ultimousuario = editProduct.c_ultimousuario;
+                if(editProduct.d_ultimafechamodificacion) product.d_ultimafechamodificacion = editProduct.d_ultimafechamodificacion;
+                let listProducts = [...productos];
+                listProducts[editProduct.index] = product;
+                setProductos(listProducts);
+                handleClose();
+            } else {
+                setNotification({...notification, message:"Para este tipo el peso es obligatorio"})
+                setIsAlert(true);
             }
-            if(editProduct.d_fecharegistro) product.d_fecharegistro = editProduct.d_fecharegistro;
-            if(editProduct.c_ultimousuario) product.c_ultimousuario = editProduct.c_ultimousuario;
-            if(editProduct.d_ultimafechamodificacion) product.d_ultimafechamodificacion = editProduct.d_ultimafechamodificacion;
-            let listProducts = [...productos];
-            listProducts[editProduct.index] = product;
-            setProductos(listProducts);
-            handleClose();
         } else {
             setIsAlert(true);
         }
@@ -102,6 +120,13 @@ const WarrantyProductsModal = (props) => {
             setMontoValorTotal({value:editProduct.n_montovalortotal, isValid:null});
         }
     }, [editProduct])
+
+    useEffect(() => {
+        if(tipo) {
+            const tipoAux = tiposProducto.find(item => item.c_tipoproducto === tipo);
+            setTipoSelected(tipoAux);
+        }
+    }, [tipo]);
 
     return (
         <Modal isOpen={isOpen} title="Producto" onClose={handleClose} modal_class="Modal__container__form">

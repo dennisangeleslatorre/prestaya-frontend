@@ -549,6 +549,12 @@ export const deleteCliente = async (body) => {
     return response;
 };
 //Prestamos
+export const obtenerDatosFormatoPrestamo = async (body) => {
+    console.log('---API--- : obtenerDatosFormatoPrestamo');
+    const url = `${port}/prestamo/obtenerDatosFormatoPrestamo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const getPrestamoByCodigoPrestamo = async (body) => {
     console.log('---API--- : getPrestamoByCodigoPrestamo');
     const url = `${port}/prestamo/getPrestamoByCodigoPrestamo`;
@@ -664,4 +670,9 @@ export const getProductosByPrestamo = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-//Cancelaciones
+export const getProductosByFormato = async (body) => {
+    console.log('---API--- : getProductosByFormato');
+    const url = `${port}/prestamoproducto/getProductosByFormato`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

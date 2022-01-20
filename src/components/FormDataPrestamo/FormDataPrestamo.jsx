@@ -22,7 +22,7 @@ const monedas = [
     { name: 'EXTERIOR', value: 'E' }
 ]
 
-const FormDataPrestamo = ({setIsLoading, elementId, setFechaDesembolsoPrestamo}) => {
+const FormDataPrestamo = ({setIsLoading, elementId, setFechaDesembolsoPrestamo, setEstadoPrestamo}) => {
     const [compania, setCompania] = useState("");
     const [nPrestamo, setNPrestamo] = useState({value:"", isValid:null});
     const [estado, setEstado] = useState("");
@@ -59,6 +59,7 @@ const FormDataPrestamo = ({setIsLoading, elementId, setFechaDesembolsoPrestamo})
         if(response.status === 200 && response.body && response.body.data) {
             const data = response.body.data;
             setFechaDesembolsoPrestamo(data.d_fechadesembolso);
+            setEstadoPrestamo(data.c_estado);
             //setAgencia(data.c_agencia);
             setCompania(data.c_compania);
             setNPrestamo({value:data.c_prestamo});
