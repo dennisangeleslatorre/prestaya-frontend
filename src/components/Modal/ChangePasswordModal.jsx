@@ -44,7 +44,7 @@ const ChangePasswordModal = (props) => {
                     placeholder="Nueva contraseña"
                     inputId="newPasswordId"
                     autoComplete="new-password"
-
+                    uppercaseOnly={false}
                 />
             </div>
             {/*Alerta*/}

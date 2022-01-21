@@ -676,3 +676,10 @@ export const getProductosByFormato = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//Reportes
+export const getReportesByPerfil = async (body) => {
+    console.log('---API--- : getReportesByPerfil');
+    const url = `${port}/reporte/getReportesByPerfil`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

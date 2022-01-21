@@ -11,7 +11,7 @@ import UserContext from '../../context/UserContext/UserContext'
 import Logo from '../../assets/images/logo_login.png'
 import './LoginStyles.css';
 //Servicio
-import { signIn } from '../../Api/Api';
+import { signIn, getReportesByPerfil } from '../../Api/Api';
 
 const Login = (props) => {
     //Estados
@@ -61,6 +61,15 @@ const Login = (props) => {
                 setIsAlert(true);
                 setErrorMessage(body.message);
             } else {
+                const response2 = await getReportesByPerfil({n_perfil: body.data.n_perfil});
+                let reportes = [];
+                if( response2 && response2.status === 200 ) {
+                    response2.body.data.forEach(item => {
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reportes.push('REPORTE RESUMIDO');
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reportes.push('REPORTE DETALLADO');
+                    });
+                }
+                body.data.reportes = reportes;
                 setUser(body.data);
                 setUserToken(body.token);
                 setIsAlert(false);
@@ -74,7 +83,8 @@ const Login = (props) => {
 
     useEffect(() => {
         if(user) {
-            handleSetData(user.a_paginas, user);
+            const keys = [...user.a_paginas, ...user.reportes];
+            handleSetData(keys, user);
         }
     }, [user])
 
@@ -109,6 +119,7 @@ const Login = (props) => {
                                             type="password"
                                             placeholder="Contraseña"
                                             inputId="passwordId"
+                                            uppercaseOnly={false}
                                         />
                                     </div>
                                     <div className="form-group text-center mt-4">

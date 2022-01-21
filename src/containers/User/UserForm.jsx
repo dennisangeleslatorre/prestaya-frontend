@@ -222,6 +222,7 @@ const UserForm = (props) => {
                     inputId="passwordId"
                     readOnly={readOnlyView}
                     autoComplete="new-password"
+                    uppercaseOnly={false}
                 />}
                 <SelectComponent
                     labelText="Estado"

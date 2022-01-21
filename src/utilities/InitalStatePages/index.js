@@ -47,8 +47,11 @@ import Prestamos from '../../containers/Prestamo/Prestamos'
 import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
 //FORMATO PRÉSTAMO
 import Contrato from '../../containers/Contrato/Contrato'
-//Cancelaciones
+//CANCELACIONES
 import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
+//REPORTE
+import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
+import ReporteResumido from '../../containers/Reporte/ReporteResumido'
 
 export default{
     initialPages: [
@@ -394,6 +397,16 @@ export default{
             path: '/cancelaciones/:id',
             exact: true,
             name: 'CANCELACIONES'
+        },{
+            component: ReporteDetallado,
+            path: '/reporteDetallado/:id',
+            exact: true,
+            name: 'REPORTE DETALLADO'
+        },{
+            component: ReporteResumido,
+            path: '/reporteResumido/:id',
+            exact: true,
+            name: 'REPORTE RESUMIDO'
         }
     ]
 }
