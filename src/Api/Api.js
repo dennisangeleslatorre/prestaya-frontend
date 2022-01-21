@@ -683,3 +683,9 @@ export const getReportesByPerfil = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getDataReporteResumidos = async (body) => {
+    console.log('---API--- : getDataReporteResumidos');
+    const url = `${port}/reporte/getDataReporteResumidos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
