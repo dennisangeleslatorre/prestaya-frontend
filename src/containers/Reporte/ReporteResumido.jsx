@@ -7,7 +7,9 @@ import SearcherComponent from '../../components/SearcherComponent/SearcherCompon
 import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
 import { listAllCompanias, getDataReporteResumidos } from '../../Api/Api'
+
 
 const columns = [
     {
@@ -57,6 +59,57 @@ const columns = [
     {
         title: 'Mnto. Total Cancelado',
         dataIndex: 'calc_sumamontototalcancelado'
+    },
+]
+
+const columnsExportExcel = [
+    {
+        label: 'Periodo',
+        value: row => (row.c_periodo || '')
+    },
+    {
+        label: 'Cliente',
+        value: row => (row.n_cliente || '')
+    },
+    {
+        label: 'Nombre Completo',
+        value: row => (row.c_nombrescompleto || '')
+    },
+    {
+        label: 'Moneda P.',
+        value: row => (row.c_monedaprestamo || '')
+    },
+    {
+        label: 'Monto Prestamo',
+        value: row => (row.calc_sumamontoprestamo || '')
+    },
+    {
+        label: 'Monto Intereses',
+        value: row => (row.calc_sumamontointereses || '')
+    },
+    {
+        label: 'Monto Total P.',
+        value: row => (row.calc_sumamontototalprestamo || '')
+    },
+    {
+        label: 'Monto Valor Prod.',
+        value: row => (row.calc_sumamontovalorproductos || '')
+    },
+    {
+        label: 'Interes Cancelado',
+        value: row => (row.calc_sumainterecamcelado || '')
+    },
+    {
+        label: 'Monto Prest. Cancelado',
+        value: row => (row.calc_montoprestamocancelado || '')
+    },
+    {
+        label: 'Mnto. Comision Canc.',
+        value: row => (row.calc_sumacomisioncancelada || '')
+    },
+    {
+        label: 'Mnto. Total Cancelado',
+        value: row => (row.calc_sumamontototalcancelado || '')
     },
 ]
 
@@ -121,7 +174,8 @@ const ReporteResumido = () => {
 
     const getDataForTable = (datos) => {
         const listAux = datos.map((item) => {
-            item.key = `${item.c_compania}-${item.n_cliente}-${item.c_monedaprestamo}`;
+            item.key = `${item.n_cliente}-${item.c_monedaprestamo}`;
+            item.periodo = item.periodo || "";
             return item;
         })
         setDataReportToTable(listAux);
@@ -131,27 +185,6 @@ const ReporteResumido = () => {
         const response = await listAllCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
     }
-
-    const handleSelectExcel = () => {
-        const dataToExcel = [];
-        dataReportToTable.forEach( item => {
-            let aux = {};
-            aux.Periodo = item.c_periodo;
-            aux.Cliente = item.n_cliente;
-            aux["Nombre Completo"] = item.c_nombrecompleto;
-            aux['Moneda P.'] = item.c_monedaprestamo;
-            aux['Monto Prestamo'] = item.calc_sumamontoprestamo;
-            aux['Monto Intereses'] = item.calc_sumamontointereses
-            aux['Monto Total P.'] = item.calc_sumamontototalprestamo;
-            aux['Monto Valor Prod.'] = item.calc_sumamontovalorproductos;
-            aux['Interes Cancelado'] = item.calc_sumainterecamcelado;
-            aux['Monto Prest. Cancelado'] = item.calc_montoprestamocancelado;
-            aux['Mnto. Comision Canc.'] = item.calc_sumacomisioncancelada;
-            aux['Mnto. Total Cancelado'] = item.calc_sumamontototalcancelado;
-            dataToExcel.push(aux);
-        });
-        console.log("Excel", dataToExcel);
-    };
 
     useEffect( async () => {
         await setIsLoading(true);
@@ -169,7 +202,6 @@ const ReporteResumido = () => {
             setNombreCliente(clienteSeleccionado.c_nombrescompleto);
         }
     }, [clienteSeleccionado])
-
 
     return (
         <>
@@ -220,9 +252,13 @@ const ReporteResumido = () => {
                 </div>
                 <div className="row">
                     <div className="col-12">
-                        <Divider />
                         <Space style={{ marginBottom: 16 }}>
-                            <Button onClick={handleSelectExcel}>EXCEL</Button>
+                            <ButtonDownloadExcel
+                                fileName="reporteResumido"
+                                sheet="reporte"
+                                columns={columnsExportExcel}
+                                content={dataReportToTable}
+                            />
                         </Space>
                     </div>
                 </div>

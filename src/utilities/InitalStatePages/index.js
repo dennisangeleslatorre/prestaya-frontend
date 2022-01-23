@@ -57,16 +57,16 @@ export default{
     initialPages: [
         {
             component: Home,
-            path: '/home',
+            path: '/inicio',
             exact: true,
-            name: 'HOME'
+            name: 'INICIO'
         }],
     allPages: [
         {
             component: Home,
-            path: '/home',
+            path: '/inicio',
             exact: true,
-            name: 'HOME'
+            name: 'INICIO'
         },{
             component: Perfiles,
             path: '/perfiles',
@@ -404,7 +404,7 @@ export default{
             name: 'REPORTE DETALLADO'
         },{
             component: ReporteResumido,
-            path: '/reporteResumido/:id',
+            path: '/reporteResumido',
             exact: true,
             name: 'REPORTE RESUMIDO'
         }

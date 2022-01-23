@@ -16,7 +16,7 @@ const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, update
     const menu = (
         <Menu key={`Menu${keyCodes.c_compania}${keyCodes.c_tipoperiodo}`}>
           { viewPermission && <Menu.Item key={`View${keyCodes.c_compania}${keyCodes.c_tipoperiodo}`} className="btn btn-info">
-            <Link to={`/visualizarPeriodo/${keyCodes.c_compania}-${keyCodes.c_tipoperiodo}`}>
+            <Link to={`/visualizarPeriodo/${keyCodes.c_compania}-${keyCodes.c_tipoperiodo}-${keyCodes.c_periodo}`}>
                 <Space direction="horizontal">
                     <Space wrap><i className="bi bi-eye"></i></Space>
                     <Space wrap>Visualizar</Space>
@@ -24,7 +24,7 @@ const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, update
             </Link>
           </Menu.Item>}
           { updatePermission && <Menu.Item key={`Edit${keyCodes.c_compania}${keyCodes.c_tipoperiodo}`} className="btn btn-warning">
-            <Link to={`/editarPeriodo/${keyCodes.c_compania}-${keyCodes.c_tipoperiodo}`}>
+            <Link to={`/editarPeriodo/${keyCodes.c_compania}-${keyCodes.c_tipoperiodo}-${keyCodes.c_periodo}`}>
                 <Space direction="horizontal">
                     <Space wrap><i className="bi bi-pencil"></i></Space>
                     <Space wrap>Editar</Space>
@@ -144,7 +144,7 @@ const Periodos = () => {
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
-            const keyCodes = { c_tipoperiodo: item.c_tipoperiodo, c_compania: item.c_compania }
+            const keyCodes = { c_tipoperiodo: item.c_tipoperiodo, c_compania: item.c_compania, c_periodo:item.c_periodo }
             aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;

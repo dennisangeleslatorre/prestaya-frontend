@@ -54,7 +54,7 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                 </SidebarHeader>
                 <SidebarContent>
                     <Menu iconShape="square">
-                        {pages.find((item)=> item.name === 'HOME') && <MenuItem onClick={() => changePage('HOME')} icon={<i className="bi bi-house-fill"></i>}>HOME<Link to="/home" /></MenuItem>}
+                        {pages.find((item)=> item.name === 'INICIO') && <MenuItem onClick={() => changePage('INICIO')} icon={<i className="bi bi-house-fill"></i>}>INICIO<Link to="/inicio" /></MenuItem>}
                         {commercialPages.length !== 0 && (
                             <SubMenu
                             icon={<i className="bi bi-wallet-fill"></i>}

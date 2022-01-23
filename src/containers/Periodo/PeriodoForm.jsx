@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 //Componentes
 import FormContainer from '../../components/FormContainer/FormContainer'
-import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
@@ -112,8 +111,8 @@ const PeriodoForm = (props) => {
     }
 
     const getData = async () => {
-        const [c_compania, c_tipoperiodo] = elementId.split('-');
-        const response = await getPeriodosByCodigoPeriodos({c_compania:c_compania, c_tipoperiodo:c_tipoperiodo});
+        const [c_compania, c_tipoperiodo, c_periodo] = elementId.split('-');
+        const response = await getPeriodosByCodigoPeriodos({c_compania:c_compania, c_tipoperiodo:c_tipoperiodo, c_periodo:c_periodo});
         if(response.status === 200) {
             const data = response.body.data;
             setCompania(data.c_compania);

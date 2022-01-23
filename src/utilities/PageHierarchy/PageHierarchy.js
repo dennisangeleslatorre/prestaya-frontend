@@ -1,8 +1,8 @@
 const pagesArray = [
     {
-        title: 'HOME',
-        value: 'HOME',
-        key: 'HOME',
+        title: 'INICIO',
+        value: 'INICIO',
+        key: 'INICIO',
         disabled: true
     },{
         title: 'COMERCIAL',

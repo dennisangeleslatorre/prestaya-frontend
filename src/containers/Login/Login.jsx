@@ -28,7 +28,7 @@ const Login = (props) => {
     const isAuth = getUserAuth();
     let history = useHistory();
     const { changePages } = props;
-    const goToProfile = () => { history.push('/home') } ;
+    const goToProfile = () => { history.push('/inicio') } ;
 
     const handleSetData = (keys, user) => {
         login(() => {
@@ -89,7 +89,7 @@ const Login = (props) => {
     }, [user])
 
     return (
-        isAuth ? <Redirect to='/home' /> : <>
+        isAuth ? <Redirect to='/inicio' /> : <>
             <div className="justify-content-center" >
                 <div className="container">
                     <div className="row justify-content-center">
