@@ -3,6 +3,7 @@ import { PDFViewer  } from "@react-pdf/renderer"
 import ContratoPDFComponent from '../../components/ContratoPDFComponent/ContratoPDFComponent'
 import Loading from '../../components/Modal/LoadingModal'
 import { obtenerDatosFormatoPrestamo, getProductosByFormato, listParametrosByCompania, getCompaniaByCodigoCompania } from '../../Api/Api'
+import { Link } from 'react-router-dom'
 
 const Contrato = (props) => {
     const elementId = props.match.params.id;
@@ -52,12 +53,17 @@ const Contrato = (props) => {
     return (
         <>
             <div className="row">
+                <div className="col-12 text-center mb-3">
+                    <Link to='/prestamos' className={`btn btn-info mr-4`}>
+                        Ir a Préstamos
+                    </Link>
+                </div>
                 {element.prestamo && <PDFViewer
                     className="col-12"
                     style={{height: "800px"}}
                     children={<ContratoPDFComponent element={element}/>}
                 />}
-                {(!element.prestamo && !isLoading) && <h2>No se encontró el préstamo</h2>}
+                {(!element.prestamo && !isLoading) && <h2 className='text-center'>No se encontró el préstamo</h2>}
             </div>
             {isLoading === true && <Loading/>}
         </>

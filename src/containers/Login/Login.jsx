@@ -32,6 +32,7 @@ const Login = (props) => {
 
     const handleSetData = (keys, user) => {
         login(() => {
+            window.location.reload(true);
             goToProfile();
             //Seteo las paginas con las llaves que tengo
             setPagesForUser(keys);

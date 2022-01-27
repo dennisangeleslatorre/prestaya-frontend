@@ -11,6 +11,7 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getClienteDinamico, deleteCliente } from '../../Api/Api'
@@ -120,6 +121,7 @@ const Clientes = () => {
     const [openSearchModal, setOpenSearchModal] = useState(false);
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
+    const { setParamsForFilterCliente, getParamsForFilterCliente } = useContext(FiltersContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "ACTUALIZAR CLIENTE" || item === "AGREGAR CLIENTE" || item === "VISUALIZAR CLIENTE" || item === "ELIMINAR CLIENTE"
     })
@@ -198,10 +200,13 @@ const Clientes = () => {
         return body;
     }
 
-    const onHandleSearch = async () => {
-        let parametros = prepareBodyToSearch();
+    const onHandleSearch = async (parametrosIniciales) => {
+        let parametros = parametrosIniciales ? parametrosIniciales : prepareBodyToSearch();
         const response = await getClienteDinamico(parametros);
-        if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) {
+            getDataForTable(response.body.data);
+            setParamsForFilterCliente(parametros);
+        }
         else getDataForTable([]);
     }
 
@@ -215,9 +220,9 @@ const Clientes = () => {
         const listAux = clientes.map((item) => {
             item.key = `${item.c_compania}-${item.n_cliente}`;
             item.d_fechaInicioOperaciones = moment(item.d_fechaInicioOperaciones).format('DD/MM/yyyy');
-            item.d_fechaInactivacion = moment(item.d_fechaInactivacion).format('DD/MM/yyyy HH:MM:ss');
-            item.d_fecharegistro = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss');
-            item.d_ultimafechamodificacion = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:MM:ss');
+            item.d_fechaInactivacion = item.d_fechaInactivacion ? moment(item.d_fechaInactivacion).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fecharegistro = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss');
+            item.d_ultimafechamodificacion = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss');
             return item;
         })
         setClientsToTable(listAux);
@@ -244,6 +249,19 @@ const Clientes = () => {
         }
     }
 
+    const getLastSearch = async () => {
+        const parametros = getParamsForFilterCliente();
+        if( parametros && Object.keys(parametros).length !== 0 ) {
+            await onHandleSearch(parametros);
+            if(parametros.c_compania) setCompania(parametros.c_compania);
+            if(parametros.n_cliente) setCodigoCliente(parametros.n_cliente);
+            if(parametros.c_estado) setEstado(parametros.c_estado);
+            if(parametros.c_tipodocumento) setTipoDocumento(parametros.c_tipodocumento);
+            if(parametros.c_numerodocumento) setNumeroDocumento({value:parametros.c_numerodocumento});
+        }
+        console.log("parametros", parametros);
+    };
+
     useEffect(() => {
         if(companias.length !== 0) setCompania(companias[0].c_compania);
     }, [companias])
@@ -259,6 +277,7 @@ const Clientes = () => {
         await setIsLoading(true);
         await getCompanias();
         await getTiposDocumentos();
+        await getLastSearch();
         setIsLoading(false);
     }, [])
 
@@ -349,7 +368,7 @@ const Clientes = () => {
                                 <div className="row">
                                     <div className="col">
                                         <Divider />
-                                        <Space style={{ marginBottom: 16 }}>
+                                        <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                                             {registerPermission && <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>}
                                             {updatePermission && <Button onClick={handleSelectUpdate}>Modificar</Button>}
                                             {viewPermission && <Button onClick={handleSelectView}>Visualizar</Button>}

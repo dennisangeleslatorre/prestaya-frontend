@@ -5,7 +5,7 @@ import useWindowsDimensions from '../../hooks/useWindowDimension'
 import './Layout.css'
 
 const Layout = (props) => {
-    const [ isVisible, setIsVisible ] = useState(false);
+    const [ isVisible, setIsVisible ] = useState(true);
     const showSidebar = () => setIsVisible(!isVisible);
     const { height, width } = useWindowsDimensions();
 

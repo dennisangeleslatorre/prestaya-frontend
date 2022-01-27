@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'antd'
 let xlsx = require('json-as-xlsx')
 
 const ButtonDownloadExcel = (props) => {
@@ -31,7 +32,7 @@ const ButtonDownloadExcel = (props) => {
     }
 
     return (
-        <button type="button" onClick={ExportToExcel}>Export To XLSX</button>
+        <Button onClick={ExportToExcel}>Export To XLSX</Button>
     )
 };
 

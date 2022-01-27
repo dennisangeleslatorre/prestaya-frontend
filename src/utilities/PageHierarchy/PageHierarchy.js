@@ -99,6 +99,14 @@ const pagesArray = [
                                 title: 'ANULAR CANCELACIÓN',
                                 value: 'ANULAR CANCELACIÓN',
                                 key: 'ANULAR CANCELACIÓN'
+                            },{
+                                title: 'REGRESAR DE ENTREGA',
+                                value: 'REGRESAR DE ENTREGA',
+                                key: 'REGRESAR DE ENTREGA'
+                            },{
+                                title: 'REGRESAR DE REMATE',
+                                value: 'REGRESAR DE REMATE',
+                                key: 'REGRESAR DE REMATE'
                             }
                         ]
                     }

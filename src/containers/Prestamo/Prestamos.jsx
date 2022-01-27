@@ -12,6 +12,8 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
+import UserContext from '../../context/UserContext/UserContext'
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
@@ -248,6 +250,8 @@ const Prestamos = () => {
     const [enabledFechaCancelacion, setEnabledFechaCancelacion] = useState(true);
     const [fechaEntrega, setFechaEntrega] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [enabledFechaEntrega, setEnabledFechaEntrega] = useState(true);
+    const [fechaVencimientoRepro, setFechaVencimientoRepro] = useState({fechaInicio: "", fechaFin: "", isValid: false});
+    const [enabledFechaVencimientoRepro, setEnabledFechaVencimientoRepro] = useState(true);
     //Estado de los Componentes
     const [paises, setPaises] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
@@ -267,7 +271,11 @@ const Prestamos = () => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     //Contexto
+    //Contextos
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     const { getPagesKeysForUser } = useContext(PagesContext);
+    const { setParamsForFilterPrestamo, getParamsForFilterPrestamo } = useContext(FiltersContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "ACTUALIZAR PRÉSTAMO" || item === "AGREGAR PRÉSTAMO" || item === "VISUALIZAR PRÉSTAMO" ||
         item === "ANULAR PRÉSTAMO" || item === "VIGENTE PRÉSTAMO" || item === "REGRESAR A PENDIENTE" || item === "CANCELACIONES" ||
@@ -309,7 +317,6 @@ const Prestamos = () => {
 
     const handleSelectVigente = () => {
         if(elementSelected) {
-            console.log("Vigente", elementSelected[0]);
             if(elementSelectedRows[0].c_estado === "PE") history.push(`/vigentePrestamo/${elementSelected[0]}`);
             else {
                 setResponseData({title:"Aviso", message:"El estado del préstamo debe ser pendiente."})
@@ -334,7 +341,8 @@ const Prestamos = () => {
         }
     }
 
-    const handleSelectReturnVigente = async () => {
+    const handleSelectRetornarPendiente = async () => {
+        setIsLoading(true);
         if(elementSelected) {
             const [c_compania, c_prestamo] = elementSelected[0].split("-");
             const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
@@ -349,16 +357,18 @@ const Prestamos = () => {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
+        setIsLoading(false);
     }
 
-    const handleReturnVigente = async () => {
+    const handleRetornarPendiente = async () => {
         await setOpen(false);
         await setIsLoading(true);
         const [c_compania, c_prestamo] = elementSelected[0].split("-");
-        const response = await retornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
+        const response = await retornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo, c_usuarioretornarpendiente:userLogedIn});
         if(response && response.status === 200) {
             await onHandleSearch();
             setResponseData( {title: "Operación exitosa", message: "Se realizó la operación con éxito el cliente." });
+            setElementSelectedRows({...elementSelectedRows, c_estado:'PE'})
         } else {
             setResponseData( {title: "Error en la operación", message: response.message || "No se pudo realizar la operación" });
         }
@@ -447,42 +457,49 @@ const Prestamos = () => {
         if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
         if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
         if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
-        if(fechaDesembolso.isValid && enabledFechaDesembolso) {
+        if(fechaDesembolso.isValid && !enabledFechaDesembolso) {
             body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
             body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
         }
-        if(fechaRegistro.isValid && enabledFechaRegistro) {
+        if(fechaRegistro.isValid && !enabledFechaRegistro) {
             body.d_fecharegistroinicio = fechaRegistro.fechaInicio;
             body.d_fecharegistrofin = fechaRegistro.fechaFin;
         }
-        if(fechaVigencia.isValid && enabledFechaVigencia) {
+        if(fechaVigencia.isValid && !enabledFechaVigencia) {
             body.d_fechavigenteinicio = fechaVigencia.fechaInicio;
             body.d_fechavigentefin = fechaVigencia.fechaFin;
         }
-        if(fechaRemate.isValid && enabledFechaRemate) {
+        if(fechaRemate.isValid && !enabledFechaRemate) {
             body.d_fechaRemateinicio = fechaRemate.fechaInicio;
             body.d_fechaRematefin = fechaRemate.fechaFin;
         }
-        if(fechaVencimiento.isValid && enabledFechaVencimiento) {
+        if(fechaVencimiento.isValid && !enabledFechaVencimiento) {
             body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
             body.d_fechavencimientofin = fechaVencimiento.fechaFin;
         }
-        if(fechaCancelacion.isValid && enabledFechaCancelacion) {
+        if(fechaCancelacion.isValid && !enabledFechaCancelacion) {
             body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
             body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
         }
-        if(fechaEntrega.isValid && enabledFechaEntrega) {
+        if(fechaEntrega.isValid && !enabledFechaEntrega) {
             body.d_fechaentregainicio = fechaEntrega.fechaInicio;
             body.d_fechaentregafin = fechaEntrega.fechaFin;
+        }
+        if(fechaVencimientoRepro.isValid && !enabledFechaVencimientoRepro) {
+            body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
+            body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
         console.log('body', body)
         return body;
     }
 
-    const onHandleSearch = async () => {
-        let parametros = prepareBodyToSearch();
+    const onHandleSearch = async (parametrosIniciales) => {
+        let parametros = parametrosIniciales ? parametrosIniciales : prepareBodyToSearch();
         const response = await getPrestamoDinamico(parametros);
-        if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) {
+            getDataForTable(response.body.data);
+            setParamsForFilterPrestamo(parametros);
+        }
         else getDataForTable([]);
     }
 
@@ -497,13 +514,13 @@ const Prestamos = () => {
             item.key = `${item.c_compania}-${item.c_prestamo}`;
             item.estadoName = estados.find(estado => estado.value === item.c_estado).name;
             item.c_monedaprestamo = monedas.find(moneda => moneda.value === item.c_monedaprestamo).name;
-            item.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechavigente = item.d_fechavigente ? moment(item.d_fechavigente).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy HH:MM:ss') : "";
-            item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:MM:ss') : "";
+            item.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechavigente = item.d_fechavigente ? moment(item.d_fechavigente).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
             return item;
         })
         setPrestamosToTable(listAux);
@@ -548,6 +565,58 @@ const Prestamos = () => {
         const response = await listAllDistritos();
         if(response && response.status === 200) setDistritos(response.body.data);
     }
+
+    const getLastSearch = async () => {
+        const parametros = getParamsForFilterPrestamo();
+        if( parametros && Object.keys(parametros).length !== 0 ) {
+            await onHandleSearch(parametros);
+            if(parametros.c_compania) setCompania(parametros.c_compania);
+            if(parametros.c_prestamo) setNPrestamo({value:parametros.c_prestamo});
+            if(parametros.n_cliente) setCodigoCliente(parametros.n_cliente);
+            if(parametros.c_estado) setEstado(parametros.c_estado);
+            if(parametros.c_tipodocumento) setTipoDocumento(parametros.c_tipodocumento);
+            if(parametros.c_numerodocumento) setNumeroDocumento({value:parametros.c_numerodocumento});
+            if(parametros.esVencido) setEsVencido(parametros.esVencido);
+            if(parametros.c_paiscodigo) setPaisCodigo(parametros.c_paiscodigo);
+            if(parametros.c_despartamentocodigo) setDepartamentoCodigo(parametros.c_despartamentocodigo);
+            if(parametros.c_provinciacodigo) setProvinciaCodigo(parametros.c_provinciacodigo);
+            if(parametros.c_distritocodigo) setDistritoCodigo(parametros.c_distritocodigo);
+            if(parametros.d_fechadesembolsoinicio && parametros.d_fechadesembolsofin) {
+                setFechaDesembolso({fechaInicio: parametros.d_fechadesembolsoinicio, fechaFin: parametros.d_fechadesembolsofin, isValid:true});
+                setEnabledFechaDesembolso(false);
+            }
+            if(parametros.d_fecharegistroinicio && parametros.d_fecharegistrofin) {
+                setFechaRegistro({fechaInicio: parametros.d_fecharegistroinicio, fechaFin: parametros.d_fecharegistrofin, isValid:true});
+                setEnabledFechaRegistro(false);
+            }
+            if(parametros.d_fechavigenteinicio && parametros.d_fechavigentefin) {
+                setFechaVigencia({fechaInicio: parametros.d_fechavigenteinicio, fechaFin: parametros.d_fechavigentefin, isValid:true});
+                setEnabledFechaVigencia(false);
+            }
+            if(parametros.d_fechaRemateinicio && parametros.d_fechaRematefin) {
+                setFechaRemate({fechaInicio: parametros.d_fechaRemateinicio, fechaFin: parametros.d_fechaRematefin, isValid:true});
+                setEnabledFechaRemate(false);
+            }
+            if(parametros.d_fechavencimientoinicio && parametros.d_fechavencimientofin) {
+                setFechaVencimiento({fechaInicio: parametros.d_fechavencimientoinicio, fechaFin: parametros.d_fechavencimientofin, isValid:true});
+                setEnabledFechaVencimiento(false);
+            }
+            if(parametros.d_fechacancelacioninicio && parametros.d_fechacancelacionfin) {
+                setFechaCancelacion({fechaInicio: parametros.d_fechacancelacioninicio, fechaFin: parametros.d_fechacancelacionfin, isValid:true});
+                setEnabledFechaCancelacion(false);
+            }
+            if(parametros.d_fechaentregainicio && parametros.d_fechaentregafin) {
+                setFechaEntrega({fechaInicio: parametros.d_fechaentregainicio, fechaFin: parametros.d_fechaentregafin, isValid:true});
+                setEnabledFechaEntrega(false);
+            }
+            if(parametros.d_fvencimientoreproinicio && parametros.d_fvencimientoreprofin) {
+                setFechaVencimientoRepro({fechaInicio: parametros.d_fvencimientoreproinicio, fechaFin: parametros.d_fvencimientoreprofin, isValid:true});
+                setEnabledFechaVencimientoRepro(false);
+            }
+
+        }
+        console.log("parametros", parametros);
+    };
 
     //Efectos
     //Listas enlazadas
@@ -601,6 +670,7 @@ const Prestamos = () => {
         await getDepartamentos();
         await getProvincias();
         await getDistritos();
+        await getLastSearch();
         setIsLoading(false);
     }, [])
 
@@ -834,6 +904,17 @@ const Prestamos = () => {
                                             marginForm="ml-0"
                                             labelSpace={3}
                                         />
+                                        <DateRangeComponent
+                                            inputId="fechaVencimientoReproId"
+                                            labelText="F. Vcto. Reprog."
+                                            state={fechaVencimientoRepro}
+                                            setState={setFechaVencimientoRepro}
+                                            enabled={enabledFechaVencimientoRepro}
+                                            setEnabled={setEnabledFechaVencimientoRepro}
+                                            classForm="col-12 col-md-6"
+                                            marginForm="ml-0"
+                                            labelSpace={3}
+                                        />
                                     </div>
                                     <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                                         <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
@@ -842,13 +923,13 @@ const Prestamos = () => {
                                 <div className="row">
                                     <div className="col">
                                         <Divider />
-                                        <Space style={{ marginBottom: 16 }}>
+                                        <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                                             { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>NUEVO</Button>}
                                             { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
                                             { currentPermission && <Button onClick={handleSelectVigente}>VIGENTE</Button>}
-                                            { returnToPendingPermission && <Button onClick={handleSelectReturnVigente}>REGRESAR A PENDIENTE</Button>}
+                                            { returnToPendingPermission && <Button onClick={handleSelectRetornarPendiente}>REGRESAR A PENDIENTE</Button>}
                                             { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
                                             { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
                                             { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}
@@ -881,7 +962,7 @@ const Prestamos = () => {
                 onClose={()=>setOpen(false)}
                 title={"Aviso de retorno"}
                 message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
-                onHandleFunction={()=>handleReturnVigente()}
+                onHandleFunction={()=>handleRetornarPendiente()}
                 buttonClass="btn-success"
             />
             <ResponseModal

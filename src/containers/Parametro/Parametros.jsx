@@ -145,9 +145,9 @@ const Parametros = () => {
             aux.valor = item[tipoValor[item.c_tipovalor]];
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss') : "";
+            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss') : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:MM:ss') : "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss') : "";
             const keyCodes = { c_parametrocodigo: item.c_parametrocodigo, c_compania: item.c_compania }
             aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);

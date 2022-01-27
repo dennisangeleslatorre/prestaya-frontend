@@ -89,12 +89,18 @@ const PrestamoForm = (props) => {
     const [fechaRegistro, setFechaRegistro] = useState("");
     const [ultimoUsuario, setUltimoUsuario] = useState("");
     const [fechaModificacion, setFechaModificacion] = useState("");
+    const [usuarioVigente, setUsuarioVigente] = useState("");
+    const [fechaVigente, setFechaVigente] = useState("");
+    const [usuarioCancelacion, setUsuarioCancelacion] = useState("");
+    const [fechaCancelacion, setFechaCancelacion] = useState("");
     const [usuarioEntrega, setUsuarioEntrega] = useState("");
     const [fechaEntregaUS, setFechaEntregaUS] = useState("");
     const [usuarioRemate, setUsuarioRemate] = useState("");
     const [fechaRemateUS, setFechaRemateUS] = useState("");
     const [usuarioAnulacion, setUsuarioAnulacion] = useState("");
     const [fechaAnulacion, setFechaAnulacion] = useState("");
+    const [usuarioRetornarPendiente, setUsuarioRetornarPendiente] = useState("");
+    const [fechaRetornarPendiente, setFechaRetornarPendiente] = useState("");
     //Listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -124,7 +130,6 @@ const PrestamoForm = (props) => {
     const buttonTypes = {
         nuevoPrestamo: {label:"Guardar", class:"btn btn-primary btn-form"},
         editarPrestamo: {label:"Actualizar", class:"btn btn-warning btn-form"},
-        visualizarPrestamo: {label:"Ir a lista", class:"btn btn-info btn-form"},
         anularPrestamo: {label:"Anular", class:"btn btn-danger btn-form"},
         vigentePrestamo: {label:"Guardar vigente", class:"btn btn-primary btn-form"},
         entregarPrestamo: {label:"Entregar", class:"btn btn-primary btn-form"},
@@ -263,7 +268,7 @@ const PrestamoForm = (props) => {
         data.c_prestamo = nPrestamo.value;
         //Separar entre productos nuevos y actualizados
         const {createdItems, updatedItems} = setCreatedAndUpdatedItems(productos);
-        if( await validateWithServices()) {
+       if( await validateWithServices()) {
             const nuevosProductosGarantia = createdItems.length !== 0 ? prepareProducts(createdItems) : "";
             const actulizarProductosGarantia = updatedItems.length !== 0 ? prepareProductsToUpdate(updatedItems) : "";
             const eliminarProductosGarntia = warrantyProductRemovalList.length !== 0 ? warrantyProductRemovalList.map(item => `'${item}'`).reduce((acc, cv) => `${acc},${cv}`) : "";
@@ -378,8 +383,6 @@ const PrestamoForm = (props) => {
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
-        } else {
-            history.push("/prestamos")
         }
     }
 
@@ -429,34 +432,36 @@ const PrestamoForm = (props) => {
             //Vigente
             setObservacionesVigencia(data.c_observacionesvigente || "");
             //Auditoria
-            //data.c_usuarioregistro
-            //data.c_usuarioregistro
             setUsuarioRegistro(data.c_usuarioregistro);
-            setFechaRegistro(moment(data.d_fecharegistro).format('DD/MM/yyy'));
+            setFechaRegistro(moment(data.d_fecharegistro).format('DD/MM/yyy HH:mm:ss'));
             //data.c_ultimousuario
             //data.d_ultimafechamodificacion
             setUltimoUsuario(data.c_ultimousuario);
-            setFechaModificacion(moment(data.d_ultimafechamodificacion).format('DD/MM/yyy'));
-            //data.c_usuarioregpendiente
-            //data.d_fecharegpendiente
-
+            setFechaModificacion(moment(data.d_ultimafechamodificacion).format('DD/MM/yyy HH:mm:ss'));
+            //data.c_usuarioretornarpendiente
+            //data.d_fecharetornarpendiente
+            setUsuarioRetornarPendiente(data.c_usuarioretornarpendiente);
+            if(data.d_fecharetornarpendiente) setFechaRetornarPendiente(moment(data.d_fecharetornarpendiente).format('DD/MM/yyy HH:mm:ss'));
             //data,c_usuariovigente
             //data.d_fechavigente
-
+            setUsuarioVigente(data.c_usuariovigente);
+            if(data.d_fechavigente) setFechaVigente(moment(data.d_fechavigente).format('DD/MM/yyy HH:mm:ss'));
             //data.c_usuarioEntrega
             //data.d_fechaEntregaUS
             setUsuarioEntrega(data.c_usuarioEntrega);
-            if(data.d_fechaEntregaUS) setFechaEntregaUS(moment(data.d_fechaEntregaUS).format('DD/MM/yyy'));
+            if(data.d_fechaEntregaUS) setFechaEntregaUS(moment(data.d_fechaEntregaUS).format('DD/MM/yyy HH:mm:ss'));
             //data.c_usuarioRemate
             //data.d_fechaRemateUS
             setUsuarioRemate(data.c_usuarioRemate);
-            if(data.d_fechaRemateUS) setFechaRemateUS(moment(data.d_fechaRemateUS).format('DD/MM/yyy'));
+            if(data.d_fechaRemateUS) setFechaRemateUS(moment(data.d_fechaRemateUS).format('DD/MM/yyy HH:mm:ss'));
             //data.c_usuarioanulacion
             //data.d_fechaanulacion
             setUsuarioAnulacion(data.c_usuarioanulacion);
-            if(data.d_fechaanulacion) setFechaAnulacion(moment(data.d_fechaanulacion).format('DD/MM/yyy'));
+            if(data.d_fechaanulacion) setFechaAnulacion(moment(data.d_fechaanulacion).format('DD/MM/yyy HH:mm:ss'));
             //data.c_usuariocancelacion
             //data.d_fechacancelacion
+            setUsuarioCancelacion(data.c_usuariocancelacion);
+            if(data.d_fechacancelacion) setFechaCancelacion(moment(data.d_fechacancelacion).format('DD/MM/yyy HH:mm:ss'));
 
             const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
             if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) setProductos(responseProducts.body.data);
@@ -593,8 +598,8 @@ const PrestamoForm = (props) => {
 
     return (
         <>
-            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
-            goList={()=>history.push("/prestamos")} view={false}>
+            <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification} showButton={urlFragment !== 'visualizarPrestamo'}
+            goList={()=>history.push(`/prestamos`)} view={false}>
                 <div className="row">
                     <ReactSelect
                         inputId="companiaCodeId"
@@ -988,12 +993,18 @@ const PrestamoForm = (props) => {
                         d_fecharegistro={fechaRegistro}
                         c_ultimousuario={ultimoUsuario}
                         d_ultimafechamodificacion={fechaModificacion}
+                        c_usuariovigente={usuarioVigente}
+                        d_fechavigente={fechaVigente}
+                        c_usuariocancelacion={usuarioCancelacion}
+                        d_fechacancelacion={fechaCancelacion}
                         c_usuarioEntrega={usuarioEntrega}
                         d_fechaEntregaUS={fechaEntregaUS}
                         c_usuarioRemate={usuarioRemate}
                         d_fechaRemateUS={fechaRemateUS}
                         c_usuarioanulacion={usuarioAnulacion}
                         d_fechaanulacion={fechaAnulacion}
+                        usuarioRetornarPendiente={usuarioRetornarPendiente}
+                        fechaRetornarPendiente={fechaRetornarPendiente}
                     />
                 </div>
             </FormContainer>

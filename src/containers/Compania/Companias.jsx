@@ -149,9 +149,9 @@ const Companias = () => {
             aux.c_distritocodigo = item.c_distritocodigo;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.actions = (<DropdownButton c_compania={item.c_compania} showDeleteModal={()=>showDeleteModal(item.c_compania)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;

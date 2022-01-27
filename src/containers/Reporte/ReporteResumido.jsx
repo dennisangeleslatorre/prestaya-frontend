@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Divider, Space, Button } from 'antd'
+import { Table, Space } from 'antd'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
@@ -8,8 +8,7 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
-import { listAllCompanias, getDataReporteResumidos } from '../../Api/Api'
-
+import { listAllCompanias, getDataReporteResumidos, getClienteByCodigoCliente } from '../../Api/Api'
 
 const columns = [
     {
@@ -142,6 +141,8 @@ const ReporteResumido = () => {
             } else {
                 setResponseData({title:"Aviso", message:"No hay un cliente con ese código"});
                 setCodigoCliente("");
+                setNombreCliente("");
+                setClienteSeleccionado({});
                 setOpenResponseModal(true);
             }
         }
@@ -159,10 +160,40 @@ const ReporteResumido = () => {
         return body;
     }
 
+    const prepareDataResumen = (data) => {
+        let elements = {};
+        data.forEach(item => {
+            if( !elements[`${item.periodo}-${item.cliente}-${item.moneda}`]){
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`] = {
+                    c_periodo: item.periodo,
+                    n_cliente: item.cliente,
+                    c_nombrescompleto: item.clientenombre,
+                    c_monedaprestamo: item.moneda === 'L' ? 'LOCAL' : 'EXTERIOR'
+                }
+            }
+            if(item.d_fechadesembolso) {
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumamontoprestamo = item.calc_sumamontoprestamo;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumamontointereses = item.calc_sumamontointereses;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumamontototalprestamo = item.calc_sumamontototalprestamo;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumamontovalorproductos = item.calc_sumamontovalorproductos;
+            } else {
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumainterecamcelado = item.calc_sumainterecamcelado;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_montoprestamocancelado = item.calc_montoprestamocancelado;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumacomisioncancelada = item.calc_sumacomisioncancelada;
+                elements[`${item.periodo}-${item.cliente}-${item.moneda}`].calc_sumamontototalcancelado = item.calc_sumamontototalcancelado;
+            }
+        })
+        return Object.values(elements);
+    };
+
     const onHandleSearch = async () => {
         let parametros = prepareBodyToSearch();
         const response = await getDataReporteResumidos(parametros);
-        if(response && response.status === 200 && response.body.data) getDataForTable(response.body.data);
+        if(response && response.status === 200 && response.body.data) {
+            const data = response.body.data;
+            const dataResumen = prepareDataResumen(data);
+            getDataForTable(dataResumen);
+        }
         else getDataForTable([]);
     }
 
@@ -174,7 +205,7 @@ const ReporteResumido = () => {
 
     const getDataForTable = (datos) => {
         const listAux = datos.map((item) => {
-            item.key = `${item.n_cliente}-${item.c_monedaprestamo}`;
+            item.key = `${item.c_periodo}-${item.n_cliente}-${item.c_monedaprestamo}`;
             item.periodo = item.periodo || "";
             return item;
         })
@@ -202,6 +233,10 @@ const ReporteResumido = () => {
             setNombreCliente(clienteSeleccionado.c_nombrescompleto);
         }
     }, [clienteSeleccionado])
+
+    /*const onSelectPdf = () => {
+        
+    };*/
 
     return (
         <>

@@ -46,3 +46,11 @@
 .container-fluid {
     overflow-x: hidden;
 }
+
+.pro-sidebar-content {
+    overflow-y: auto;
+}
+
+.pro-item-content {
+    white-space: inherit !important;
+}

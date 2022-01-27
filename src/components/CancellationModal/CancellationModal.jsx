@@ -85,9 +85,6 @@ const CancellationModal = (props) => {
 
     const handleSaveCancellation = async () => {
         if(validate()) {
-            /*console.log('montoPrestamoCancelar.value', montoPrestamoCancelar.value);
-            console.log('montoPrestamo.value', montoPrestamo.value);
-            console.log('ASDAS', (montoPrestamoCancelar.value < montoPrestamo.value && montoPrestamoCancelar.value > 0))*/
             if(validacionesFuncion[tipoCancelacion]() === "OK" ) {
                 const body = prepareCancellation();
                 const response = await cancelarPrestamo(body)
@@ -97,8 +94,9 @@ const CancellationModal = (props) => {
                     setOpenResponseModal(true);
                     getCancelaciones();
                 } else {
-                    setIsAlert(true);
-                    setNotification({...notification, message:"Error al consumir el servicio"})
+                    await handleClose();
+                    setResponseData({title:"Error", message:response.message});
+                    setOpenResponseModal(true);
                 }
             } else {
                 setNotification({...notification, message:validacionesFuncion[tipoCancelacion]()})

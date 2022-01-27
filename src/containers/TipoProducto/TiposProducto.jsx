@@ -133,9 +133,9 @@ const TiposProducto = () => {
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_flagpeso = item.c_flagpeso === "S" ? "OBLIGATORIO" : "NO OBLIGATORIO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.actions = (<DropdownButton c_tipoproducto={item.c_tipoproducto} showDeleteModal={()=>showDeleteModal(item.c_tipoproducto)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);
             return aux;

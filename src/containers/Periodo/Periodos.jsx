@@ -139,11 +139,11 @@ const Periodos = () => {
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ABIERTO" : "CERRADO";
             aux.c_usuariocierre = item.c_usuariocierre || "";
-            aux.d_fechacierre = item.d_fechacierre ? moment(item.d_fechacierre).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_fechacierre = item.d_fechacierre ? moment(item.d_fechacierre).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
-            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
+            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
             const keyCodes = { c_tipoperiodo: item.c_tipoperiodo, c_compania: item.c_compania, c_periodo:item.c_periodo }
             aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);

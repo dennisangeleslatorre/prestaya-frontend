@@ -8,7 +8,7 @@ import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Api
-import { getCancelacionesByCodigoPrestamo, anularCancelacion, listParametrosByCompania } from '../../Api/Api'
+import { anularCancelacion, listParametrosByCompania, retornarEntrega, retornarRemate } from '../../Api/Api'
 import moment from 'moment'
 
 const columns = [
@@ -76,13 +76,13 @@ const tipoCancelaciones = {
 }
 
 const estados = {
-    'PE': 'PENDIENTE',
+    'VI': 'VIGENTE',
     'CA': 'CANCELADO',
     'RE': 'REMATE'
 }
 
 const FormCancelaciones = (props) => {
-    const { elementId, fechaDesembolsoPrestamo, estadoPrestamo } = props;
+    const { elementId, fechaDesembolsoPrestamo, estadoPrestamo, cancelaciones, getData } = props;
     //Estados
     const [tableCancelaciones, setTableCancelaciones] = useState([]);
     const [openCancellationModal, setOpenCancellationModal] = useState(false);
@@ -95,13 +95,17 @@ const FormCancelaciones = (props) => {
     const [open, setOpen] = useState(false);
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal ] = useState(false);
+    const [openRegresarEntrega, setOpenRegresarEntrega] = useState(false);
+    const [openRegresarRemate, setOpenRegresarRemate] = useState(false);
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "CANCELAR" || item === "ANULAR CANCELACIÓN"
+        return item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
     })
     const cancelarPermission = userPermisssions.includes("CANCELAR");
     const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
+    const regresarEntregaPermission = userPermisssions.includes("REGRESAR DE ENTREGA");
+    const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
 
     const getParameters = async () => {
         const [c_compania, c_prestamo] = elementId.split('-');
@@ -117,18 +121,10 @@ const FormCancelaciones = (props) => {
         }
     }
 
-    const getCancelaciones = async () => {
-        await setIsLoading(true);
-        const [c_compania, c_prestamo] = elementId.split('-');
-        const response = await getCancelacionesByCodigoPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
-        if(response && response.status === 200 && response.body.data) {
-            const cancelaciones = response.body.data;
-            const nLineaPosition = cancelaciones.length-1;
-            setUltimaCancelacion(cancelaciones[nLineaPosition]);
-            getDataForTable(cancelaciones);
-        }
-        else getDataForTable([]);
-        setIsLoading(false);
+    const getCancelaciones = () => {
+        const nLineaPosition = cancelaciones.length-1;
+        setUltimaCancelacion(cancelaciones[nLineaPosition]);
+        getDataForTable(cancelaciones);
     }
 
     const getDataForTable = (cancelaciones) => {
@@ -136,8 +132,8 @@ const FormCancelaciones = (props) => {
             item.key = index;
             item.d_fechavencimiento_format = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy') : "";
             item.d_fechacancelacion_format = item.d_fechacancelacion ? moment(item.d_fechacancelacion).format('DD/MM/yyyy') : "";
-            item.d_fecharegistro_format = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:MM:ss');
-            item.d_ultimafechamodificacion_format = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:MM:ss');
+            item.d_fecharegistro_format = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss');
+            item.d_ultimafechamodificacion_format = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss');
             item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
             item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
             item.n_montointeresesdiario = item.n_montointeresesdiario ? Number(item.n_montointeresesdiario).toFixed(2) : "";
@@ -177,7 +173,7 @@ const FormCancelaciones = (props) => {
         const [c_compania, c_prestamo] = elementId.split('-');
         const response = await anularCancelacion({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response && response.status === 200) {
-            await getCancelaciones();
+            await getData();
             setResponseData({title:"Operación exitosa", message:"Se anuló la cancelación con éxito"});
             setOpenResponseModal(true);
         }  else {
@@ -188,10 +184,49 @@ const FormCancelaciones = (props) => {
         setIsLoading(false);
     }
 
+    const handleRegresarEntrega = async () => {
+        await setIsLoading(true);
+        setOpenRegresarEntrega(false)
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await retornarEntrega({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200) {
+            await getData();
+            setResponseData({title:"Operación exitosa", message:"Se regresó la entrega."});
+            setOpenResponseModal(true);
+        }  else {
+            const message = response ? response.message : "Error al regresar la entrega.";
+            setResponseData({title:"Aviso", message:message});
+            setOpenResponseModal(true);
+        }
+        setIsLoading(false);
+    }
+
+    const handleRegresarRemate = async () => {
+        await setIsLoading(true);
+        setOpenRegresarRemate(false)
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200) {
+            await getData();
+            setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
+            setOpenResponseModal(true);
+        }  else {
+            const message = response ? response.message : "Error al regresar el remate.";
+            setResponseData({title:"Aviso", message:message});
+            setOpenResponseModal(true);
+        }
+        setIsLoading(false);
+    }
+
     useEffect(async () => {
         await getParameters();
-        await getCancelaciones();
     }, [])
+
+    useEffect(() => {
+        console.log("DASDASDAS", cancelaciones)
+        if(cancelaciones.length !== 0) getCancelaciones();
+        else getDataForTable([])
+    }, [cancelaciones]);
 
     return (
         <>
@@ -199,8 +234,10 @@ const FormCancelaciones = (props) => {
             <div className="row col-12">
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
-                        { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button>}
-                        { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button>}
+                        { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button> }
+                        { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button> }
+                        { (regresarEntregaPermission && estadoPrestamo === "EN") && <Button onClick={()=>setOpenRegresarEntrega(true)}>REGRESAR DE ENTREGA</Button>}
+                        { (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button>}
                     </Space>
                 </div>
             </div>
@@ -221,7 +258,7 @@ const FormCancelaciones = (props) => {
                 fechaDesembolsoCancelacion={fechaDesembolsoCancelacion}
                 diasComisionParametros={diasComisionParametros}
                 montoComisionParametros={montoComisionParametros}
-                getCancelaciones={getCancelaciones}
+                getCancelaciones={getData}
             />
             <ConfirmationModal
                 isOpen={open}
@@ -229,6 +266,22 @@ const FormCancelaciones = (props) => {
                 title={"Aviso de anulación"}
                 message={"¿Seguro que desea anular la última cancelación?."}
                 onHandleFunction={()=>handleDeleteCancelacion()}
+                buttonClass="btn-danger"
+            />
+            <ConfirmationModal
+                isOpen={openRegresarEntrega}
+                onClose={()=>setOpenRegresarEntrega(false)}
+                title={"Aviso de regresar entrega"}
+                message={"¿Seguro que desea regresar la entrega?. Se perderán los datos de la entrega registrada."}
+                onHandleFunction={()=>handleRegresarEntrega()}
+                buttonClass="btn-danger"
+            />
+            <ConfirmationModal
+                isOpen={openRegresarRemate}
+                onClose={()=>setOpenRegresarRemate(false)}
+                title={"Aviso de regresar remate"}
+                message={"¿Seguro que desea regresar el remate?. Se perderán los datos del remate registrado."}
+                onHandleFunction={()=>handleRegresarRemate()}
                 buttonClass="btn-danger"
             />
             <ResponseModal

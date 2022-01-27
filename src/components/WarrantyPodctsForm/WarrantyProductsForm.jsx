@@ -40,13 +40,13 @@ const columns = [
         dataIndex: 'c_usuarioregistro'
     },{
         title: 'F, Registro',
-        dataIndex: 'd_fecharegistro'
+        dataIndex: 'd_fecharegistro_format'
     },{
         title: 'U. Usuario',
         dataIndex: 'c_ultimousuario'
     },{
         title: 'U. Fecha Modificación',
-        dataIndex: 'd_ultimafechamodificacion'
+        dataIndex: 'd_ultimafechamodificacion_format'
     }
 ]
 
@@ -125,11 +125,9 @@ const WarrantyProductsForm = (props) => {
     };
 
     const getDataTable = () => {
-        const listProducts = productos.map((item, index) => {
+        const listProducts = [...productos].map((item, index) => {
             let aux = item;
             aux.key = index;
-            //console.log('allTiposProductos', allTiposProductos);
-            //console.log("asldasd", allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto));
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
             aux.n_linea = index+1;
             aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
@@ -137,8 +135,8 @@ const WarrantyProductsForm = (props) => {
             aux.n_pesoneto = Number(item.n_pesoneto).toFixed(4);
             aux.n_montovalortotal = Number(item.n_montovalortotal).toFixed(2);
             aux.c_usuarioregistro = item.c_usuarioregistro ? item.c_usuarioregistro : "";
-            aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
-            aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
+            aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
+            aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
             return aux;
         });
         setTableDataProducts(listProducts);

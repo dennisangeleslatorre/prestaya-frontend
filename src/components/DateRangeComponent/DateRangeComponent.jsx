@@ -66,7 +66,7 @@ const DateRangeComponent = (props) => {
                         type="date"
                         value = {state.fechaInicio}
                         className={`form-control "col-md-12 col-xs-12`}
-                        readOnly={!enabled}
+                        readOnly={enabled}
                     />
                     <input
                         onChange={handleChangeFechaFin}
@@ -74,7 +74,7 @@ const DateRangeComponent = (props) => {
                         type="date"
                         value = {state.fechaFin}
                         className={`form-control "col-md-12 col-xs-12`}
-                        readOnly={!enabled}
+                        readOnly={enabled}
                     />
                 </div>
                 {showMessage()}

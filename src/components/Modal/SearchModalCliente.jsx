@@ -18,7 +18,7 @@ const SearchModalCliente = (props) => {
     ]
 
     const handleSearchCliente = async () => {
-        if(nameCliente.length >= 3) {
+        if(nameCliente.length >= 1) {
             await setIsLoading(true)
             const response = await getClienteDinamico({c_nombrescompleto: nameCliente, c_compania:compania});
             if(response && response.status === 200 && response.body) getClientesToTable(response.body.data);
@@ -65,8 +65,8 @@ const SearchModalCliente = (props) => {
                     labelSpace={2}
                     marginForm="ml-0 mr-0"
                 >
-                    { nameCliente.length < 3 && <div className="invalid__message__data">
-                        La longitud debe ser mayor a 2
+                    { nameCliente.length < 1 && <div className="invalid__message__data">
+                        La longitud debe ser mayor a 1
                     </div> }
                 </SearcherComponent>
                 <div className="col-12 mb-3 text-center">

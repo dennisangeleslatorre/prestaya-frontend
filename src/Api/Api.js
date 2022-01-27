@@ -644,6 +644,20 @@ export const cambiarEstadoEntregar = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+//RETORNA ENTREGA
+export const retornarEntrega = async (body) => {
+    console.log('---API--- : retornarEntrega');
+    const url = `${port}/prestamo/retornarEntrega`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+//RETORNAR REMATE
+export const retornarRemate = async (body) => {
+    console.log('---API--- : retornarRemate');
+    const url = `${port}/prestamo/retornarRemate`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
 //CANCELAR
 export const getCancelacionesByCodigoPrestamo = async (body) => {
     console.log('---API--- : getCancelacionesByCodigoPrestamo');
@@ -686,6 +700,12 @@ export const getReportesByPerfil = async (body) => {
 export const getDataReporteResumidos = async (body) => {
     console.log('---API--- : getDataReporteResumidos');
     const url = `${port}/reporte/getDataReporteResumidos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getDataReporteDetallado = async (body) => {
+    console.log('---API--- : getDataReporteDetallado');
+    const url = `${port}/reporte/getDataReporteDetallado`;
     const response = await consumer(url, 'post', body);
     return response;
 };
