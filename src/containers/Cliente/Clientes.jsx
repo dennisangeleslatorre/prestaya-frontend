@@ -23,40 +23,60 @@ const columns = [
         dataIndex: 'n_cliente',
         sorter: {
             compare: (a, b) => a.n_cliente - b.n_cliente,
-            multiple: 4,
+            multiple: 1,
         },
     },{
         title: 'Nombre Completo',
         dataIndex: 'c_nombrescompleto',
         sorter: {
-            compare: (a, b) => a.c_nombrescompleto - b.c_nombrescompleto,
-            multiple: 3,
+            compare: (a, b) => a.c_nombrescompleto.localeCompare(b.c_nombrescompleto),
+            multiple: 2,
         },
     },{
         title: 'Tipo Doc',
         dataIndex: 'c_tipodocumento',
+        sorter: {
+            compare: (a, b) => a.c_tipodocumento.localeCompare(b.c_tipodocumento),
+            multiple: 3,
+        },
     },{
         title: 'Número doc',
         dataIndex: 'c_numerodocumento',
         sorter: {
-            compare: (a, b) => a.c_nombrescompleto - b.c_nombrescompleto,
-            multiple: 2,
+            compare: (a, b) => a.c_numerodocumento - b.c_numerodocumento,
+            multiple: 4,
         },
     },{
         title: 'Dirección',
         dataIndex: 'c_direccion',
     },{
         title: 'País',
-        dataIndex: 'c_paiscodigo',
+        dataIndex: 'pais',
+        sorter: {
+            compare: (a, b) => a.pais.localeCompare(b.pais),
+            multiple: 5,
+        },
     },{
         title: 'Departamento',
-        dataIndex: 'c_departamentocodigo',
+        dataIndex: 'departamento',
+        sorter: {
+            compare: (a, b) => a.departamento.localeCompare(b.departamento),
+            multiple: 6,
+        },
     },{
         title: 'Provincia',
-        dataIndex: 'c_provinciacodigo',
+        dataIndex: 'provincia',
+        sorter: {
+            compare: (a, b) => a.provincia.localeCompare(b.provincia),
+            multiple: 7,
+        },
     },{
         title: 'Distrito',
-        dataIndex: 'c_distritocodigo',
+        dataIndex: 'distrito',
+        sorter: {
+            compare: (a, b) => a.distrito.localeCompare(b.distrito),
+            multiple: 8,
+        },
     },{
         title: 'Teléfono 1',
         dataIndex: 'c_telefono1',
@@ -67,8 +87,8 @@ const columns = [
         title: 'Correo',
         dataIndex: 'c_correo',
         sorter: {
-            compare: (a, b) => a.c_nombrescompleto - b.c_nombrescompleto,
-            multiple: 1,
+            compare: (a, b) => a.c_correo.localeCompare(b.c_correo),
+            multiple: 9,
         },
     },{
         title: 'F. Inicio Operaciones',
@@ -76,6 +96,10 @@ const columns = [
     },{
         title: 'Estado',
         dataIndex: 'c_estado',
+        sorter: {
+            compare: (a, b) => a.c_correo.localeCompare(b.c_correo),
+            multiple: 10,
+        },
     },{
         title: 'F. Inactivación',
         dataIndex: 'd_fechaInactivacion',
@@ -85,12 +109,21 @@ const columns = [
     },{
         title: 'U. Registro',
         dataIndex: 'c_usuarioregistro',
+        sorter: {
+            compare: (a, b) => a.c_usuarioregistro.localeCompare(b.c_usuarioregistro),
+            multiple: 11,
+        },
+        style: { background: "#072c31" }
     },{
         title: 'F. Registro',
         dataIndex: 'd_fecharegistro',
     },{
         title: 'U. Modificación',
         dataIndex: 'c_ultimousuario',
+        sorter: {
+            compare: (a, b) => a.c_ultimousuario.localeCompare(b.c_ultimousuario),
+            multiple: 12,
+        },
     },{
         title: 'F. Modificación',
         dataIndex: 'd_ultimafechamodificacion',
@@ -129,6 +162,15 @@ const Clientes = () => {
     const updatePermission = userPermisssions.includes("ACTUALIZAR CLIENTE");
     const viewPermission = userPermisssions.includes("VISUALIZAR CLIENTE");
     const deletePermission = userPermisssions.includes("ELIMINAR CLIENTE");
+
+    const handleChangeCompania = (value) => {
+        setCompania(value);
+        setEstado("T");
+        setCodigoCliente("");
+        setNombreCliente("");
+        setTipoDocumento("T");
+        setNumeroDocumento({value: "", isValid:null});
+    };
 
     //Funciones
     const handleSelectUpdate = () => {
@@ -186,7 +228,8 @@ const Clientes = () => {
                 setCodigoCliente("");
                 setOpenResponseModal(true);
             }
-        }
+        } else
+            setNombreCliente("");
         setIsLoading(false);
     }
 
@@ -220,9 +263,10 @@ const Clientes = () => {
         const listAux = clientes.map((item) => {
             item.key = `${item.c_compania}-${item.n_cliente}`;
             item.d_fechaInicioOperaciones = moment(item.d_fechaInicioOperaciones).format('DD/MM/yyyy');
-            item.d_fechaInactivacion = item.d_fechaInactivacion ? moment(item.d_fechaInactivacion).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechaInactivacion = item.d_fechaInactivacion ? moment(item.d_fechaInactivacion).format('DD/MM/yyyy') : "";
             item.d_fecharegistro = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss');
             item.d_ultimafechamodificacion = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss');
+            item.c_estado = item.c_estado === 'A' ? 'ACTIVO' : 'INACTIVO';
             return item;
         })
         setClientsToTable(listAux);
@@ -296,7 +340,7 @@ const Clientes = () => {
                                             placeholder="Seleccione un compañía"
                                             valueSelected={compania}
                                             data={companias}
-                                            handleElementSelected={setCompania}
+                                            handleElementSelected={handleChangeCompania}
                                             optionField="c_descripcion"
                                             valueField="c_compania"
                                             classForm="col-12 col-md-6"
@@ -369,7 +413,7 @@ const Clientes = () => {
                                     <div className="col">
                                         <Divider />
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
-                                            {registerPermission && <Button onClick={()=>history.push("/nuevoCliente")}>Nuevo</Button>}
+                                            {registerPermission && <Button onClick={()=>history.push(`/nuevoCliente/${compania}`)}>Nuevo</Button>}
                                             {updatePermission && <Button onClick={handleSelectUpdate}>Modificar</Button>}
                                             {viewPermission && <Button onClick={handleSelectView}>Visualizar</Button>}
                                             {deletePermission && <Button onClick={handleSelectDelete}>Eliminar</Button>}

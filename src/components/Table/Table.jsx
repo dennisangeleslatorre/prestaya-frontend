@@ -197,7 +197,7 @@ const Table = (props) => {
                                 <tr className="table-header">
                                     {columns.map((head, index) => {
                                         return (
-                                            <th key={index} scope="col">
+                                            <th key={index} className={ head.audit ? 'table-audit-head' : ''} scope="col">
                                                 <span className="ml-0 text-center"> {head.label} </span>
                                                 { showSortAscendingAndDescending(head) }
                                             </th>
@@ -212,7 +212,7 @@ const Table = (props) => {
                                         <tr key={index}>
                                             {columns.map((head, index2) => {
                                                 return(
-                                                    <td key={index + "-" + index2}>{item[head.name]}</td>
+                                                    <td className={ head.audit ? 'table-audit-column' : ''} key={index + "-" + index2}>{item[head.name]}</td>
                                                 )
                                             })}
                                         </tr>

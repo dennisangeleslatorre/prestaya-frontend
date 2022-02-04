@@ -85,16 +85,7 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                                 ))}
                             </SubMenu>
                         )}
-                        {reportPages.length !== 0 && (
-                            <SubMenu
-                            icon={<i className="bi bi-card-checklist"></i>}
-                            title="Reportes"
-                            >
-                                {reportPages.map((page) => (
-                                    <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
-                                ))}
-                            </SubMenu>
-                        )}
+                        {reportPages.length !== 0 && <MenuItem onClick={() => changePage('REPORTES')} icon={<i className="bi bi-card-checklist"></i>}>REPORTES<Link to="/reportes" /></MenuItem>}
                     </Menu>
                 </SidebarContent>
                 <SidebarFooter>

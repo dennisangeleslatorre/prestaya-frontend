@@ -23,7 +23,7 @@ const Login = (props) => {
     const [user, setUser] = useState(null);
     //Context
     const { setPagesForUser, pages } = useContext(PagesContext);
-    const { getUserAuth, login, setUserData, setUserToken } = useContext(UserContext);
+    const { getUserAuth, login, setUserData, setUserToken, setReportesUsuarios } = useContext(UserContext);
     //Objetos
     const isAuth = getUserAuth();
     let history = useHistory();
@@ -69,7 +69,11 @@ const Login = (props) => {
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reportes.push('REPORTE RESUMIDO');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reportes.push('REPORTE DETALLADO');
                     });
-                }
+                    if(response2.body.data.length > 0) {
+                        reportes.push('REPORTES');
+                        setReportesUsuarios(response2.body.data);
+                    } else setReportesUsuarios([]);
+                } else setReportesUsuarios([]);
                 body.data.reportes = reportes;
                 setUser(body.data);
                 setUserToken(body.token);

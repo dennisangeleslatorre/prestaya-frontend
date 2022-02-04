@@ -440,7 +440,8 @@ const Prestamos = () => {
                 setCodigoCliente("");
                 setOpenResponseModal(true);
             }
-        }
+        } else
+            setNombreCliente("");
         setIsLoading(false);
     }
 

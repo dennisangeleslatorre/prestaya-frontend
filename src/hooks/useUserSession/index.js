@@ -44,6 +44,16 @@ const useUserSession = () => {
         return isSessionActive;
     };
 
+    const setReportesUsuarios = value => {
+        window.localStorage.setItem('reportesUsuario', JSON.stringify(value));
+    }
+
+    const getReportesUsuarios = () => {
+        let reoprtes = window.localStorage.getItem('reportesUsuario');
+        reoprtes = JSON.parse(reoprtes);
+        return reoprtes ;
+    };
+
     return {
         login,
         logout,
@@ -51,7 +61,9 @@ const useUserSession = () => {
         setUserData,
         getUserData,
         setUserToken,
-        getUserToken
+        getUserToken,
+        setReportesUsuarios,
+        getReportesUsuarios
     }
 };
 

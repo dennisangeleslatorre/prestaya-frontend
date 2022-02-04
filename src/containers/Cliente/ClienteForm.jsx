@@ -73,7 +73,6 @@ const ClienteForm = (props) => {
          visualizarCliente: {label:"Ir a lista", class:"btn btn-info btn-form"}
      }
      const readOnlyView = urlFragment === "visualizarCliente" ? true : false;
-     const readOnlyCode = urlFragment !== "nuevoCliente" ? true : false;
 
      const formFunctions = {
          nuevoCliente: ()=> handleRegister(),
@@ -92,6 +91,11 @@ const ClienteForm = (props) => {
         setNotification({title:title, type:"alert-danger", message:message})
     }
 
+    const handleChangeEstado = (value) => {
+        setEstado(value);
+        if(value === "I") setFechaInactivacion({value: moment().format('YYYY-MM-DD')});
+    };
+
     const validate = () => {
         if( !compania || !apellidoPaterno.value || !apellidoMaterno.value || !nombres.value || !direccion.value || !paisCodigo ||
             !departamentoCodigo || !provinciaCodigo || !distritoCodigo || !telefono.isValid || !telefono2.isValid || !correoElectronico.isValid ||
@@ -105,7 +109,7 @@ const ClienteForm = (props) => {
             c_apellidospaterno: apellidoPaterno.value,
             c_apellidosmaterno: apellidoMaterno.value,
             c_nombres: nombres.value,
-            c_nombrescompleto: `${nombres.value} ${apellidoPaterno.value} ${apellidoMaterno.value}`,
+            c_nombrescompleto: `${apellidoPaterno.value} ${apellidoMaterno.value}, ${nombres.value}`,
             c_tipodocumento: tipoDocumento,
             c_numerodocumento: numeroDocumento.value,
             c_direccion: direccion.value,
@@ -121,6 +125,7 @@ const ClienteForm = (props) => {
         if(fechaInicioOperaciones.value) data.d_fechaInicioOperaciones = fechaInicioOperaciones.value;
         if(estado === "I") {
             data.c_motivoinactivacion = motivoInactivacion;
+            data.d_fechaInactivacion = fechaInactivacion.value;
         }
         return data;
     }
@@ -266,7 +271,7 @@ const ClienteForm = (props) => {
     }, [])
 
     useEffect(() => {
-        if(urlFragment === "nuevoCliente" && companias.length !== 0) setCompania(companias[0].c_compania)
+        if(urlFragment === "nuevoCliente" && companias.length !== 0) setCompania(elementId);
     }, [companias])
 
     useEffect(() => {
@@ -281,10 +286,6 @@ const ClienteForm = (props) => {
         }
     }, [tipoDocumento])
 
-    useEffect(() => {
-        if(estado === "A" && !fechaInactivacion.value) setFechaInactivacion({value: moment().format('yyyy-MM-DD')})
-    }, [estado])
-
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
@@ -298,7 +299,7 @@ const ClienteForm = (props) => {
                     handleElementSelected={setCompania}
                     optionField="c_descripcion"
                     valueField="c_compania"
-                    disabledElement={readOnlyCode}
+                    disabledElement={true}
                 />
                 { urlFragment !== "nuevoCliente" && <InputComponent
                     label="Código del cliente"
@@ -364,7 +365,7 @@ const ClienteForm = (props) => {
                 />
                 <InputComponent
                     label="Nombre completo"
-                    state={{value: `${apellidoPaterno.value} ${apellidoMaterno.value} ${nombres.value}`}}
+                    state={{value: `${apellidoPaterno.value} ${apellidoMaterno.value}${nombres.value ?",":""} ${nombres.value}`}}
                     type="text"
                     placeholder="Nombre completo"
                     inputId="nombreCompletoId"
@@ -479,7 +480,7 @@ const ClienteForm = (props) => {
                     valueField="value"
                     optionField="name"
                     valueSelected={estado}
-                    handleChange={setEstado}
+                    handleChange={handleChangeEstado}
                     disabledElement={readOnlyView}
                 />
                 { urlFragment !== "nuevoCliente" && <InputComponent

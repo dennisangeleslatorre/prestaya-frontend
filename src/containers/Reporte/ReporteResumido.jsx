@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Space } from 'antd'
+import { Space } from 'antd'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
@@ -8,58 +8,12 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
+import moment from 'moment'
+//Api
 import { listAllCompanias, getDataReporteResumidos, getClienteByCodigoCliente } from '../../Api/Api'
-
-const columns = [
-    {
-        title: 'Periodo',
-        dataIndex: 'c_periodo'
-    },
-    {
-        title: 'Cliente',
-        dataIndex: 'n_cliente'
-    },
-    {
-        title: 'Nombre Completo',
-        dataIndex: 'c_nombrescompleto'
-    },
-    {
-        title: 'Moneda P.',
-        dataIndex: 'c_monedaprestamo'
-    },
-    {
-        title: 'Monto Prestamo',
-        dataIndex: 'calc_sumamontoprestamo'
-    },
-    {
-        title: 'Monto Intereses',
-        dataIndex: 'calc_sumamontointereses'
-    },
-    {
-        title: 'Monto Total P.',
-        dataIndex: 'calc_sumamontototalprestamo'
-    },
-    {
-        title: 'Monto Valor Prod.',
-        dataIndex: 'calc_sumamontovalorproductos'
-    },
-    {
-        title: 'Interes Cancelado',
-        dataIndex: 'calc_sumainterecamcelado'
-    },
-    {
-        title: 'Monto Prest. Cancelado',
-        dataIndex: 'calc_montoprestamocancelado'
-    },
-    {
-        title: 'Mnto. Comision Canc.',
-        dataIndex: 'calc_sumacomisioncancelada'
-    },
-    {
-        title: 'Mnto. Total Cancelado',
-        dataIndex: 'calc_sumamontototalcancelado'
-    },
-]
+//PDF
+import { PDFViewer  } from "@react-pdf/renderer"
+import ReporteResumidoPDFComponent from '../../components/ReporteResumidoPDFComponent/ReporteResumidoPDFComponent'
 
 const columnsExportExcel = [
     {
@@ -119,6 +73,7 @@ const ReporteResumido = () => {
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
     const [dataReportToTable, setDataReportToTable] = useState([]);
+    const [elementPdf, setElementPdf] = useState(null);
     //Estados del formulario
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal ] = useState(false);
@@ -145,7 +100,8 @@ const ReporteResumido = () => {
                 setClienteSeleccionado({});
                 setOpenResponseModal(true);
             }
-        }
+        } else
+            setNombreCliente("");
         setIsLoading(false);
     }
 
@@ -154,8 +110,8 @@ const ReporteResumido = () => {
         if(compania) body.c_compania = compania;
         if(codigoCliente) body.n_cliente = codigoCliente;
         if(periodo.isValid) {
-            body.periodoInicio = periodo.periodoInicio;
-            body.periodoFin = periodo.periodoFin;
+            body.periodo_inicio = periodo.periodoInicio.replace("-", "");
+            body.periodo_fin = periodo.periodoFin.replace("-", "");
         }
         return body;
     }
@@ -186,6 +142,44 @@ const ReporteResumido = () => {
         return Object.values(elements);
     };
 
+    const separateDataByPeriodo = (datos) => {
+        let grupoPeriodo = {};
+        datos.forEach(item => {
+            if( !grupoPeriodo[item.c_periodo]){
+                grupoPeriodo[item.c_periodo] = {
+                    lineasReporte: [],
+                    sumaxperiodo_montoprestamocancelado : 0,
+                    sumaxperiodo_montocomisioncancelada : 0,
+                    sumaxperiodo_montointerecamcelado : 0,
+                    sumaxperiodo_montointereses : 0,
+                    sumaxperiodo_montoprestamo : 0,
+                    sumaxperiodo_montototalcancelado : 0,
+                    sumaxperiodo_montototalprestamo : 0,
+                    sumaxperiodo_montovalorproductos : 0,
+                }
+            }
+            grupoPeriodo[item.c_periodo].lineasReporte.push(item);
+            if(item.calc_montoprestamocancelado) grupoPeriodo[item.c_periodo].sumaxperiodo_montoprestamocancelado += Number(item.calc_montoprestamocancelado);
+            if(item.calc_sumacomisioncancelada) grupoPeriodo[item.c_periodo].sumaxperiodo_montocomisioncancelada += Number(item.calc_sumacomisioncancelada);
+            if(item.calc_sumainterecamcelado) grupoPeriodo[item.c_periodo].sumaxperiodo_montointerecamcelado += Number(item.calc_sumainterecamcelado);
+            if(item.calc_sumamontointereses) grupoPeriodo[item.c_periodo].sumaxperiodo_montointereses += Number(item.calc_sumamontointereses);
+            if(item.calc_sumamontoprestamo) grupoPeriodo[item.c_periodo].sumaxperiodo_montoprestamo += Number(item.calc_sumamontoprestamo);
+            if(item.calc_sumamontototalcancelado) grupoPeriodo[item.c_periodo].sumaxperiodo_montototalcancelado += Number(item.calc_sumamontototalcancelado);
+            if(item.calc_sumamontototalprestamo) grupoPeriodo[item.c_periodo].sumaxperiodo_montototalprestamo += Number(item.calc_sumamontototalprestamo);
+            if(item.calc_sumamontovalorproductos) grupoPeriodo[item.c_periodo].sumaxperiodo_montovalorproductos += Number(item.calc_sumamontovalorproductos);
+        })
+        return grupoPeriodo;
+    };
+
+    const getDataForPDF = (datos) => {
+        let element = {};
+        const dataPorPeriodo = separateDataByPeriodo(datos);
+        element.dataPorPeriodo = dataPorPeriodo;
+        element.periodo = periodo;
+        element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
+        setElementPdf(element);
+    };
+
     const onHandleSearch = async () => {
         let parametros = prepareBodyToSearch();
         const response = await getDataReporteResumidos(parametros);
@@ -204,6 +198,7 @@ const ReporteResumido = () => {
     }
 
     const getDataForTable = (datos) => {
+        getDataForPDF(datos);
         const listAux = datos.map((item) => {
             item.key = `${item.c_periodo}-${item.n_cliente}-${item.c_monedaprestamo}`;
             item.periodo = item.periodo || "";
@@ -217,9 +212,15 @@ const ReporteResumido = () => {
         if(response && response.status === 200) setCompanias(response.body.data);
     }
 
+    const getPeriodoDefualt = () => {
+        const periodoAux = moment().format('yyyy-MM');
+        setPeriodo({periodoInicio:periodoAux, periodoFin:periodoAux, isValid:true})
+    };
+
     useEffect( async () => {
         await setIsLoading(true);
         await getCompanias();
+        getPeriodoDefualt();
         setIsLoading(false);
     }, []);
 
@@ -233,10 +234,6 @@ const ReporteResumido = () => {
             setNombreCliente(clienteSeleccionado.c_nombrescompleto);
         }
     }, [clienteSeleccionado])
-
-    /*const onSelectPdf = () => {
-        
-    };*/
 
     return (
         <>
@@ -297,14 +294,14 @@ const ReporteResumido = () => {
                         </Space>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col" style={{ overflow: 'scroll' }}>
-                        <Table
-                            columns={columns}
-                            dataSource={dataReportToTable}
-                            pagination={{ pageSize: 50 }}
-                        />
-                    </div>
+                <div className="col-12">
+                    {elementPdf ? <PDFViewer
+                        className="col-12"
+                        style={{height: "800px"}}
+                        children={<ReporteResumidoPDFComponent element={elementPdf}/>}
+                    /> : <div className="text-center">
+                        <h2>No se a realizado una búsqueda</h2>
+                    </div>}
                 </div>
             </ReportContainer>
             {isLoading === true && <Loading/>}

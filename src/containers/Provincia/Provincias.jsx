@@ -71,22 +71,22 @@ const Provincias = () => {
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'c_paiscodigo', label: 'País', sortVar:0 },
-        {name:'c_departamentocodigo', label: 'Departamento', sortVar:0 },
-        {name:'c_provinciacodigo', label: 'Provincia', sortVar:0 },
-        {name:'c_descripcion', label: 'Descripción', sortVar:0 },
-        {name:'c_estado', label: 'Estado', sortVar:0 },
-        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
-        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
-        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
-        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0 },
+        {name:'pais', label: 'País', sortVar:1 },
+        {name:'departamento', label: 'Departamento', sortVar:1 },
+        {name:'c_provinciacodigo', label: 'Provincia', sortVar:1 },
+        {name:'c_descripcion', label: 'Descripción', sortVar:1 },
+        {name:'c_estado', label: 'Estado', sortVar:1 },
+        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
+        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
+        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
+        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0, audit:true },
     ];
 
     //campos de filtro
     const fieldsFilter= [
         { name: 'c_provinciacodigo' },
-        { name: 'c_departamentocodigo' },
-        { name: 'c_paiscodigo' },
+        { name: 'departamento' },
+        { name: 'pais' },
         { name: 'c_descripcion' },
         { name: 'c_estado' }
     ];
@@ -131,8 +131,8 @@ const Provincias = () => {
     const getProvinciasTable = (provincias) => {
         const listProvinciasTable = provincias.map((item) => {
             let aux = {};
-            aux.c_paiscodigo = item.c_paiscodigo;
-            aux.c_departamentocodigo = item.c_departamentocodigo;
+            aux.pais = item.pais;
+            aux.departamento = item.departamento;
             aux.c_provinciacodigo = item.c_provinciacodigo;
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";

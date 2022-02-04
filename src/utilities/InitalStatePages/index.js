@@ -52,6 +52,7 @@ import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 //REPORTE
 import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
 import ReporteResumido from '../../containers/Reporte/ReporteResumido'
+import Reportes from '../../containers/Reporte/Reportes'
 
 export default{
     initialPages: [
@@ -334,7 +335,7 @@ export default{
             name: 'CLIENTES'
         },{
             component: ClienteForm,
-            path: '/nuevoCliente',
+            path: '/nuevoCliente/:id',
             exact: true,
             name: 'AGREGAR CLIENTE'
         },{
@@ -398,8 +399,13 @@ export default{
             exact: true,
             name: 'CANCELACIONES'
         },{
+            component: Reportes,
+            path: '/reportes',
+            exact: true,
+            name: 'REPORTES'
+        },{
             component: ReporteDetallado,
-            path: '/reporteDetallado/:id',
+            path: '/reporteDetallado',
             exact: true,
             name: 'REPORTE DETALLADO'
         },{

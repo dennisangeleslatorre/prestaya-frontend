@@ -12,106 +12,15 @@ import Loading from '../../components/Modal/LoadingModal'
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
 import { listAllCompanias, getClienteByCodigoCliente, listAllPaises, listAllDepartamentos,
     listAllProvincias, listAllDistritos, getDataReporteDetallado} from '../../Api/Api'
-
-const columns = [
-    {
-        title: '# Prestamo',
-        dataIndex: 'c_prestamo'
-    },
-    {
-        title: 'Cliente',
-        dataIndex: 'n_cliente'
-    },
-    {
-        title: 'Nombre Completo',
-        dataIndex: 'c_nombrescompleto'
-    },
-    {
-        title: 'F. Desembolso',
-        dataIndex: 'd_fechadesembolso'
-    },
-    {
-        title: 'Dias Plazo',
-        dataIndex: 'n_diasplazo'
-    },
-    {
-        title: 'F. Vencimiento',
-        dataIndex: 'd_fechavencimiento'
-    },
-    {
-        title: 'Moneda P.',
-        dataIndex: 'c_monedaprestamo'
-    },
-    {
-        title: 'Monto Prestamo',
-        dataIndex: 'n_montoprestamo'
-    },
-    {
-        title: '% Tasa Interes',
-        dataIndex: 'n_tasainteres'
-    },
-    {
-        title: 'Monto Intereses',
-        dataIndex: 'n_montointereses'
-    },
-    {
-        title: 'Monto Total P.',
-        dataIndex: 'n_montototalprestamo'
-    },
-    {
-        title: 'Monto Valor Prod.',
-        dataIndex: 'calc_sumavalorproductos'
-    },
-    {
-        title: 'Dias Plazo Totales',
-        dataIndex: 'calc_diasplazostotales'
-    },
-    {
-        title: 'F. Vcto. Reprog.',
-        dataIndex: 'd_fechavencimientoreprogramada'
-    },
-    {
-        title: 'F. Cancelacion',
-        dataIndex: 'd_ultimafechacancelacion'
-    },
-    {
-        title: 'Dias Vencido',
-        dataIndex: 'calc_diasvencido'
-    },
-    {
-        title: 'Vencido',
-        dataIndex: 'esvencido'
-    },
-    {
-        title: 'Interes Cancelado',
-        dataIndex: 'calc_sumainterescancelado'
-    },
-    {
-        title: 'Monto Prest. Cancelado',
-        dataIndex: 'calc_sumamontoprestamocancelado'
-    },
-    {
-        title: 'Mnto. Comision Canc.',
-        dataIndex: 'calc_sumamontocomisioncancelada'
-    },
-    {
-        title: 'Mnto. Total Cancelado',
-        dataIndex: 'calc_sumamontotalcancelado'
-    },
-    {
-        title: 'Estado',
-        dataIndex: 'c_estado'
-    },
-    {
-        title: 'Distrito',
-        dataIndex: 'nombredistrito'
-    },
-]
+//PDF
+import { PDFViewer  } from "@react-pdf/renderer"
+import ReporteDetalladoPDFComponent from '../../components/ReporteDetalladoPDFComponent/ReporteDetalladoPDFComponent'
+import moment from 'moment'
 
 const columnsExportExcel = [
     {
-        label: 'Periodo',
-        value: row => (row.c_periodo || '')
+        label: '# Prestamo',
+        value: row => (row.c_prestamo || '')
     },
     {
         label: 'Cliente',
@@ -122,40 +31,84 @@ const columnsExportExcel = [
         value: row => (row.c_nombrescompleto || '')
     },
     {
+        label: 'F. Desembolso',
+        value: row => (row.d_fechadesembolso || '')
+    },
+    {
+        label: 'Dias Plazo',
+        value: row => (row.calc_diasplazototales || '')
+    },
+    {
+        label: 'F. Vencimiento',
+        value: row => (row.d_fechavencimiento || '')
+    },
+    {
         label: 'Moneda P.',
         value: row => (row.c_monedaprestamo || '')
     },
     {
         label: 'Monto Prestamo',
-        value: row => (row.calc_sumamontoprestamo || '')
+        value: row => (row.n_montoprestamo || '')
+    },
+    {
+        label: '% Tasa Interes',
+        value: row => (row.n_tasainteres || '')
     },
     {
         label: 'Monto Intereses',
-        value: row => (row.calc_sumamontointereses || '')
+        value: row => (row.n_montointereses || '')
     },
     {
         label: 'Monto Total P.',
-        value: row => (row.calc_sumamontototalprestamo || '')
+        value: row => (row.n_montototalprestamo || '')
     },
     {
         label: 'Monto Valor Prod.',
         value: row => (row.calc_sumamontovalorproductos || '')
     },
     {
+        label: 'Dias Plazo Totales',
+        value: row => (row.calc_diasplazototales || '')
+    },
+    {
+        label: 'F. Vcto. Reprog.',
+        value: row => (row.d_fechavencimientoreprogramada || '')
+    },
+    {
+        label: 'F. Cancelacion',
+        value: row => (row.ultimafechacancelacionregistrada || '')
+    },
+    {
+        label: 'Dias Vencido',
+        value: row => (row.calc_diasvencido || '')
+    },
+    {
+        label: 'Vencido',
+        value: row => (row.esvencido || '')
+    },
+    {
         label: 'Interes Cancelado',
-        value: row => (row.calc_sumainterecamcelado || '')
+        value: row => (row.calc_sumainterescancelado || '')
     },
     {
         label: 'Monto Prest. Cancelado',
-        value: row => (row.calc_montoprestamocancelado || '')
+        value: row => (row.calc_sumamontoprestamocancelado || '')
     },
     {
         label: 'Mnto. Comision Canc.',
-        value: row => (row.calc_sumacomisioncancelada || '')
+        value: row => (row.calc_sumamontocomisioncancelada || '')
     },
     {
         label: 'Mnto. Total Cancelado',
-        value: row => (row.calc_sumamontototalcancelado || '')
+        value: row => (row.calc_sumamontotalcancelado || '')
+    },
+    {
+        label: 'Estado',
+        value: row => (row.c_estado || '')
+    },
+    {
+        label: 'Distrito',
+        value: row => (row.nombredistrito || '')
     },
 ]
 
@@ -172,6 +125,8 @@ const estados = [
 const ReporteDetallado = () => {
     const [compania, setCompania] = useState("");
     const [estado, setEstado] = useState("T");
+    const [excluiranulados, setExcluiranulados] = useState(false);
+    const [solovalidos, setSolovalidos] = useState(false);
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
@@ -189,6 +144,7 @@ const ReporteDetallado = () => {
     const [enabledFechaVencimiento, setEnabledFechaVencimiento] = useState(true);
     const [fechaVencimientoReprogramada, setFechaVencimientoReprogramada] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [enabledFechaVencimientoReprogramada, setEnabledFechaVencimientoReprogramada] = useState(true);
+    const [elementPdf, setElementPdf] = useState(null);
     //Estados del formulario
     const [dataReportToTable, setDataReportToTable] = useState([]);
     const [responseData, setResponseData] = useState({});
@@ -223,7 +179,8 @@ const ReporteDetallado = () => {
                 setClienteSeleccionado({});
                 setOpenResponseModal(true);
             }
-        }
+        } else
+            setNombreCliente("");
         setIsLoading(false);
     }
 
@@ -231,15 +188,74 @@ const ReporteDetallado = () => {
         let body = {};
         if(compania) body.c_compania = compania;
         if(codigoCliente) body.n_cliente = codigoCliente;
+        if(esVencido && esVencido !== 'T') body.esvencido = esVencido;
+        if(paisCodigo) body.c_paiscodigo = paisCodigo;
+        if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
+        if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
+        if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
+        if(estado && estado !== "T") body.c_estado = estado;
+
+        if(excluiranulados) body.excluiranulados = excluiranulados;
+        if(solovalidos) body.solovalidos = solovalidos;
+
+        if(fechaDesembolso.isValid && !enabledFechaDesembolso) {
+            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
+            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
+        }
+        if(fechaCancelacion.isValid && !enabledFechaCancelacion) {
+            body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
+            body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
+        }
+        if(fechaVencimiento.isValid && !enabledFechaVencimiento) {
+            body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
+            body.d_fechavencimientofin = fechaVencimiento.fechaFin;
+        }
+        if(enabledFechaVencimientoReprogramada.isValid && !enabledFechaVencimientoReprogramada) {
+            body.d_fechavencimientoreprogramadainicio = enabledFechaVencimientoReprogramada.fechaInicio;
+            body.d_fechavencimientoreprogramadafin = enabledFechaVencimientoReprogramada.fechaFin;
+        }
+        console.log('body', body)
         return body;
     }
+
+    const getSumas = (datos) => {
+        let element = {
+            suma_montoprestamo: 0,
+            suma_montointereses: 0,
+            suma_montototalprestamo: 0,
+            suma_montovalorproductos: 0,
+            suma_interescancelado: 0,
+            suma_montoprestamocancelado: 0,
+            suma_montocomisioncancelado: 0,
+            suma_montototalcancelado: 0
+        };
+        element.lineasReporte = datos;
+        datos.forEach(item => {
+            if(item.n_montoprestamo) element.suma_montoprestamo += Number(item.n_montoprestamo);
+            if(item.n_montointereses) element.suma_montointereses += Number(item.n_montointereses);
+            if(item.n_montototalprestamo) element.suma_montototalprestamo += Number(item.n_montototalprestamo);
+            if(item.calc_sumamontovalorproductos) element.suma_montovalorproductos += Number(item.calc_sumamontovalorproductos);
+            if(item.calc_sumainterescancelado) element.suma_interescancelado += Number(item.calc_sumainterescancelado);
+            if(item.calc_sumamontoprestamocancelado) element.suma_montoprestamocancelado += Number(item.calc_sumamontoprestamocancelado);
+            if(item.calc_sumamontocomisioncancelada) element.suma_montocomisioncancelado += Number(item.calc_sumamontocomisioncancelada);
+            if(item.calc_sumamontotalcancelado) element.suma_montototalcancelado += Number(item.calc_sumamontotalcancelado);
+        })
+        return element;
+    };
+
+    const getDataForPDF = (datos) => {
+        let element = {};
+        const dataReportes = getSumas(datos);
+        element = {...dataReportes};
+        element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
+        setElementPdf(element);
+    };
 
     const onHandleSearch = async () => {
         let parametros = prepareBodyToSearch();
         const response = await getDataReporteDetallado(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
-            console.log("HOla")
             getDataForTable(data);
         }
         else getDataForTable([]);
@@ -252,13 +268,16 @@ const ReporteDetallado = () => {
     }
 
     const getDataForTable = (datos) => {
-        console.log("Crear tabla", datos)
+        getDataForPDF(datos);
         const listAux = datos.map((item) => {
-            console.log("Item", item.c_prestamo)
             item.key = `${item.c_prestamo}-${item.c_compania}`;
             item.c_monedaprestamo = item.c_monedaprestamo === 'L' ? 'LOCAL' : 'EXTERIOR';
             item.c_estado = estados.find(estado => estado.value === item.c_estado).name;
             item.esVencido = item.esVencido === 'N' ? 'NO' : 'SI';
+            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy') : "";
+            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy') : "";
+            item.d_fechavencimientoreprogramada = item.d_fechavencimientoreprogramada ? moment(item.d_fechavencimientoreprogramada).format('DD/MM/yyyy') : "";
+            item.ultimafechacancelacionregistrada = item.ultimafechacancelacionregistrada ? moment(item.ultimafechacancelacionregistrada).format('DD/MM/yyyy') : "";
             return item;
         })
         setDataReportToTable(listAux);
@@ -367,6 +386,32 @@ const ReporteDetallado = () => {
                         optionField="name"
                         valueSelected={estado}
                         handleChange={setEstado}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                        labelSpace={3}
+                    />
+                    <SelectComponent
+                        labelText="Excluir anulados"
+                        defaultValue="Excluir anulados"
+                        items={[{name:"SI", value:true},{name:"NO", value:false}]}
+                        selectId="excluirAnuladosId"
+                        valueField="value"
+                        optionField="name"
+                        valueSelected={excluiranulados}
+                        handleChange={setExcluiranulados}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                        labelSpace={3}
+                    />
+                    <SelectComponent
+                        labelText="Solo válidos"
+                        defaultValue="Solo válidos"
+                        items={[{name:"SI", value:true},{name:"NO", value:false}]}
+                        selectId="soloValidosId"
+                        valueField="value"
+                        optionField="name"
+                        valueSelected={solovalidos}
+                        handleChange={setSolovalidos}
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                         labelSpace={3}
@@ -525,15 +570,14 @@ const ReporteDetallado = () => {
                         </Space>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col" style={{ overflow: 'scroll' }}>
-                        <Table
-                            classForm
-                            columns={columns}
-                            dataSource={dataReportToTable}
-                            pagination={{ pageSize: 50 }}
-                        />
-                    </div>
+                <div className="col-12">
+                    {elementPdf ? <PDFViewer
+                        className="col-12"
+                        style={{height: "800px"}}
+                        children={<ReporteDetalladoPDFComponent element={elementPdf}/>}
+                    /> : <div className="text-center">
+                        <h2>No se a realizado una búsqueda</h2>
+                    </div>}
                 </div>
             </ReportContainer>
             {isLoading === true && <Loading/>}

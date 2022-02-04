@@ -28,6 +28,8 @@ const SearchModalCliente = (props) => {
 
     const handleSelectCliente = async (item) => {
         await setClienteObtained(item);
+        setNameCliente("")
+        setTableData([]);
         onClose();
     }
 
@@ -66,7 +68,7 @@ const SearchModalCliente = (props) => {
                     marginForm="ml-0 mr-0"
                 >
                     { nameCliente.length < 1 && <div className="invalid__message__data">
-                        La longitud debe ser mayor a 1
+                        La longitud debe ser mayor a 0
                     </div> }
                 </SearcherComponent>
                 <div className="col-12 mb-3 text-center">

@@ -82,10 +82,10 @@ const Parametros = () => {
         {name:'c_tipovalor', label: 'Tipo valor', sortVar:1 },
         {name:'valor', label: 'Valor', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:1 },
-        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
-        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
-        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
-        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0 },
+        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
+        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
+        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
+        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0, audit:true },
     ];
 
     //campos de filtro

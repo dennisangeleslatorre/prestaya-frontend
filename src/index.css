@@ -42,6 +42,10 @@ code {
   color: #ffff !important;
 }
 
+.btn-light {
+  background-color: #f3f3f3;
+}
+
 #sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
   background-color: #c3e6ff !important;
 }
@@ -82,4 +86,13 @@ code {
   font-weight: 500;
   border: 1px solid darkgray;
   background-color: #10489e !important;
+}
+
+.table-audit-head {
+  background-color: #4c4c4c !important;
+}
+
+.table-audit-column {
+  background-color: #bbbbbb;
+  color: #ffff !important;
 }

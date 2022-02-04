@@ -72,18 +72,18 @@ const Departamentos = () => {
     const columns = [
         {name:'actions', label: '', sortVar:0},
         {name:'c_paiscodigo', label: 'País', sortVar:1 },
-        {name:'c_departamentocodigo', label: 'Departamento', sortVar:1 },
+        {name:'pais', label: 'Departamento', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
-        {name:'c_estado', label: 'Estado', sortVar:0 },
-        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
-        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
-        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
-        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0 },
+        {name:'c_estado', label: 'Estado', sortVar:1 },
+        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
+        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
+        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
+        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0, audit:true },
     ];
 
     //campos de filtro
     const fieldsFilter= [
-        { name: 'c_departamentocodigo' },
+        { name: 'pais' },
         { name: 'c_paiscodigo' },
         { name: 'c_descripcion' },
         { name: 'c_estado' }
@@ -130,7 +130,7 @@ const Departamentos = () => {
         const listDepartamentosTable = departamentos.map((item) => {
             let aux = {};
             aux.c_paiscodigo = item.c_paiscodigo;
-            aux.c_departamentocodigo = item.c_departamentocodigo;
+            aux.pais = item.pais;
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";

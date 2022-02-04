@@ -73,11 +73,11 @@ const Paises = () => {
         {name:'actions', label: '', sortVar:0},
         {name:'c_paiscodigo', label: 'Código del país', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
-        {name:'c_estado', label: 'Estado', sortVar:0 },
-        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:0 },
-        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0 },
-        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:0 },
-        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0 },
+        {name:'c_estado', label: 'Estado', sortVar:1 },
+        {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
+        {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
+        {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
+        {name:'d_ultimafechamodificacion', label: 'Fecha actualización', sortVar:0, audit:true },
     ];
 
     //campos de filtro
