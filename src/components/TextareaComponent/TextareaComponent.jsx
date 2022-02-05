@@ -2,7 +2,7 @@ import React from 'react'
 
 const TextareaComponent = ({inputId, label, placeholder, readOnly, value, setState, max=250, classForm="", labelSpace=2, uppercaseOnly=false}) => {
     const handleOnChange = (e) => {
-        if(uppercaseOnly) setState({...state, value: e.target.value.toUpperCase()});
+        if(uppercaseOnly) setState({...value, value: e.target.value.toUpperCase()});
         else setState(e.target.value);
     }
     return (
