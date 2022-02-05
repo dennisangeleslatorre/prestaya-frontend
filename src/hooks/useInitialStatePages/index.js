@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import initalStatePages from '../../utilities/initalStatePages'
+import initalStatePages from '../../utilities/InitalStatePages'
 
 const useInitialState = () => {
 
