@@ -136,7 +136,7 @@ const FormCancelaciones = (props) => {
             item.d_ultimafechamodificacion_format = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss');
             item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
             item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
-            item.n_montointeresesdiario = item.n_montointeresesdiario ? Number(item.n_montointeresesdiario).toFixed(2) : "";
+            item.n_montointeresesdiario = item.n_montointeresesdiario ? Number(item.n_montointeresesdiario).toFixed(4) : "";
             item.n_montointeresescancelar = item.n_montointeresescancelar ? Number(item.n_montointeresescancelar).toFixed(2) : "";
             item.n_montoprestamocancelar = item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar).toFixed(2) : "";
             item.n_montocomisioncancelar = item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar).toFixed(2) : "";
