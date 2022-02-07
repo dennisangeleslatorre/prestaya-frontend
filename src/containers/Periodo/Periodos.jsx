@@ -11,6 +11,7 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 import { Link } from 'react-router-dom'
 import { listAllPeriodos, deletePeriodos } from '../../Api/Api'
 import moment from 'moment'
+import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo';
 
 const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, updatePermission=false, deletePermission=false}) => {
     const menu = (
@@ -49,6 +50,10 @@ const DropdownButton = ({keyCodes, showDeleteModal, viewPermission=false, update
             </Button>
         </Dropdown>
     )
+}
+
+const tiposPeriodos = {
+    PECO000001: "Periodo para controlar los cierres de mes"
 }
 
 const Periodos = () => {
@@ -134,8 +139,8 @@ const Periodos = () => {
         const listPeriodosTable = periodos.map((item) => {
             let aux = {};
             aux.companyname = item.companyname;
-            aux.c_tipoperiodo = item.c_tipoperiodo;
-            aux.c_periodo = item.c_periodo;
+            aux.c_tipoperiodo = tiposPeriodos[item.c_tipoperiodo];
+            aux.c_periodo = formatPeriodo(item.c_periodo);
             aux.c_descripcion = item.c_descripcion;
             aux.c_estado = item.c_estado === "A" ? "ABIERTO" : "CERRADO";
             aux.c_usuariocierre = item.c_usuariocierre || "";

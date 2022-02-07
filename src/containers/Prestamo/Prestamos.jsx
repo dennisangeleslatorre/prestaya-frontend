@@ -292,6 +292,37 @@ const Prestamos = () => {
     const entregarPermission = userPermisssions.includes("ENTREGAR");
     const formatoPrestamoPermission = userPermisssions.includes("FORMATO PRÉSTAMO");
 
+    const handleChangeCompania = (value) => {
+        setCompania(value);
+        setNPrestamo({value:""});
+        setEstado("T");
+        setCodigoCliente("");
+        setNombreCliente("");
+        setTipoDocumento("T");
+        setNumeroDocumento({value: "", isValid:null});
+        setEsVencido("T");
+        setPaisCodigo("");
+        setDepartamentoCodigo("");
+        setProvinciaCodigo("");
+        setDistritoCodigo("");
+        setFechaDesembolso({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaDesembolso(true);
+        setFechaRegistro({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaRegistro(true);
+        setFechaVigencia({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaVigencia(true);
+        setFechaRemate({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaRemate(true);
+        setFechaVencimiento({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaVencimiento(true);
+        setFechaCancelacion({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaCancelacion(true);
+        setFechaEntrega({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaEntrega(true);
+        setFechaVencimientoRepro({fechaInicio: "", fechaFin: "", isValid: false});
+        setEnabledFechaVencimientoRepro(true);
+    }
+
     //funciones
     const handleSelectUpdate = () => {
         if(elementSelected) {
@@ -690,7 +721,7 @@ const Prestamos = () => {
                                             placeholder="Seleccione un compañía"
                                             valueSelected={compania}
                                             data={companias}
-                                            handleElementSelected={setCompania}
+                                            handleElementSelected={handleChangeCompania}
                                             optionField="c_descripcion"
                                             valueField="c_compania"
                                             classForm="col-12 col-md-6"

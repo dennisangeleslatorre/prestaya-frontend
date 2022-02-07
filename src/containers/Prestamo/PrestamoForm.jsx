@@ -415,7 +415,7 @@ const PrestamoForm = (props) => {
             setFechaDesembolso({value:moment(data.d_fechadesembolso).format('yyyy-MM-DD')});
             setPlazoDias({value:data.n_diasplazo, isValid:true});
             setFechaVencimiento({value:moment(data.d_fechavencimiento).format('yyyy-MM-DD')});
-            setMontoInteresDiario({value:Number(data.n_montointeresesdiario).toFixed(2)});
+            setMontoInteresDiario({value:Number(data.n_montointeresesdiario).toFixed(4)});
             setObservacionesRegistro(data.c_observacionesregistro);
             //Recojo
             setPersonaRecoge({value:data.c_nombrepersonarecogio || ""});
