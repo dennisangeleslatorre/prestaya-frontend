@@ -585,7 +585,7 @@ const PrestamoForm = (props) => {
 
     useEffect(() => {
         if( plazoDias.isValid && montoIntereses.value ) {
-            setMontoInteresDiario({value: (Number(montoIntereses.value)/Number(plazoDias.value)).toFixed(2)});
+            setMontoInteresDiario({value: (Number(montoIntereses.value)/Number(plazoDias.value)).toFixed(4)});
         }
     }, [montoIntereses, plazoDias])
 
