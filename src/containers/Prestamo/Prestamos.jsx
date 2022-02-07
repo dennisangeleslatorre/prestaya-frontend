@@ -548,8 +548,8 @@ const Prestamos = () => {
             item.c_monedaprestamo = monedas.find(moneda => moneda.value === item.c_monedaprestamo).name;
             item.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechavigente = item.d_fechavigente ? moment(item.d_fechavigente).format('DD/MM/yyyy HH:mm:ss') : "";
-            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy HH:mm:ss') : "";
-            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).local().format('DD/MM/yyyy') : "";
+            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).local().format('DD/MM/yyyy') : "";
             item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
