@@ -81,11 +81,15 @@ code {
   border: 1px solid !important;
 }
 
-.ant-table-thead > tr > th {
+.ant-table-thead > tr > th  {
   color: rgb(255 255 255 / 85%) !important;
   font-weight: 500;
   border: 1px solid darkgray;
   background-color: #10489e !important;
+}
+
+.ant-table-thead > tr > th.ant-table-cell.table-audit-column{
+  background-color: #4c4c4c !important;
 }
 
 .table-audit-head {
@@ -93,6 +97,15 @@ code {
 }
 
 .table-audit-column {
-  background-color: #bbbbbb;
+  background-color: #bbbbbb !important;
   color: #ffff !important;
+}
+
+.table-audit-column:hover {
+  background-color: #bbbbbb !important;
+}
+
+.text-audit-table {
+  font-weight: bold;
+  font-size: 15px;
 }

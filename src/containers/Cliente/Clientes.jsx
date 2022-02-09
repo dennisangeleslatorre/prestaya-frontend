@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Divider, Space, Button } from 'antd'
+import { Table, Divider, Space, Button, Tooltip } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -25,6 +25,7 @@ const columns = [
             compare: (a, b) => a.n_cliente - b.n_cliente,
             multiple: 1,
         },
+        width: 100,
     },{
         title: 'Nombre Completo',
         dataIndex: 'c_nombrescompleto',
@@ -32,6 +33,15 @@ const columns = [
             compare: (a, b) => a.c_nombrescompleto.localeCompare(b.c_nombrescompleto),
             multiple: 2,
         },
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        render: c_nombrescompleto => (
+            <Tooltip placement="topLeft" title={c_nombrescompleto}>
+              {c_nombrescompleto}
+            </Tooltip>
+        ),
     },{
         title: 'Tipo Doc',
         dataIndex: 'c_tipodocumento',
@@ -39,6 +49,7 @@ const columns = [
             compare: (a, b) => a.c_tipodocumento.localeCompare(b.c_tipodocumento),
             multiple: 3,
         },
+        width: 120,
     },{
         title: 'Número doc',
         dataIndex: 'c_numerodocumento',
@@ -46,9 +57,19 @@ const columns = [
             compare: (a, b) => a.c_numerodocumento - b.c_numerodocumento,
             multiple: 4,
         },
+        width: 150,
     },{
         title: 'Dirección',
         dataIndex: 'c_direccion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        render: c_direccion => (
+            <Tooltip placement="topLeft" title={c_direccion}>
+              {c_direccion}
+            </Tooltip>
+        ),
     },{
         title: 'País',
         dataIndex: 'pais',
@@ -56,6 +77,7 @@ const columns = [
             compare: (a, b) => a.pais.localeCompare(b.pais),
             multiple: 5,
         },
+        width: 150,
     },{
         title: 'Departamento',
         dataIndex: 'departamento',
@@ -63,6 +85,7 @@ const columns = [
             compare: (a, b) => a.departamento.localeCompare(b.departamento),
             multiple: 6,
         },
+        width: 150,
     },{
         title: 'Provincia',
         dataIndex: 'provincia',
@@ -70,6 +93,7 @@ const columns = [
             compare: (a, b) => a.provincia.localeCompare(b.provincia),
             multiple: 7,
         },
+        width: 150,
     },{
         title: 'Distrito',
         dataIndex: 'distrito',
@@ -77,12 +101,15 @@ const columns = [
             compare: (a, b) => a.distrito.localeCompare(b.distrito),
             multiple: 8,
         },
+        width: 150,
     },{
         title: 'Teléfono 1',
         dataIndex: 'c_telefono1',
+        width: 150,
     },{
         title: 'Teléfono 2',
         dataIndex: 'c_telefono2',
+        width: 150,
     },{
         title: 'Correo',
         dataIndex: 'c_correo',
@@ -90,9 +117,19 @@ const columns = [
             compare: (a, b) => a.c_correo.localeCompare(b.c_correo),
             multiple: 9,
         },
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        render: c_correo => (
+            <Tooltip placement="topLeft" title={c_correo}>
+              {c_correo}
+            </Tooltip>
+        ),
     },{
         title: 'F. Inicio Operaciones',
         dataIndex: 'd_fechaInicioOperaciones',
+        width: 140,
     },{
         title: 'Estado',
         dataIndex: 'c_estado',
@@ -100,33 +137,55 @@ const columns = [
             compare: (a, b) => a.c_correo.localeCompare(b.c_correo),
             multiple: 10,
         },
+        width: 140,
     },{
         title: 'F. Inactivación',
         dataIndex: 'd_fechaInactivacion',
+        width: 140,
     },{
         title: 'Motivo Inactivación',
         dataIndex: 'c_motivoinactivacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        render: c_motivoinactivacion => (
+            <Tooltip placement="topLeft" title={c_motivoinactivacion}>
+              {c_motivoinactivacion}
+            </Tooltip>
+        ),
     },{
-        title: 'U. Registro',
+        title: () => <label className='text-audit-table'>U. Registro</label>,
         dataIndex: 'c_usuarioregistro',
         sorter: {
             compare: (a, b) => a.c_usuarioregistro.localeCompare(b.c_usuarioregistro),
             multiple: 11,
         },
-        style: { background: "#072c31" }
+        render: text => <label className='text-audit-table'>{text}</label>,
+        width: 155,
+        className: 'table-audit-column'
     },{
-        title: 'F. Registro',
+        title: () => <label className='text-audit-table'>F. Registro</label>,
         dataIndex: 'd_fecharegistro',
+        render: text => <label className='text-audit-table'>{text}</label>,
+        width: 180,
+        className: 'table-audit-column'
     },{
-        title: 'U. Modificación',
+        title: () => <label className='text-audit-table'>U. Modificación</label>,
         dataIndex: 'c_ultimousuario',
         sorter: {
             compare: (a, b) => a.c_ultimousuario.localeCompare(b.c_ultimousuario),
             multiple: 12,
         },
+        render: text => <label className='text-audit-table'>{text}</label>,
+        width: 155,
+        className: 'table-audit-column'
     },{
-        title: 'F. Modificación',
+        title:() => <label className='text-audit-table'>F. Modificación</label>,
         dataIndex: 'd_ultimafechamodificacion',
+        render: text => <label className='text-audit-table'>{text}</label>,
+        width: 180,
+        className: 'table-audit-column'
     }
 ]
 

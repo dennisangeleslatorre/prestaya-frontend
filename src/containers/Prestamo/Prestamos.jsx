@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Divider, Space, Button } from 'antd'
+import { Table, Divider, Space, Button, Tooltip } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -23,183 +23,409 @@ import moment from 'moment'
 const columns = [
     {
         title: '# Prestamo',
-        dataIndex: 'c_prestamo'
+        dataIndex: 'c_prestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
     },
     {
-        title: 'F. Registro',
-        dataIndex: 'd_fecharegistro'
+        title: () => <label className='text-audit-table'>F. Registro</label>,
+        dataIndex: 'd_fecharegistro',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table'
     },
     {
         title: 'Cliente',
-        dataIndex: 'n_cliente'
+        dataIndex: 'n_cliente',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
     },
     {
         title: 'Nombre Completo',
-        dataIndex: 'c_nombrescompleto'
+        dataIndex: 'c_nombrescompleto',
+        width: 250,
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_nombrescompleto => (
+            <Tooltip placement="topLeft" title={c_nombrescompleto}>
+              {c_nombrescompleto}
+            </Tooltip>
+        ),
     },
     {
         title: 'Tipo Doc',
-        dataIndex: 'c_tipodocumento'
+        dataIndex: 'c_tipodocumento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100
     },
     {
         title: 'Numero Doc',
-        dataIndex: 'c_numerodocumento'
+        dataIndex: 'c_numerodocumento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Telefono',
-        dataIndex: 'c_telefono1'
+        dataIndex: 'c_telefono1',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
-        title: 'F. Vigencia',
-        dataIndex: 'd_fechavigente'
+        title:() => <label className='text-audit-table'>F. Vigencia</label>,
+        dataIndex: 'd_fechavigente',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table'
     },
     {
         title: 'F. Desembolso',
-        dataIndex: 'd_fechadesembolso'
+        dataIndex: 'd_fechadesembolso',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Dias Plazo',
-        dataIndex: 'n_diasplazo'
+        dataIndex: 'n_diasplazo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100
     },
     {
         title: 'F. Vencimiento',
-        dataIndex: 'd_fechavencimiento'
+        dataIndex: 'd_fechavencimiento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Moneda P.',
-        dataIndex: 'c_monedaprestamo'
+        dataIndex: 'c_monedaprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 120
     },
     {
         title: 'Monto Prestamo',
-        dataIndex: 'n_montoprestamo'
+        dataIndex: 'n_montoprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: '% Tasa Interes',
-        dataIndex: 'n_tasainteres'
+        dataIndex: 'n_tasainteres',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Monto Intereses',
-        dataIndex: 'n_montointereses'
+        dataIndex: 'n_montointereses',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: 'Monto Total P.',
-        dataIndex: 'n_montototalprestamo'
+        dataIndex: 'n_montototalprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: 'Monto Valor Prod.',
-        dataIndex: 'calc_montovalorproducto'
+        dataIndex: 'calc_montovalorproducto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: 'Dias Plazo Totales',
-        dataIndex: 'calc_diastotalesplazo'
+        dataIndex: 'calc_diastotalesplazo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: 'F. Vcto. Reprog.',
-        dataIndex: 'calc_fechaultimovencimiento'
+        dataIndex: 'calc_fechaultimovencimiento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Dias Transcurridos',
-        dataIndex: 'calc_diastotalestranscurridos'
+        dataIndex: 'calc_diastotalestranscurridos',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150
     },
     {
         title: 'Dias Vencido',
-        dataIndex: 'calc_diasvencido'
+        dataIndex: 'calc_diasvencido',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 120
     },
     {
         title: 'Vencido',
-        dataIndex: 'calc_esvencido'
+        dataIndex: 'calc_esvencido',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100
     },
     {
         title: 'F. Cancelacion',
-        dataIndex: 'calc_fechaultimacancelacion'
+        dataIndex: 'calc_fechaultimacancelacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Interes Cancelado',
-        dataIndex: 'calc_sumainterescancelado'
+        dataIndex: 'calc_sumainterescancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160
     },
     {
         title: 'Monto Prest. Cancelado',
-        dataIndex: 'calc_sumamontoprestamocancelado'
+        dataIndex: 'calc_sumamontoprestamocancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 190
     },
     {
         title: 'Mnto. Comision Canc.',
-        dataIndex: 'calc_sumamontocomisioncancelado'
+        dataIndex: 'calc_sumamontocomisioncancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Mnto. Total Cancelado',
-        dataIndex: 'calc_sumamontototalcancelado'
+        dataIndex: 'calc_sumamontototalcancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Estado',
-        dataIndex: 'estadoName'
+        dataIndex: 'estadoName',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'F. Entrega',
-        dataIndex: 'd_fechaentrega'
+        dataIndex: 'd_fechaentrega',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Observaciones Entrega',
-        dataIndex: 'c_observacionesentrega'
+        dataIndex: 'c_observacionesentrega',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_observacionesentrega => (
+            <Tooltip placement="topLeft" title={c_observacionesentrega}>
+              {c_observacionesentrega}
+            </Tooltip>
+        ),
     },
     {
         title: 'F. Remate',
-        dataIndex: 'd_fechaRemate'
+        dataIndex: 'd_fechaRemate',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
     },
     {
         title: 'Obs. Remate',
-        dataIndex: 'c_observacionesremate'
+        dataIndex: 'c_observacionesremate',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_observacionesremate => (
+            <Tooltip placement="topLeft" title={c_observacionesremate}>
+              {c_observacionesremate}
+            </Tooltip>
+        ),
     },
     {
-        title: 'F. Anulacion',
-        dataIndex: 'd_fechaanulacion'
+        title:() => <label className='text-audit-table'>F. Anulacion</label>,
+        dataIndex: 'd_fechaanulacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table'
     },
     {
         title: 'Obs. Anulacion',
-        dataIndex: 'c_observacionesanula'
+        dataIndex: 'c_observacionesanula',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_observacionesanula => (
+            <Tooltip placement="topLeft" title={c_observacionesanula}>
+              {c_observacionesanula}
+            </Tooltip>
+        ),
     },
     {
         title: 'Direccion',
-        dataIndex: 'c_direccioncliente'
+        dataIndex: 'c_direccioncliente',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 300,
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_direccioncliente => (
+            <Tooltip placement="topLeft" title={c_direccioncliente}>
+              {c_direccioncliente}
+            </Tooltip>
+        ),
     },
     {
         title: 'Pais',
-        dataIndex: 'c_paiscodigo'
+        dataIndex: 'pais',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Departamento',
-        dataIndex: 'c_departamentocodigo'
+        dataIndex: 'departamento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Provincia',
-        dataIndex: 'c_provinciacodigo'
+        dataIndex: 'provincia',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
         title: 'Distrito',
-        dataIndex: 'c_distritocodigo'
+        dataIndex: 'distrito',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180
     },
     {
-        title: 'Usuario Registro',
-        dataIndex: 'c_usuarioregistro'
+        title:() => <label className='text-audit-table'>Usuario Registro</label>,
+        dataIndex: 'c_usuarioregistro',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'Usuario Vigencia',
-        dataIndex: 'c_usuariovigente'
+        title:() => <label className='text-audit-table'>Usuario Vigencia</label>,
+        dataIndex: 'c_usuariovigente',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'Usuario Cancelacion',
-        dataIndex: 'c_usuariocancelacion'
+        title:() => <label className='text-audit-table'>Usuario Cancelacion</label>,
+        dataIndex: 'c_usuariocancelacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 170,
+        className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'Usuario Entrega',
-        dataIndex: 'c_usuarioEntrega'
+        title:() => <label className='text-audit-table'>Usuario Entrega</label> ,
+        dataIndex: 'c_usuarioEntrega',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'Usuario Remate',
-        dataIndex: 'c_usuarioRemate'
+        title:() => <label className='text-audit-table'>Usuario Remate</label>,
+        dataIndex: 'c_usuarioRemate',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'U. Anulacion',
-        dataIndex: 'c_usuarioanulacion'
+        title:() => <label className='text-audit-table'>U. Anulacion</label>,
+        dataIndex: 'c_usuarioanulacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table'
     }
 ]
 
@@ -270,6 +496,7 @@ const Prestamos = () => {
     const [open, setOpen] = useState(false);
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     //Contexto
     //Contextos
     const { getUserData } = useContext(UserContext);
@@ -399,7 +626,7 @@ const Prestamos = () => {
         if(response && response.status === 200) {
             await onHandleSearch();
             setResponseData( {title: "Operación exitosa", message: "Se realizó la operación con éxito el cliente." });
-            setElementSelectedRows({...elementSelectedRows, c_estado:'PE'})
+            setSelectedRowKeys([]);
         } else {
             setResponseData( {title: "Error en la operación", message: response.message || "No se pudo realizar la operación" });
         }
@@ -551,7 +778,7 @@ const Prestamos = () => {
             item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).local().format('DD/MM/yyyy') : "";
             item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).local().format('DD/MM/yyyy') : "";
             item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
-            item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy') : "";
             item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
             return item;
         })
@@ -560,11 +787,10 @@ const Prestamos = () => {
 
     //Atributos de la tabla
     const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            //console.log("selectedRowKeys", selectedRowKeys);
-            //console.log("selectedRows", selectedRows);
-            setElementSelected(selectedRowKeys);
+        onChange: (selectedKeys, selectedRows) => {
+            setElementSelected(selectedKeys);
             setElementSelectedRows(selectedRows);
+            setSelectedRowKeys(selectedKeys);
         }
     };
 
@@ -976,6 +1202,7 @@ const Prestamos = () => {
                                             rowSelection={{
                                                 type: "radio",
                                                 ...rowSelection,
+                                                selectedRowKeys,
                                             }}
                                             columns={columns}
                                             dataSource={prestamosToTable}

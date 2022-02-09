@@ -33,7 +33,7 @@ const ClienteForm = (props) => {
     const [distritoCodigo, setDistritoCodigo] = useState("");
     const [telefono, setTelefono] = useState({value:"", isValid:null});
     const [telefono2, setTelefono2] = useState({value:"", isValid:true});
-    const [correoElectronico, setCorreoElectronico] = useState({value:"", isValid:null});
+    const [correoElectronico, setCorreoElectronico] = useState({value:"", isValid:true});
     const [estado, setEstado] = useState("A");
     const [fechaRegistro, setFechaRegistro] = useState({value:"", isValid:null});
     const [fechaInicioOperaciones, setFechaInicioOperaciones] = useState({value:"", isValid:null});
@@ -183,8 +183,8 @@ const ClienteForm = (props) => {
             setProvinciaCodigo(data.c_provinciacodigo);
             setDistritoCodigo(data.c_distritocodigo);
             setTelefono({value: data.c_telefono1, isValid: true});
-            setTelefono2({value: data.c_telefono2, isValid: true});
-            setCorreoElectronico({value: data.c_correo, isValid: true});
+            setTelefono2({value: data.c_telefono2||"", isValid: true});
+            setCorreoElectronico({value: data.c_correo||"", isValid: true});
             setEstado(data.c_estado);
             setFechaRegistro({value: moment(data.d_fecharegistro).format('DD/MM/yyyy')});
             setFechaInicioOperaciones({value: moment(data.d_fechaInicioOperaciones).format('yyyy-MM-DD')});
@@ -461,6 +461,7 @@ const ClienteForm = (props) => {
                     validation="email"
                     max={60}
                     uppercaseOnly={false}
+                    required={false}
                     readOnly={readOnlyView}
                 />
                 <InputComponent

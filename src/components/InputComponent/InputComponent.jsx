@@ -20,7 +20,7 @@ const validations = {
 const InputComponent = (props) => {
 
     const { state, setState, type, label=null, placeholder="", inputId, validation, min, max=250, readOnly, autoComplete="new-text",
-            required=true, uppercaseOnly=true, classForm="", marginForm="", labelSpace=2, fixedNumber=2  } = props;
+            required=true, uppercaseOnly=true, classForm="", marginForm="", labelSpace=2, fixedNumber=2, labelLine  } = props;
 
     const handleOnChange = (e) => {
         if(type === "number") {
@@ -51,7 +51,7 @@ const InputComponent = (props) => {
 
     return (
         <div className={`form-group ${marginForm} ${classForm} row`}>
-            { label && <label htmlFor={inputId} className={`col-sm-${labelSpace} col-form-label label-input`}>{ label }</label> }
+            { label && <label htmlFor={inputId} className={`${ labelLine ? "col-12" : `col-sm-${labelSpace}`} col-form-label label-input`}>{ label }</label> }
             <div className={ label ? `col-sm-${12-labelSpace}` : `col-sm-${14-labelSpace}`}>
                 <input
                     autoComplete={autoComplete}

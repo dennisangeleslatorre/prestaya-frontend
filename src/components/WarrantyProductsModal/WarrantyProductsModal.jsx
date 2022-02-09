@@ -141,16 +141,6 @@ const WarrantyProductsModal = (props) => {
                     readOnly={true}
                     classForm="col-12 col-lg-6"
                 />
-                <InputComponent
-                    label="Descripción producto"
-                    state={descripcion}
-                    setState={setDescripcion}
-                    type="text"
-                    placeholder="Descripción producto"
-                    inputId="descripcionId"
-                    classForm="col-12 col-lg-6"
-                    max={300}
-                />
                 <ReactSelect
                     inputId="tiposId"
                     labelText="Tipos de producto"
@@ -161,6 +151,18 @@ const WarrantyProductsModal = (props) => {
                     optionField="c_descripcion"
                     valueField="c_tipoproducto"
                     classForm="col-12 col-lg-6"
+                />
+                <InputComponent
+                    label="Descripción producto"
+                    state={descripcion}
+                    setState={setDescripcion}
+                    type="text"
+                    placeholder="Descripción producto"
+                    inputId="descripcionId"
+                    classForm="col-12"
+                    max={300}
+                    labelSpace={0}
+                    labelLine={true}
                 />
                 <ReactSelect
                     inputId="unidadMedidaId"
@@ -211,7 +213,8 @@ const WarrantyProductsModal = (props) => {
                     setState={setObservaciones}
                     max={500}
                     classForm="col-12"
-                    labelSpace={1}
+                    labelSpace={0}
+                    labelLine={true}
                 />
                 <InputComponent
                     label="Monto valor"
