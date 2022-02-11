@@ -1,4 +1,8 @@
+import { useState } from 'react'
+
 const useUserSession = () => {
+
+    const [sessionTime, setSessionTime] = useState(1000 * 60 * 15);
 
     //Al logearse
     const login = (callback, token) => {
@@ -63,7 +67,9 @@ const useUserSession = () => {
         setUserToken,
         getUserToken,
         setReportesUsuarios,
-        getReportesUsuarios
+        getReportesUsuarios,
+        sessionTime,
+        setSessionTime
     }
 };
 

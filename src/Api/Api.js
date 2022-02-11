@@ -480,6 +480,12 @@ export const deleteParametro = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getParametroSession = async () => {
+    console.log('---API--- : getParametroSession');
+    const url = `${port}/parametros/getParametroSession`;
+    const response = await consumer(url, 'get');
+    return response;
+};
 //Peridos
 export const listPeriodosByCompania = async (c_codigocompania) => {
     console.log('---API--- : listPeriodos');
