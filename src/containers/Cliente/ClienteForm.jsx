@@ -188,7 +188,7 @@ const ClienteForm = (props) => {
             setEstado(data.c_estado);
             setFechaRegistro({value: moment(data.d_fecharegistro).format('DD/MM/yyyy')});
             setFechaInicioOperaciones({value: moment(data.d_fechaInicioOperaciones).format('yyyy-MM-DD')});
-            if(data.d_fechaInactivacion) setFechaInactivacion({value:data.d_fechaInactivacion});
+            if(data.d_fechaInactivacion) setFechaInactivacion({value:moment(data.d_fechaInactivacion).format('yyyy-MM-DD')});
             if(data.c_motivoinactivacion) setMotivoInactivacion(data.c_motivoinactivacion);
 
         }else {

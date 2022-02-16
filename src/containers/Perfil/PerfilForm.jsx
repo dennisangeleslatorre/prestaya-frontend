@@ -11,7 +11,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { registerPerfil, getRoleByNPerfil, updatePerfil } from '../../Api/Api'
+import { registerPerfil, getRoleByNPerfil, updatePerfil, getReportes, getReportesByPerfil, assignReportToProfile } from '../../Api/Api'
 //utilities
 import { pagesArray } from '../../utilities/PageHierarchy/PageHierarchy'
 
@@ -20,6 +20,8 @@ const PerfilForm = (props) => {
     const [perfil, setPerfil] = useState({value: "", isValid:null});
     const [codigo, setCodigo] = useState({value: "", isValid:null});
     const [paginas, setPaginas] = useState(['INICIO']);
+    const [reportes, setReportes] = useState([]);
+    const [reportsArray, setReportsArray] = useState([]);
     const [estado, setEstado] = useState("A");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
@@ -78,13 +80,32 @@ const PerfilForm = (props) => {
         return data;
     }
 
+    const assignReportesToProfile = async () => {
+        const reportesAux = reportes.map(reporte => {
+            return {
+                c_tiporeporte: 'CO000001',
+                n_grupo: 2,
+                n_reporte: reporte
+            }
+        })
+        await assignReportToProfile({
+            reportes: reportesAux,
+            n_perfil: perfil.value,
+            usuario: userLogedIn
+        })
+    }
+
     const handleRegister = async () => {
         setOpen(false);
         await setIsLoading(true);
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
         const response = await registerPerfil(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el perfil") : prepareNotificationDanger("Error al registrar", response.message);
+        if (response && response.status === 200) {
+            prepareNotificationSuccess("Se registró con éxito el perfil");
+            assignReportesToProfile();
+        } else
+            prepareNotificationDanger("Error al registrar", response.message)
         setIsLoading(false);
     }
 
@@ -94,7 +115,11 @@ const PerfilForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updatePerfil({body:data, id:elementId});
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el perfil") : prepareNotificationDanger("Error al actualizar", response.message);
+        if (response && response.status === 200) {
+            prepareNotificationSuccess("Se actualizó con éxito el perfil");
+            assignReportesToProfile();
+        } else
+            prepareNotificationDanger("Error al actualizar", response.message)
         setIsLoading(false);
     }
 
@@ -112,7 +137,38 @@ const PerfilForm = (props) => {
         }
     }
 
-    const getData = async () => {
+    const getReportesFunction = async () => {
+        const response = await getReportes(elementId);
+        if(response.status === 200) {
+            const data = response.body.data;
+            const resportListAux = [
+                {
+                    title: 'COMERCIAL',
+                    value: 'COMERCIAL',
+                    key: 'COMERCIAL',
+                    children: [
+                        {
+                            title: 'CLIENTES',
+                            value: 'CLIENTES',
+                            key: 'CLIENTES',
+                            children: []
+                        }
+                    ]
+                }
+            ]
+            data.filter(item => item.c_tiporeporte === 'CO000001' && item.n_grupo === 2)
+            .forEach(report => resportListAux[0].children[0].children.push(
+                {
+                    title: report.c_nombrereporte,
+                    value: report.n_reporte,
+                    key: report.n_reporte
+                }
+            ));
+            setReportsArray(resportListAux);
+        }
+    }
+
+    const getPaginasByPerfilFunction = async () => {
         const response = await getRoleByNPerfil(elementId);
         if(response.status === 200) {
             const data = response.body.data;
@@ -125,8 +181,26 @@ const PerfilForm = (props) => {
         }
     }
 
+    const getReportesByPerfilFunction = async () => {
+        const response = await getReportesByPerfil({n_perfil: elementId});
+        if(response.status === 200) {
+            const data = response.body.data;
+            let reportesAux = data.filter(item => item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.c_acceso === 'S')
+            .map(reporte => reporte.n_reporte);
+            setReportes(reportesAux);
+        } else {
+            prepareNotificationDanger("Error obteniendo datos", response.message);
+        }
+    }
+
+    const getData = async () => {
+        await getPaginasByPerfilFunction();
+        await getReportesByPerfilFunction();
+    }
+
     useEffect(async () => {
         await setIsLoading(true);
+        await getReportesFunction()
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoPerfil") await getData();
         setIsLoading(false);
@@ -163,6 +237,13 @@ const PerfilForm = (props) => {
                     data={pagesArray}
                     value={paginas}
                     handleOnChange={(value)=>setPaginas(value)}
+                    readOnly={readOnlyView}
+                />
+                <TreeSelectComponent
+                    label="Reportes"
+                    data={reportsArray}
+                    value={reportes}
+                    handleOnChange={(value)=>setReportes(value)}
                     readOnly={readOnlyView}
                 />
                 <SelectComponent

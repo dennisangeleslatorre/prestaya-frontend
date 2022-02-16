@@ -9,9 +9,10 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 import UserContext from '../../context/UserContext/UserContext'
 //Assets
 import Logo from '../../assets/images/logo_login.png'
-import './LoginStyles.css';
+import './LoginStyles.css'
 //Servicio
-import { signIn, getReportesByPerfil } from '../../Api/Api';
+import { signIn, getReportesByPerfil } from '../../Api/Api'
+import { getSessionDataToLogin } from '../../utilities/Functions/getSessionDataToLogin'
 
 const Login = (props) => {
     //Estados
@@ -50,11 +51,13 @@ const Login = (props) => {
     const authentication = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        const audit_description = await getSessionDataToLogin();
         //Se valida
         if( validate() ) {
             let user = {
                 c_codigousuario: username.value,
-                c_clave: password.value
+                c_clave: password.value,
+                c_descripcion_login: audit_description
             }
             const response = await signIn(user);
             const body = response.body;

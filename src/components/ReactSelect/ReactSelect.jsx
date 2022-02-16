@@ -49,7 +49,7 @@ const ReactSelect = (props) => {
             <label htmlFor={inputId} className={`col-sm-${labelSpace} col-form-label label-input`}>
                 { labelText } {isClear && <Button  onClick={()=>handleElementSelected("")}>Limpiar</Button>}
             </label>
-            <div className={ labelText ? `col-sm-${12-labelSpace}` : `col-sm-${14-labelSpace}`}>
+            <div className={ "form-control" + labelText ? `col-sm-${12-labelSpace}` : `col-sm-${14-labelSpace}`}>
                 <Select
                     inputId={inputId}
                     onChange={(item)=>selectValue(item.value)}

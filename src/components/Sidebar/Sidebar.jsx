@@ -58,7 +58,7 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                         {commercialPages.length !== 0 && (
                             <SubMenu
                             icon={<i className="bi bi-wallet-fill"></i>}
-                            title="Comercial"
+                            title="COMERCIAL"
                             >
                                 {commercialPages.map((page) => (
                                     <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
@@ -68,7 +68,7 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                         {masterPages.length !== 0 && (
                             <SubMenu
                             icon={<i className="bi bi-gear-fill"></i>}
-                            title="Maestros"
+                            title="MAESTROS"
                             >
                                 {masterPages.map((page) => (
                                     <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>
@@ -78,7 +78,7 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
                         {systemPages.length !== 0 && (
                             <SubMenu
                             icon={<i className="bi bi-shield-shaded"></i>}
-                            title="Sistema"
+                            title="SISTEMA"
                             >
                                 {systemPages.map((page) => (
                                     <MenuItem key={page.name} onClick={() => changePage(page.name)}> {page.name} <Link to={page.path} /> </MenuItem>

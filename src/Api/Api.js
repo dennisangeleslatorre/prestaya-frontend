@@ -715,3 +715,15 @@ export const getDataReporteDetallado = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getReportes = async () => {
+    console.log('---API--- : getReportes');
+    const url = `${port}/reporte/getReportes`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const assignReportToProfile = async (body) => {
+    console.log('---API--- : assignReportToProfile');
+    const url = `${port}/reporte/assignReportToProfile`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

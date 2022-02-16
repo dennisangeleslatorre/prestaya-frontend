@@ -19,4 +19,19 @@
 .label-input {
     font-weight: bold;
     color: #10489e;
+    font-size: 13px !important;
+}
+
+#span {
+    font-size: 13px !important;
+}
+
+.input-group > .form-control {
+    position: relative;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+    margin-bottom: 0;
+    font-size: 14px;
 }

@@ -24,10 +24,14 @@ const columns = [
     {
         title: '# Prestamo',
         dataIndex: 'c_prestamo',
+        sorter: {
+            compare: (a, b) => a.c_prestamo.localeCompare(b.c_prestamo),
+            multiple: 1,
+        },
         ellipsis: {
             showTitle: false,
         },
-        width: 150,
+        width: 130,
     },
     {
         title: () => <label className='text-audit-table'>F. Registro</label>,
@@ -41,6 +45,10 @@ const columns = [
     {
         title: 'Cliente',
         dataIndex: 'n_cliente',
+        sorter: {
+            compare: (a, b) => a.n_cliente - b.n_cliente,
+            multiple: 2,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -50,6 +58,10 @@ const columns = [
         title: 'Nombre Completo',
         dataIndex: 'c_nombrescompleto',
         width: 250,
+        sorter: {
+            compare: (a, b) => a.c_nombrescompleto.localeCompare(b.c_nombrescompleto),
+            multiple: 3,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -62,14 +74,22 @@ const columns = [
     {
         title: 'Tipo Doc',
         dataIndex: 'c_tipodocumento',
+        sorter: {
+            compare: (a, b) => a.c_tipodocumento.localeCompare(b.c_tipodocumento),
+            multiple: 4,
+        },
         ellipsis: {
             showTitle: false,
         },
-        width: 100
+        width: 120
     },
     {
         title: 'Numero Doc',
         dataIndex: 'c_numerodocumento',
+        sorter: {
+            compare: (a, b) => a.c_numerodocumento - b.c_numerodocumento,
+            multiple: 5,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -78,6 +98,10 @@ const columns = [
     {
         title: 'Telefono',
         dataIndex: 'c_telefono1',
+        sorter: {
+            compare: (a, b) => a.c_telefono1.localeCompare(b.c_telefono1),
+            multiple: 6,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -103,10 +127,14 @@ const columns = [
     {
         title: 'Dias Plazo',
         dataIndex: 'n_diasplazo',
+        sorter: {
+            compare: (a, b) => a.n_diasplazo.localeCompare(b.n_diasplazo),
+            multiple: 7,
+        },
         ellipsis: {
             showTitle: false,
         },
-        width: 100
+        width: 120
     },
     {
         title: 'F. Vencimiento',
@@ -119,6 +147,10 @@ const columns = [
     {
         title: 'Moneda P.',
         dataIndex: 'c_monedaprestamo',
+        sorter: {
+            compare: (a, b) => a.c_monedaprestamo.localeCompare(b.c_monedaprestamo),
+            multiple: 8,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -127,6 +159,10 @@ const columns = [
     {
         title: 'Monto Prestamo',
         dataIndex: 'n_montoprestamo',
+        sorter: {
+            compare: (a, b) => a.n_montoprestamo - b.n_montoprestamo,
+            multiple: 9,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -135,6 +171,10 @@ const columns = [
     {
         title: '% Tasa Interes',
         dataIndex: 'n_tasainteres',
+        sorter: {
+            compare: (a, b) => a.n_tasainteres - b.n_tasainteres,
+            multiple: 10,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -143,6 +183,10 @@ const columns = [
     {
         title: 'Monto Intereses',
         dataIndex: 'n_montointereses',
+        sorter: {
+            compare: (a, b) => a.n_montointereses - b.n_montointereses,
+            multiple: 11,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -151,6 +195,10 @@ const columns = [
     {
         title: 'Monto Total P.',
         dataIndex: 'n_montototalprestamo',
+        sorter: {
+            compare: (a, b) => a.n_montototalprestamo - b.n_montototalprestamo,
+            multiple: 12,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -159,6 +207,10 @@ const columns = [
     {
         title: 'Monto Valor Prod.',
         dataIndex: 'calc_montovalorproducto',
+        sorter: {
+            compare: (a, b) => a.calc_montovalorproducto - b.calc_montovalorproducto,
+            multiple: 13,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -167,6 +219,10 @@ const columns = [
     {
         title: 'Dias Plazo Totales',
         dataIndex: 'calc_diastotalesplazo',
+        sorter: {
+            compare: (a, b) => a.calc_diastotalesplazo - b.calc_diastotalesplazo,
+            multiple: 14,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -183,14 +239,22 @@ const columns = [
     {
         title: 'Dias Transcurridos',
         dataIndex: 'calc_diastotalestranscurridos',
+        sorter: {
+            compare: (a, b) => a.calc_diastotalestranscurridos - b.calc_diastotalestranscurridos,
+            multiple: 15,
+        },
         ellipsis: {
             showTitle: false,
         },
-        width: 150
+        width: 155
     },
     {
         title: 'Dias Vencido',
         dataIndex: 'calc_diasvencido',
+        sorter: {
+            compare: (a, b) => a.calc_diasvencido - b.calc_diasvencido,
+            multiple: 16,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -199,6 +263,10 @@ const columns = [
     {
         title: 'Vencido',
         dataIndex: 'calc_esvencido',
+        sorter: {
+            compare: (a, b) => a.calc_esvencido.localeCompare(b.calc_esvencido),
+            multiple: 17,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -215,6 +283,10 @@ const columns = [
     {
         title: 'Interes Cancelado',
         dataIndex: 'calc_sumainterescancelado',
+        sorter: {
+            compare: (a, b) => a.calc_sumainterescancelado - b.calc_sumainterescancelado,
+            multiple: 18,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -223,6 +295,10 @@ const columns = [
     {
         title: 'Monto Prest. Cancelado',
         dataIndex: 'calc_sumamontoprestamocancelado',
+        sorter: {
+            compare: (a, b) => a.calc_sumamontoprestamocancelado - b.calc_sumamontoprestamocancelado,
+            multiple: 19,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -231,6 +307,10 @@ const columns = [
     {
         title: 'Mnto. Comision Canc.',
         dataIndex: 'calc_sumamontocomisioncancelado',
+        sorter: {
+            compare: (a, b) => a.calc_sumamontocomisioncancelado - b.calc_sumamontocomisioncancelado,
+            multiple: 20,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -239,6 +319,10 @@ const columns = [
     {
         title: 'Mnto. Total Cancelado',
         dataIndex: 'calc_sumamontototalcancelado',
+        sorter: {
+            compare: (a, b) => a.calc_sumamontototalcancelado - b.calc_sumamontototalcancelado,
+            multiple: 21,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -247,6 +331,10 @@ const columns = [
     {
         title: 'Estado',
         dataIndex: 'estadoName',
+        sorter: {
+            compare: (a, b) => a.estadoName.localeCompare(b.estadoName),
+            multiple: 22,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -344,6 +432,10 @@ const columns = [
     {
         title: 'Pais',
         dataIndex: 'pais',
+        sorter: {
+            compare: (a, b) => a.pais.localeCompare(b.pais),
+            multiple: 23,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -352,6 +444,10 @@ const columns = [
     {
         title: 'Departamento',
         dataIndex: 'departamento',
+        sorter: {
+            compare: (a, b) => a.departamento.localeCompare(b.departamento),
+            multiple: 24,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -360,6 +456,10 @@ const columns = [
     {
         title: 'Provincia',
         dataIndex: 'provincia',
+        sorter: {
+            compare: (a, b) => a.provincia.localeCompare(b.provincia),
+            multiple: 25,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -368,6 +468,10 @@ const columns = [
     {
         title: 'Distrito',
         dataIndex: 'distrito',
+        sorter: {
+            compare: (a, b) => a.distrito.localeCompare(b.distrito),
+            multiple: 26,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -376,6 +480,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>Usuario Registro</label>,
         dataIndex: 'c_usuarioregistro',
+        sorter: {
+            compare: (a, b) => a.c_usuarioregistro.localeCompare(b.c_usuarioregistro),
+            multiple: 27,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -385,6 +493,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>Usuario Vigencia</label>,
         dataIndex: 'c_usuariovigente',
+        sorter: {
+            compare: (a, b) => a.c_usuariovigente.localeCompare(b.c_usuariovigente),
+            multiple: 28,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -394,6 +506,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>Usuario Cancelacion</label>,
         dataIndex: 'c_usuariocancelacion',
+        sorter: {
+            compare: (a, b) => a.c_usuariocancelacion.localeCompare(b.c_usuariocancelacion),
+            multiple: 29,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -403,6 +519,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>Usuario Entrega</label> ,
         dataIndex: 'c_usuarioEntrega',
+        sorter: {
+            compare: (a, b) => a.c_usuarioEntrega.localeCompare(b.c_usuarioEntrega),
+            multiple: 30,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -412,6 +532,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>Usuario Remate</label>,
         dataIndex: 'c_usuarioRemate',
+        sorter: {
+            compare: (a, b) => a.c_usuarioRemate.localeCompare(b.c_usuarioRemate),
+            multiple: 31,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -421,6 +545,10 @@ const columns = [
     {
         title:() => <label className='text-audit-table'>U. Anulacion</label>,
         dataIndex: 'c_usuarioanulacion',
+        sorter: {
+            compare: (a, b) => a.c_usuarioanulacion.localeCompare(b.c_usuarioanulacion),
+            multiple: 32,
+        },
         ellipsis: {
             showTitle: false,
         },
@@ -780,6 +908,19 @@ const Prestamos = () => {
             item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy') : "";
             item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
+            item.n_tasainteres = item.n_tasainteres ? Number(item.n_tasainteres).toFixed(4) : "";
+            item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
+            item.n_montototalprestamo = item.n_montototalprestamo ? Number(item.n_montototalprestamo).toFixed(2) : "";
+            item.calc_montovalorproducto = item.calc_montovalorproducto ? Number(item.calc_montovalorproducto).toFixed(2) : "";
+            item.calc_diastotalesplazo = item.calc_diastotalesplazo ? Number(item.calc_diastotalesplazo).toFixed(0) : "";
+            item.calc_diastotalestranscurridos = item.calc_diastotalestranscurridos ? Number(item.calc_diastotalestranscurridos).toFixed(0) : "";
+            item.calc_diasvencido = item.calc_diasvencido ? Number(item.calc_diasvencido).toFixed(0) : "";
+            item.calc_sumainterescancelado = item.calc_sumainterescancelado ? Number(item.calc_sumainterescancelado).toFixed(2) : "";
+            item.calc_sumamontoprestamocancelado = item.calc_sumamontoprestamocancelado ? Number(item.calc_sumamontoprestamocancelado).toFixed(2) : "";
+            item.calc_sumamontocomisioncancelado = item.calc_sumamontocomisioncancelado ? Number(item.calc_sumamontocomisioncancelado).toFixed(2) : "";
+            item.calc_sumamontototalcancelado = item.calc_sumamontototalcancelado ? Number(item.calc_sumamontototalcancelado).toFixed(2) : "";
+
             return item;
         })
         setPrestamosToTable(listAux);
@@ -1180,7 +1321,6 @@ const Prestamos = () => {
                                 </div>
                                 <div className="row">
                                     <div className="col">
-                                        <Divider />
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                                             { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>NUEVO</Button>}
                                             { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}

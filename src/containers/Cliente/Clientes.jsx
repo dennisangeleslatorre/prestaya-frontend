@@ -470,7 +470,6 @@ const Clientes = () => {
                                 </div>
                                 <div className="row">
                                     <div className="col">
-                                        <Divider />
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                                             {registerPermission && <Button onClick={()=>history.push(`/nuevoCliente/${compania}`)}>Nuevo</Button>}
                                             {updatePermission && <Button onClick={handleSelectUpdate}>Modificar</Button>}

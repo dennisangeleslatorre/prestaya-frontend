@@ -1,7 +1,7 @@
 import React from 'react'
 import { TreeSelect } from 'antd'
 
-const TreeSelectComponent = ({data, value, handleOnChange, readOnly=false}) => {
+const TreeSelectComponent = ({label="Páginas", data, value, handleOnChange, readOnly=false}) => {
     //Propiedades del select
     const tProps = {
         treeData: data,
@@ -16,7 +16,7 @@ const TreeSelectComponent = ({data, value, handleOnChange, readOnly=false}) => {
     };
     return (
         <div className="form-group row">
-            <label htmlFor="treeSelectPageId" className="col-sm-2 col-form-label label-input">Páginas</label>
+            <label htmlFor="treeSelectPageId" className="col-sm-2 col-form-label label-input">{label}</label>
             <div className="col-sm-10">
                 <TreeSelect {...tProps} onChange={handleOnChange}/>
             </div>

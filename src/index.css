@@ -86,6 +86,8 @@ code {
   font-weight: 500;
   border: 1px solid darkgray;
   background-color: #10489e !important;
+  font-size: 13px;
+  padding: 13px 13px !important;
 }
 
 .ant-table-thead > tr > th.ant-table-cell.table-audit-column{
@@ -107,5 +109,28 @@ code {
 
 .text-audit-table {
   font-weight: bold;
-  font-size: 15px;
+  font-size: 13px;
+  margin: 0px;
+}
+
+.ant-btn {
+  border-radius: 0.4rem !important;
+}
+
+.pro-item-content {
+  font-size: 14px;
+}
+
+.ant-table-tbody > tr > td {
+  position: relative;
+  padding: 8px 8px !important;
+  overflow-wrap: break-word;
+}
+
+.form-control {
+  font-size: 13px;
+}
+
+.input-group-text {
+  font-size: 13px;
 }
