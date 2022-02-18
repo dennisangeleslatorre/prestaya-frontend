@@ -40,7 +40,7 @@ const TipoDocumentoForm = (props) => {
         editarTipoDocumento: {label:"Actualizar", class:"btn btn-warning btn-form"},
         visualizarTipoDocumento: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
-    const readOnlyView = urlFragment === "visualizarDepartamento" ? true : false;
+    const readOnlyView = urlFragment === "visualizarTipoDocumento" ? true : false;
     const readOnlyCode = urlFragment !== "nuevoTipoDocumento" ? true : false;
 
     const formFunctions = {

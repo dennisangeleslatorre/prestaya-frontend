@@ -72,7 +72,7 @@ const Perfiles = () => {
     //Constantes
     const columns = [
         {name:'actions', label: '', sortVar:0},
-        {name:'n_perfil', label: 'Paginas', sortVar:1 },
+        {name:'n_perfil', label: 'N° perfil', sortVar:1 },
         {name:'c_codigoperfil', label: 'Perfil', sortVar:1 },
         {name:'c_paginas', label: 'Páginas', sortVar:0 },
         {name:'c_estado', label: 'Estado', sortVar:0}
