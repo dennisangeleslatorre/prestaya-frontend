@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { PDFViewer  } from "@react-pdf/renderer"
 import ContratoPDFComponent from '../../components/ContratoPDFComponent/ContratoPDFComponent'
 import Loading from '../../components/Modal/LoadingModal'
-import { obtenerDatosFormatoPrestamo, getProductosByFormato, listParametrosByCompania, getCompaniaByCodigoCompania } from '../../Api/Api'
+import { obtenerDatosFormatoPrestamo, getProductosByFormato, listParametrosByCompania, getCompaniaToFormato } from '../../Api/Api'
 import { Link } from 'react-router-dom'
 
 const Contrato = (props) => {
@@ -13,7 +13,7 @@ const Contrato = (props) => {
 
     const getData = async () => {
         let elementAux = {};
-        const responseCompania = await getCompaniaByCodigoCompania(c_compania);
+        const responseCompania = await getCompaniaToFormato(c_compania);
         if(responseCompania.status === 200) {
             const compania = responseCompania.body.data;
             elementAux.compania = compania;

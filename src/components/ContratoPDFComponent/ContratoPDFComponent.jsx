@@ -381,7 +381,7 @@ const ContratoPDFComponent = ({element}) => (
                         <Text style={styles.body__subtitle__text}>III)      CONTRATO DE PRÉSTAMOS CON GARANTIA PRENDARIA</Text>
                     </View>
                     <View style={styles.row__header__container}>
-                        <Text style={styles.body__paragrah}>Conste por el presente documento Contrato de Préstamo con Garantía que celebran en una parte La Empresa EFECTI FACIL S.A.C. con RUC: {element.compania.c_ruc} y domicilio en {element.compania.c_direccion}, en quien adelante se denominará <Text style={styles.body__text__bold}>“LA EMPRESA”</Text> y del otro cuyos datos están indicados en este contrato a quien en delante se denominará <Text style={styles.body__text__bold}>“EL CLIENTE”</Text>, en los términos y condiciones siguientes:</Text>
+                        <Text style={styles.body__paragrah}>Conste por el presente documento Contrato de Préstamo con Garantía que celebran en una parte La Empresa EFECTI FACIL S.A.C. con RUC: {element.compania.c_ruc} y domicilio en {element.compania.c_direccion} {element.compania.distrito}, en quien adelante se denominará <Text style={styles.body__text__bold}>“LA EMPRESA”</Text> y del otro cuyos datos están indicados en este contrato a quien en delante se denominará <Text style={styles.body__text__bold}>“EL CLIENTE”</Text>, en los términos y condiciones siguientes:</Text>
                     </View>
                     <View style={styles.row__header__container}>
                         <Text style={styles.body__subtitle__text}>1.-INTRODUCCION</Text>

@@ -37,7 +37,8 @@ const Layout = (props) => {
     useEffect( async () => {
         const responseParametro = await getParametroSession();
         if( responseParametro && responseParametro.status === 200 ) {
-            setSessionTime(1000 * 60 * Number(responseParametro.body.data.n_valornumero > 0 ? responseParametro.body.data.n_valornumero : 525600));
+            const minutos = Number(responseParametro.body.data.n_valornumero) > 0 ? Number(responseParametro.body.data.n_valornumero) : 525600
+            setSessionTime(1000 * 60 * minutos );
         }
     }, [])
 

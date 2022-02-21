@@ -258,6 +258,12 @@ export const deleteCompania = async (c_compania) => {
     const response = await consumer(url, 'post', {});
     return response;
 };
+export const getCompaniaToFormato = async (id) => {
+    console.log('---API--- : getCompaniaToFormato');
+    const url = `${port}/compania/${id}/getCompaniaToFormato`;
+    const response = await consumer(url, 'get');
+    return response;
+};
 //Pais
 export const listPaises = async () => {
     console.log('---API--- : listPaises');

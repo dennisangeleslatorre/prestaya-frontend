@@ -34,13 +34,12 @@ const columns = [
         width: 130,
     },
     {
-        title: () => <label className='text-audit-table'>F. Registro</label>,
-        dataIndex: 'd_fecharegistro',
+        title: 'F. Desembolso',
+        dataIndex: 'd_fechadesembolso',
         ellipsis: {
             showTitle: false,
         },
-        width: 180,
-        className: 'table-audit-column text-audit-table'
+        width: 140
     },
     {
         title: 'Cliente',
@@ -108,8 +107,8 @@ const columns = [
         width: 180
     },
     {
-        title:() => <label className='text-audit-table'>F. Vigencia</label>,
-        dataIndex: 'd_fechavigente',
+        title: () => <label className='text-audit-table'>F. Registro</label>,
+        dataIndex: 'd_fecharegistro',
         ellipsis: {
             showTitle: false,
         },
@@ -117,12 +116,13 @@ const columns = [
         className: 'table-audit-column text-audit-table'
     },
     {
-        title: 'F. Desembolso',
-        dataIndex: 'd_fechadesembolso',
+        title:() => <label className='text-audit-table'>F. Vigencia</label>,
+        dataIndex: 'd_fechavigente',
         ellipsis: {
             showTitle: false,
         },
-        width: 140
+        width: 180,
+        className: 'table-audit-column text-audit-table'
     },
     {
         title: 'Dias Plazo',
