@@ -25,6 +25,9 @@ const columns = [
             compare: (a, b) => a.n_cliente - b.n_cliente,
             multiple: 1,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 100,
     },{
         title: 'Nombre Completo',
@@ -34,6 +37,9 @@ const columns = [
             multiple: 2,
         },
         ellipsis: {
+            showTitle: false,
+        },
+         ellipsis: {
             showTitle: false,
         },
         width: 300,
@@ -49,6 +55,9 @@ const columns = [
             compare: (a, b) => a.c_tipodocumento.localeCompare(b.c_tipodocumento),
             multiple: 3,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 120,
     },{
         title: 'Número doc',
@@ -57,11 +66,17 @@ const columns = [
             compare: (a, b) => a.c_numerodocumento - b.c_numerodocumento,
             multiple: 4,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Dirección',
         dataIndex: 'c_direccion',
         ellipsis: {
+            showTitle: false,
+        },
+         ellipsis: {
             showTitle: false,
         },
         width: 300,
@@ -77,6 +92,9 @@ const columns = [
             compare: (a, b) => a.pais.localeCompare(b.pais),
             multiple: 5,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Departamento',
@@ -84,6 +102,9 @@ const columns = [
         sorter: {
             compare: (a, b) => a.departamento.localeCompare(b.departamento),
             multiple: 6,
+        },
+         ellipsis: {
+            showTitle: false,
         },
         width: 150,
     },{
@@ -93,6 +114,9 @@ const columns = [
             compare: (a, b) => a.provincia.localeCompare(b.provincia),
             multiple: 7,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Distrito',
@@ -101,14 +125,23 @@ const columns = [
             compare: (a, b) => a.distrito.localeCompare(b.distrito),
             multiple: 8,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Teléfono 1',
         dataIndex: 'c_telefono1',
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Teléfono 2',
         dataIndex: 'c_telefono2',
+         ellipsis: {
+            showTitle: false,
+        },
         width: 150,
     },{
         title: 'Correo',
@@ -120,6 +153,9 @@ const columns = [
         ellipsis: {
             showTitle: false,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 300,
         render: c_correo => (
             <Tooltip placement="topLeft" title={c_correo}>
@@ -129,6 +165,9 @@ const columns = [
     },{
         title: 'F. Inicio Operaciones',
         dataIndex: 'd_fechaInicioOperaciones',
+         ellipsis: {
+            showTitle: false,
+        },
         width: 140,
     },{
         title: 'Estado',
@@ -137,15 +176,24 @@ const columns = [
             compare: (a, b) => a.c_correo.localeCompare(b.c_correo),
             multiple: 10,
         },
+         ellipsis: {
+            showTitle: false,
+        },
         width: 140,
     },{
         title: 'F. Inactivación',
         dataIndex: 'd_fechaInactivacion',
+         ellipsis: {
+            showTitle: false,
+        },
         width: 140,
     },{
         title: 'Motivo Inactivación',
         dataIndex: 'c_motivoinactivacion',
         ellipsis: {
+            showTitle: false,
+        },
+         ellipsis: {
             showTitle: false,
         },
         width: 300,
@@ -162,12 +210,18 @@ const columns = [
             multiple: 11,
         },
         render: text => <label className='text-audit-table'>{text}</label>,
+         ellipsis: {
+            showTitle: false,
+        },
         width: 155,
         className: 'table-audit-column'
     },{
         title: () => <label className='text-audit-table'>F. Registro</label>,
         dataIndex: 'd_fecharegistro',
         render: text => <label className='text-audit-table'>{text}</label>,
+         ellipsis: {
+            showTitle: false,
+        },
         width: 180,
         className: 'table-audit-column'
     },{
@@ -178,12 +232,18 @@ const columns = [
             multiple: 12,
         },
         render: text => <label className='text-audit-table'>{text}</label>,
+         ellipsis: {
+            showTitle: false,
+        },
         width: 155,
         className: 'table-audit-column'
     },{
         title:() => <label className='text-audit-table'>F. Modificación</label>,
         dataIndex: 'd_ultimafechamodificacion',
         render: text => <label className='text-audit-table'>{text}</label>,
+         ellipsis: {
+            showTitle: false,
+        },
         width: 180,
         className: 'table-audit-column'
     }
