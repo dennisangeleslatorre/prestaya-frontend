@@ -13,8 +13,8 @@ import './Sidebar.css'
 
 const systemModules = {
     commercialModule: ['CLIENTES', 'PRÉSTAMOS'],
-    masterModule: [ 'TIPOS DE PRODUCTO', 'TIPOS DE DOCUMENTO', 'UNIDADES DE MEDIDA', 'AGENCIAS', 'PARÁMETROS', 'PAÍSES',
-                    'DEPARTAMENTOS', 'PROVINCIAS', 'DISTRITOS', 'COMPAÑÍAS', 'PERÍODOS' ],
+    masterModule: [ 'AGENCIAS', 'COMPAÑÍAS', 'DEPARTAMENTOS', 'DISTRITOS', 'PAÍSES', 'PARÁMETROS', 'PERÍODOS', 'PROVINCIAS', 'TIPOS DE DOCUMENTO',
+                    'TIPOS DE PRODUCTO', 'UNIDADES DE MEDIDA' ],
     systemModule: ['USUARIOS', 'PERFILES'],
     reportModule: ['REPORTE DETALLADO', 'REPORTE RESUMIDO']
 }
@@ -26,7 +26,14 @@ const Sidebar = ({isCollapse, showSidebar, toggled}) => {
     let history = useHistory();
     //Paginas por modulo
     const commercialPages = pages.filter((item) => systemModules['commercialModule'].includes(item.name));
-    const masterPages = pages.filter((item) => systemModules['masterModule'].includes(item.name));
+    const masterPages = pages.filter((item) => systemModules['masterModule'].includes(item.name)).sort((a, b) => {
+        if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+    });
     const systemPages = pages.filter((item) => systemModules['systemModule'].includes(item.name));
     const reportPages = pages.filter((item) => systemModules['reportModule'].includes(item.name));
 

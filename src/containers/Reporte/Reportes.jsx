@@ -27,14 +27,14 @@ const Reportes = () => {
                                     </tr>
                                     {/*Comercial*/}
                                     <tr>
-                                        <td>Comercial</td>
+                                        <td><b>Comercial</b></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td>Clientes</td>
+                                        <td><b>Préstamos</b></td>
                                         <td></td>
                                         <td></td>
                                     </tr>
