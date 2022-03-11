@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Divider, Space, Button, Tooltip } from 'antd'
+import { Table, Space, Button, Tooltip } from 'antd'
 //Componentes
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -10,6 +10,7 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
+import { Checkbox } from 'antd';
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 import UserContext from '../../context/UserContext/UserContext'
@@ -19,6 +20,7 @@ import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
     listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate } from '../../Api/Api'
 import moment from 'moment'
+import { separator } from '../../utilities/Functions/FormatNumber';
 
 const columns = [
     {
@@ -32,6 +34,14 @@ const columns = [
             showTitle: false,
         },
         width: 130,
+    },
+    {
+        title: 'P.',
+        dataIndex: 'peso',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 40
     },
     {
         title: 'F. Desembolso',
@@ -908,18 +918,51 @@ const Prestamos = () => {
             item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy') : "";
             item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
-            item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
+            item.n_montoprestamo = (
+                <div className="col-12 text-center">
+                    {item.n_montoprestamo ? separator(Number(item.n_montoprestamo).toFixed(2)) : ""}
+                </div>
+            );
             item.n_tasainteres = item.n_tasainteres ? Number(item.n_tasainteres).toFixed(4) : "";
-            item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
-            item.n_montototalprestamo = item.n_montototalprestamo ? Number(item.n_montototalprestamo).toFixed(2) : "";
-            item.calc_montovalorproducto = item.calc_montovalorproducto ? Number(item.calc_montovalorproducto).toFixed(2) : "";
+            item.n_montointereses = (
+                <div className='col-12 text-end'>
+                    {item.n_montointereses ? separator(Number(item.n_montointereses).toFixed(2)) : ""}
+                </div>
+            );
+            item.n_montototalprestamo = (
+                <div className="col-12 text-end">
+                    {item.n_montototalprestamo ? separator(Number(item.n_montototalprestamo).toFixed(2)) : ""}
+                </div>
+            );
+            item.calc_montovalorproducto = (
+                <div className="col-12 text-end">
+                    {item.calc_montovalorproducto ? separator(Number(item.calc_montovalorproducto).toFixed(2)) : ""}
+                </div>
+            );
             item.calc_diastotalesplazo = item.calc_diastotalesplazo ? Number(item.calc_diastotalesplazo).toFixed(0) : "";
             item.calc_diastotalestranscurridos = item.calc_diastotalestranscurridos ? Number(item.calc_diastotalestranscurridos).toFixed(0) : "";
             item.calc_diasvencido = item.calc_diasvencido ? Number(item.calc_diasvencido).toFixed(0) : "";
-            item.calc_sumainterescancelado = item.calc_sumainterescancelado ? Number(item.calc_sumainterescancelado).toFixed(2) : "";
-            item.calc_sumamontoprestamocancelado = item.calc_sumamontoprestamocancelado ? Number(item.calc_sumamontoprestamocancelado).toFixed(2) : "";
-            item.calc_sumamontocomisioncancelado = item.calc_sumamontocomisioncancelado ? Number(item.calc_sumamontocomisioncancelado).toFixed(2) : "";
-            item.calc_sumamontototalcancelado = item.calc_sumamontototalcancelado ? Number(item.calc_sumamontototalcancelado).toFixed(2) : "";
+            item.calc_sumainterescancelado = (
+                <div className="col-12 text-end">
+                    {item.calc_sumainterescancelado ? separator(Number(item.calc_sumainterescancelado).toFixed(2)) : ""}
+                </div>
+            );
+            item.calc_sumamontoprestamocancelado = (
+                <div className="col-12 text-end">
+                    {item.calc_sumamontoprestamocancelado ? separator(Number(item.calc_sumamontoprestamocancelado).toFixed(2)) : ""}
+                </div>
+            );
+            item.calc_sumamontocomisioncancelado = (
+                <div className="col-12 text-end">
+                    {item.calc_sumamontocomisioncancelado ? separator(Number(item.calc_sumamontocomisioncancelado).toFixed(2)) : ""}
+                </div>
+            );
+            item.calc_sumamontototalcancelado = (
+                <div className="col-12 text-end">
+                    {item.calc_sumamontototalcancelado ? separator(Number(item.calc_sumamontototalcancelado).toFixed(2)) : ""}
+                </div>
+            );
+            item.peso = <Checkbox checked={ (Number(item.n_pesonetototal) > 0 ||  Number(item.n_pesobrutototal) > 0) ? true : false} />
 
             return item;
         })

@@ -4,7 +4,7 @@ import { Table, Space, Button } from 'antd'
 import WarrantyProductsModal from '../WarrantyProductsModal/WarrantyProductsModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 //Servicios
-import { listTiposProducto, listUnidadesMedida, listAllTiposProducto } from '../../Api/Api'
+import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida } from '../../Api/Api'
 import moment from 'moment'
 
 const columns = [
@@ -19,7 +19,7 @@ const columns = [
         dataIndex: 'c_tipoproducto_name'
     },,{
         title: 'Unidad Medida',
-        dataIndex: 'c_unidadmedida'
+        dataIndex: 'c_unidadmedida_name'
     },{
         title: 'Cantidad',
         dataIndex: 'n_cantidad'
@@ -58,6 +58,7 @@ const WarrantyProductsForm = (props) => {
     const [tiposProducto, setTiposProducto] = useState([]);
     const [allTiposProductos, setAllTiposProductos] = useState([]);
     const [unidadesMedidas, setUnidadesMedidas] = useState([]);
+    const [allUnidadesMedidas, setAllUnidadesMedidas] = useState([]);
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [newNLine, setNewNLine] = useState({value:1});
     const [showModal, setShowModal] = useState(false);
@@ -111,10 +112,17 @@ const WarrantyProductsForm = (props) => {
         if(response && response.status === 200) setUnidadesMedidas(response.body.data);
     }
 
+    const getAllListUnidadesMedidas = async () => {
+        const response = await listAllUnidadesMedida();
+        if(response && response.status === 200) setAllUnidadesMedidas(response.body.data);
+    }
+
+
     useEffect(async () => {
         await getUnidadesMedidas();
         await getTiposProducto();
         await getAllListTiposProductos();
+        await getAllListUnidadesMedidas();
     }, [])
 
     //Atributos de la tabla
@@ -129,6 +137,7 @@ const WarrantyProductsForm = (props) => {
             let aux = item;
             aux.key = index;
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
+            aux.c_unidadmedida_name = allUnidadesMedidas.find(unidad => unidad.c_unidadmedida === item.c_unidadmedida).c_descripcion;
             aux.n_linea = index+1;
             aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
             aux.n_pesobruto = Number(item.n_pesobruto).toFixed(4);

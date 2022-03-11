@@ -141,12 +141,44 @@ const styles = StyleSheet.create({
         borderWidth: '1px',
         margin: '0px'
     },
+    table__column__container__und__dynamic__weight: {
+        width: '2.0cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
+    table__column__container__desc__dynamic__weight: {
+        width: '4.2cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
+    table__column__container__weight__dynamic__weight: {
+        width: '2.8cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
     table__text: {
         fontSize: '0.35cm',
         textAlign: 'center'
     },
     table__text__header: {
         fontSize: '0.4cm',
+        textAlign: 'center'
+    },
+    table__text__header__dynamic__weight: {
+        fontSize: '0.35cm',
+        textAlign: 'center'
+    },
+    table__text__dynamic__weight: {
+        fontSize: '0.30cm',
         textAlign: 'center'
     },
     //bottom
@@ -343,34 +375,50 @@ const ContratoPDFComponent = ({element}) => (
                     </View>
                     <View style={styles.table__container}>
                         <View style={styles.table__row__container}>
-                            <View style={styles.table__column__container__und}>
-                                <Text style={styles.table__text__header}>UND</Text>
+                            <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
+                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>UND</Text>
                             </View>
-                            <View style={styles.table__column__container}>
-                                <Text style={styles.table__text__header}>TIPO</Text>
+                            <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container}>
+                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>TIPO</Text>
                             </View>
-                            <View style={styles.table__column__container__desc}>
-                                <Text style={styles.table__text__header}>DESCRIPCION</Text>
+                            <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>DESCRIPCION</Text>
                             </View>
-                            <View style={styles.table__column__container__desc}>
-                                <Text style={styles.table__text__header}>OBSERVACIONES</Text>
+                            <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>OBSERVACIONES</Text>
                             </View>
+                            { element.thereWeight && <>
+                                <View style={styles.table__column__container__weight__dynamic__weight}>
+                                    <Text style={styles.table__text__header__dynamic__weight}>PESO BRUTO</Text>
+                                </View>
+                                <View style={styles.table__column__container__weight__dynamic__weight}>
+                                    <Text style={styles.table__text__header__dynamic__weight}>PESO NETO</Text>
+                                </View>
+                            </> }
                         </View>
                         {
                             element.productos.map((item,index) => (
                                 <View style={styles.table__row__container} key={index}>
-                                    <View style={styles.table__column__container__und}>
-                                        <Text style={styles.table__text}>{item.unidadmedidadesc}</Text>
+                                    <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
+                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.unidadmedidadesc}</Text>
                                     </View>
-                                    <View style={styles.table__column__container}>
-                                        <Text style={styles.table__text}>{item.tipoproductodesc}</Text>
+                                    <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container}>
+                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.tipoproductodesc}</Text>
                                     </View>
-                                    <View style={styles.table__column__container__desc}>
-                                        <Text style={styles.table__text}>{item.c_descripcionproducto}</Text>
+                                    <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.c_descripcionproducto}</Text>
                                     </View>
-                                    <View style={styles.table__column__container__desc}>
-                                        <Text style={styles.table__text}>{item.c_observaciones}</Text>
+                                    <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.c_observaciones}</Text>
                                     </View>
+                                    { element.thereWeight && <>
+                                        <View style={styles.table__column__container__weight__dynamic__weight}>
+                                            <Text style={styles.table__text__header__dynamic__weight}>{Number(item.n_pesobruto).toFixed(4)}</Text>
+                                        </View>
+                                        <View style={styles.table__column__container__weight__dynamic__weight}>
+                                            <Text style={styles.table__text__header__dynamic__weight}>{Number(item.n_pesoneto).toFixed(4)}</Text>
+                                        </View>
+                                    </>}
                                 </View>
                             ))
                         }
@@ -412,7 +460,7 @@ const ContratoPDFComponent = ({element}) => (
                         <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>a.- cancelación total</Text> del préstamo, incluyendo los intereses. Ante cual la empresa devolverá los bienes entregados en garantía.</Text>
                         <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>b.- Pago parcial</Text> o amortización del préstamo con los intereses pactados.</Text>
                         <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>c.- Renovación</Text> del préstamo previo pago de los intereses devengados.</Text>
-                        <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>SOLO SE COBRARÁ PENALIDAD de S/{Number(element.montoPenalidadCancelacion).toFixed(2)}(00/100) soles, si se realizara una Cancelación de contrato en los próximos 1 a {Number(element.diasCobroPenalidad).toFixed(0)} días después de generarse el préstamo.</Text></Text>
+                        <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>SOLO SE COBRARÁ COMISION de S/{Number(element.montoPenalidadCancelacion).toFixed(2)}(00/100) soles ADICIONALES, si se realizara una cancelación de contrato en el mismo día de efectuarse el préstamo a {Number(element.diasCobroPenalidad).toFixed(0)} días después de generarse el préstamo.</Text></Text>
                         <Text style={styles.body__multi__paragraph}><Text style={styles.body__text__bold}>          Además de los {Number(element.prestamo.n_diasplazo).toFixed(0)} días de plazo de duración del préstamo “EL PRESTATARIO” cuenta con {Number(element.diasRemate).toFixed(0)} días adicionales antes del remate de su prenda.</Text></Text>
                     </View>
                     <View style={styles.row__header__container}>

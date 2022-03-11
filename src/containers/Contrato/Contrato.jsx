@@ -27,7 +27,12 @@ const Contrato = (props) => {
             if(responseProductos.status === 200) {
                 const productos = responseProductos.body.data;
                 elementAux.productos = productos;
-            } else elementAux.productos = [];
+                const weight = productos.find(item => Number(item.n_pesobruto) > 0 || Number(item.n_pesoneto) > 0 );
+                elementAux.thereWeight = weight ? true : false;
+            } else {
+                elementAux.productos = [];
+                elementAux.thereWeight = false;
+            }
         }
         const responseParametros = await listParametrosByCompania(c_compania);
         if(responseParametros && responseParametros.status === 200) {
