@@ -125,6 +125,14 @@ const styles = StyleSheet.create({
         borderWidth: '1px',
         margin: '0px'
     },
+    table__column__container__cnt: {
+        width: '1cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
     table__column__container__und: {
         width: '3.5cm',
         minHeight: '0.7cm',
@@ -142,7 +150,7 @@ const styles = StyleSheet.create({
         margin: '0px'
     },
     table__column__container__und__dynamic__weight: {
-        width: '2.0cm',
+        width: '1.9cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -158,12 +166,19 @@ const styles = StyleSheet.create({
         margin: '0px'
     },
     table__column__container__weight__dynamic__weight: {
-        width: '2.8cm',
+        width: '2.4cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
         borderWidth: '1px',
         margin: '0px'
+    },
+    table__column__container__total__dynamic__weight: {
+        width: '4.2cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        marginLeft: '9cm'
     },
     table__text: {
         fontSize: '0.35cm',
@@ -174,12 +189,18 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     table__text__header__dynamic__weight: {
-        fontSize: '0.35cm',
+        fontSize: '0.33cm',
         textAlign: 'center'
     },
     table__text__dynamic__weight: {
         fontSize: '0.30cm',
         textAlign: 'center'
+    },
+    table__text__dynamic__weight__bold: {
+        fontSize: '0.30cm',
+        textAlign: 'center',
+        fontFamily: 'Roboto',
+        fontWeight: 'bold',
     },
     //bottom
     signatures__container: {
@@ -375,17 +396,20 @@ const ContratoPDFComponent = ({element}) => (
                     </View>
                     <View style={styles.table__container}>
                         <View style={styles.table__row__container}>
+                            <View style={styles.table__column__container__cnt}>
+                                <Text style={styles.table__text__header__dynamic__weight}>CNT</Text>
+                            </View>
                             <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
-                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>UND</Text>
+                                <Text style={styles.table__text__header__dynamic__weight}>UND</Text>
                             </View>
-                            <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container}>
-                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>TIPO</Text>
-                            </View>
-                            <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
-                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>DESCRIPCION</Text>
+                            <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
+                                <Text style={styles.table__text__header__dynamic__weight}>TIPO</Text>
                             </View>
                             <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
-                                <Text style={element.thereWeight ? styles.table__text__header__dynamic__weight : styles.table__text__header}>OBSERVACIONES</Text>
+                                <Text style={styles.table__text__header__dynamic__weight}>DESCRIPCION</Text>
+                            </View>
+                            <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                <Text style={styles.table__text__header__dynamic__weight}>OBSERVACIONES</Text>
                             </View>
                             { element.thereWeight && <>
                                 <View style={styles.table__column__container__weight__dynamic__weight}>
@@ -399,29 +423,43 @@ const ContratoPDFComponent = ({element}) => (
                         {
                             element.productos.map((item,index) => (
                                 <View style={styles.table__row__container} key={index}>
+                                    <View style={styles.table__column__container__cnt}>
+                                        <Text style={styles.table__text__dynamic__weight}>1</Text>
+                                    </View>
                                     <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
-                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.unidadmedidadesc}</Text>
+                                        <Text style={ styles.table__text__dynamic__weight}>{item.unidadmedidadesc}</Text>
                                     </View>
-                                    <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container}>
-                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.tipoproductodesc}</Text>
-                                    </View>
-                                    <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
-                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.c_descripcionproducto}</Text>
+                                    <View style={element.thereWeight ? styles.table__column__container__und__dynamic__weight : styles.table__column__container__und}>
+                                        <Text style={ styles.table__text__dynamic__weight}>{item.tipoproductodesc}</Text>
                                     </View>
                                     <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
-                                        <Text style={ element.thereWeight ? styles.table__text__dynamic__weight : styles.table__text}>{item.c_observaciones}</Text>
+                                        <Text style={ styles.table__text__dynamic__weight}>{item.c_descripcionproducto}</Text>
+                                    </View>
+                                    <View style={element.thereWeight ? styles.table__column__container__desc__dynamic__weight : styles.table__column__container__desc}>
+                                        <Text style={ styles.table__text__dynamic__weight}>{item.c_observaciones}</Text>
                                     </View>
                                     { element.thereWeight && <>
                                         <View style={styles.table__column__container__weight__dynamic__weight}>
-                                            <Text style={styles.table__text__header__dynamic__weight}>{Number(item.n_pesobruto).toFixed(4)}</Text>
+                                            <Text style={styles.table__text__dynamic__weight}>{Number(item.n_pesobruto).toFixed(4)}</Text>
                                         </View>
                                         <View style={styles.table__column__container__weight__dynamic__weight}>
-                                            <Text style={styles.table__text__header__dynamic__weight}>{Number(item.n_pesoneto).toFixed(4)}</Text>
+                                            <Text style={styles.table__text__dynamic__weight}>{Number(item.n_pesoneto).toFixed(4)}</Text>
                                         </View>
                                     </>}
                                 </View>
                             ))
                         }
+                        { element.thereWeight && <View style={styles.table__row__container}>
+                            <View style={styles.table__column__container__total__dynamic__weight}>
+                                <Text style={styles.table__text__dynamic__weight__bold}>TOTALES PESO:</Text>
+                            </View>
+                            <View style={styles.table__column__container__weight__dynamic__weight}>
+                                <Text style={styles.table__text__dynamic__weight__bold}>{Number(element.pesobrutototal).toFixed(4)}</Text>
+                            </View>
+                            <View style={styles.table__column__container__weight__dynamic__weight}>
+                                <Text style={styles.table__text__dynamic__weight__bold}>{Number(element.pesonetototal).toFixed(4)}</Text>
+                            </View>
+                        </View> }
                     </View>
                 </View>
                 <View style={styles.body__section}>

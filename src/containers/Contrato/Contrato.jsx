@@ -27,8 +27,19 @@ const Contrato = (props) => {
             if(responseProductos.status === 200) {
                 const productos = responseProductos.body.data;
                 elementAux.productos = productos;
-                const weight = productos.find(item => Number(item.n_pesobruto) > 0 || Number(item.n_pesoneto) > 0 );
+                let weight = false;
+                let pesonetototal = 0;
+                let pesobrutototal = 0;
+                productos.forEach(item => {
+                    pesonetototal += Number(item.n_pesoneto);
+                    pesobrutototal += Number(item.n_pesobruto);
+                    if(Number(item.n_pesobruto) > 0 || Number(item.n_pesoneto) > 0) {
+                        weight = true;
+                    }
+                });
                 elementAux.thereWeight = weight ? true : false;
+                elementAux.pesonetototal = pesonetototal;
+                elementAux.pesobrutototal = pesobrutototal;
             } else {
                 elementAux.productos = [];
                 elementAux.thereWeight = false;
