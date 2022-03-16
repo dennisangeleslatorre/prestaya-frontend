@@ -253,7 +253,7 @@ const CompaniaForm = (props) => {
                     validation="numberWithRange"
                     min={11}
                     max={20}
-                    readOnly={readOnlyCode}
+                    readOnly={readOnlyView}
                 />
                 <InputComponent
                     label="Dirección"
