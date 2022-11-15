@@ -254,7 +254,7 @@ const PerfilForm = (props) => {
                     readOnly={readOnlyView}
                 />
                 <TreeSelectComponent
-                    label="Reportes"
+                    label="ReportesA"
                     data={reportsArray}
                     value={reportes}
                     handleOnChange={(value)=>setReportes(value)}
