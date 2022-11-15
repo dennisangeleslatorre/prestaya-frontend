@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd'
+import { Button, Space } from 'antd'
 let xlsx = require('json-as-xlsx')
 
 const ButtonDownloadExcel = (props) => {
@@ -32,7 +32,13 @@ const ButtonDownloadExcel = (props) => {
     }
 
     return (
-        <Button onClick={ExportToExcel}>Export To XLSX</Button>
+        <div className="row">
+            <div className="col-12">
+                <Space style={{ marginBottom: 16 }}>
+                    <Button onClick={ExportToExcel}>Export To XLSX</Button>
+                </Space>
+            </div>
+        </div>
     )
 };
 

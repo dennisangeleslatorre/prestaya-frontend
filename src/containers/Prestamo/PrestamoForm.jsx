@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
 import FormContainer from '../../components/FormContainer/FormContainer'
 import InputComponent from '../../components/InputComponent/InputComponent'
+import InputComponentView from '../../components/InputComponent/InputComponentView'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
@@ -14,12 +15,13 @@ import Loading from '../../components/Modal/LoadingModal'
 import AuditTableComponent from '../../components/AuditTableComponent/AuditTableComponent'
 import HeaderForm from '../../components/HeaderForm/HeaderForm'
 //Context
+import PagesContext from '../../context/PagesContext/PagesContext'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate } from '../../Api/Api'
+        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 
@@ -65,6 +67,8 @@ const PrestamoForm = (props) => {
     const [montoInteresDiario, setMontoInteresDiario] = useState({value:"0.0", required:null});
     const [observacionesRegistro, setObservacionesRegistro] = useState("");
     const [productos, setProductos] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [usuarioDesembolso, setUsuarioDesembolso] = useState("");
     //Listas
     const [warrantyProductUpdateList, setWarrantyProductUpdateList] = useState([]);
     const [warrantyProductRemovalList, setWarrantyProductRemovalList] = useState([]);
@@ -122,6 +126,10 @@ const PrestamoForm = (props) => {
     //Contextos
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "MODIFICA USUARIO OPERACIÓN" })
+    const modificaOperacionPermission = userPermisssions.includes("MODIFICA USUARIO OPERACIÓN");
     //Variables
     const elementId = props.match.params.id;
     const location = useLocation();
@@ -309,7 +317,9 @@ const PrestamoForm = (props) => {
                 c_prestamo: c_prestamo,
                 c_estado: "VI",
                 c_usuariovigente: userLogedIn,
-                c_observacionesvigente: observacionesVigencia
+                c_observacionesvigente: observacionesVigencia,
+                c_usuariodesembolso: usuarioDesembolso,
+                n_monto: montoPrestamo.value
             }
             const response = await updtVigentePrestamo(data);
             (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Vigente") : prepareNotificationDanger("Error al actualizar", response.message);
@@ -462,6 +472,8 @@ const PrestamoForm = (props) => {
             //data.d_fechacancelacion
             setUsuarioCancelacion(data.c_usuariocancelacion);
             if(data.d_fechacancelacion) setFechaCancelacion(moment(data.d_fechacancelacion).format('DD/MM/yyy HH:mm:ss'));
+            //usuario desembolso
+            if(data.c_usuariodesembolso) setUsuarioDesembolso(data.c_usuariodesembolso);
 
             const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
             if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) setProductos(responseProducts.body.data);
@@ -532,6 +544,12 @@ const PrestamoForm = (props) => {
         if(response && response.status === 200) setDistritos(response.body.data);
     }
 
+    const getUsuarios = async () => {
+        const response = await listUsers();
+        if(response && response.status === 200) setUsuarios(response.body.data);
+        setUsuarioDesembolso(userLogedIn);
+    }
+
     useEffect(async () => {
         await setIsLoading(true);
         if(urlFragment === "nuevoPrestamo") await getParameters();
@@ -542,6 +560,7 @@ const PrestamoForm = (props) => {
         await getDepartamentos();
         await getProvincias();
         await getDistritos();
+        if(urlFragment === "vigentePrestamo") await getUsuarios();
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoPrestamo") await getData();
         else setEstado("PE")
@@ -884,6 +903,31 @@ const PrestamoForm = (props) => {
                         classForm="col-12"
                         labelSpace={1}
                     />
+                    {urlFragment === "vigentePrestamo" ? <div className='col-12 m-0 p-0'>
+                        <ReactSelect
+                            inputId="usuarioDesembolsoId"
+                            labelText="Usuario Desembolso"
+                            placeholder="Seleccione un Usuario"
+                            valueSelected={usuarioDesembolso}
+                            data={usuarios}
+                            handleElementSelected={setUsuarioDesembolso}
+                            optionField="c_nombres"
+                            valueField="c_codigousuario"
+                            classForm="col-12 col-lg-6"
+                            disabledElement={!modificaOperacionPermission}
+                        />
+                    </div>
+                    : <div className='col-12 m-0 p-0'>
+                        <InputComponentView
+                            label="Usuario Desembolso"
+                            state={usuarioDesembolso}
+                            type="text"
+                            placeholder="Usuario Desembolso"
+                            inputId="nrccu"
+                            readOnly={true}
+                            classForm="col-12 col-lg-6"
+                        />
+                    </div>}
                     {/*ENTREGA*/}
                     <InputComponent
                         label="Persona recoge"

@@ -7,8 +7,9 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
+import { useHistory } from 'react-router'
 //Api
-import { anularCancelacion, listParametrosByCompania, retornarEntrega, retornarRemate } from '../../Api/Api'
+import { anularCancelacion, listParametrosByCompania, retornarEntrega, retornarRemate, listUsers } from '../../Api/Api'
 import moment from 'moment'
 
 const columns = [
@@ -66,6 +67,9 @@ const columns = [
     },{
         title: 'U. Fecha Modificación',
         dataIndex: 'd_ultimafechamodificacion_format'
+    },{
+        title: 'U. Operación',
+        dataIndex: 'c_usuariooperacion'
     }
 ]
 
@@ -82,6 +86,8 @@ const estados = {
 }
 
 const FormCancelaciones = (props) => {
+    //Navegacion
+    let history = useHistory();
     const { elementId, fechaDesembolsoPrestamo, estadoPrestamo, cancelaciones, getData } = props;
     //Estados
     const [tableCancelaciones, setTableCancelaciones] = useState([]);
@@ -97,15 +103,21 @@ const FormCancelaciones = (props) => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openRegresarEntrega, setOpenRegresarEntrega] = useState(false);
     const [openRegresarRemate, setOpenRegresarRemate] = useState(false);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [selectedNLineas, setSelectedNLineas] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
+        || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES"
     })
     const cancelarPermission = userPermisssions.includes("CANCELAR");
     const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
     const regresarEntregaPermission = userPermisssions.includes("REGRESAR DE ENTREGA");
     const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
+    const formatoRecibosCancelaciones = userPermisssions.includes("FORMATO RECIBOS CANCELACIONES");
+    const formatoCancelaciones = userPermisssions.includes("FORMATO CANCELACIONES");
 
     const getParameters = async () => {
         const [c_compania, c_prestamo] = elementId.split('-');
@@ -114,8 +126,6 @@ const FormCancelaciones = (props) => {
             const data = response.body.data;
             const dias = data.find((item) => item.c_parametrocodigo === "PACO000004");
             const montos = data.find((item) => item.c_parametrocodigo === "PACO000009");
-            console.log("dias", dias)
-            console.log("montos", montos)
             setDiasComisionParametros(parseInt(dias.n_valornumero));
             setMontoComisionParametros(parseInt(montos.n_valornumero));
         }
@@ -218,12 +228,38 @@ const FormCancelaciones = (props) => {
         setIsLoading(false);
     }
 
+    const handleIrFormatoRecibos = () => {
+        if(selectedNLineas && selectedNLineas.length > 0 ) {
+            history.push(`/formatoRecibos/${elementId}/${selectedNLineas}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Debe seleccionar al menos una cancelación"});
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleIrFormatoCancelaciones = () => {
+        history.push(`/formatoCancelaciones/${elementId}`);
+    }
+
+    //Atributos de la tabla
+    const rowSelection = {
+        onChange: (selectedKeys, selectedRows) => {
+            setSelectedRowKeys(selectedKeys);
+            setSelectedNLineas(selectedRows.map(item => item.n_linea));
+        }
+    };
+
+    const getUsuarios = async () => {
+        const response = await listUsers();
+        if(response && response.status === 200) setUsuarios(response.body.data);
+    }
+
     useEffect(async () => {
         await getParameters();
+        await getUsuarios();
     }, [])
 
     useEffect(() => {
-        console.log("DASDASDAS", cancelaciones)
         if(cancelaciones.length !== 0) getCancelaciones();
         else getDataForTable([])
     }, [cancelaciones]);
@@ -238,6 +274,8 @@ const FormCancelaciones = (props) => {
                         { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button> }
                         { (regresarEntregaPermission && estadoPrestamo === "EN") && <Button onClick={()=>setOpenRegresarEntrega(true)}>REGRESAR DE ENTREGA</Button>}
                         { (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button>}
+                        { (formatoRecibosCancelaciones) && <Button onClick={handleIrFormatoRecibos}>FORMATO RECIBOS</Button> }
+                        { (formatoCancelaciones) && <Button onClick={handleIrFormatoCancelaciones}>FORMATO CANCELACIONES</Button> }
                     </Space>
                 </div>
             </div>
@@ -246,6 +284,11 @@ const FormCancelaciones = (props) => {
                     columns={columns}
                     dataSource={tableCancelaciones}
                     pagination={{ pageSize: 50 }}
+                    rowSelection={{
+                        type: "checkbox",
+                        ...rowSelection,
+                        selectedRowKeys,
+                    }}
                 />
             </div>
             <CancellationModal
@@ -259,6 +302,7 @@ const FormCancelaciones = (props) => {
                 diasComisionParametros={diasComisionParametros}
                 montoComisionParametros={montoComisionParametros}
                 getCancelaciones={getData}
+                usuarios={usuarios}
             />
             <ConfirmationModal
                 isOpen={open}

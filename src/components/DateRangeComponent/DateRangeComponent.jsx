@@ -33,14 +33,17 @@ const DateRangeComponent = (props) => {
     }
 
     const handleChangeFechaInicio = (e) => {
-        const isValid = isValidFunction(e.target.value, state.fechaFin);
-        setState({...state, fechaInicio: e.target.value, isValid: isValid});
+        setState({...state, fechaInicio: e.target.value});
     }
 
     const handleChangeFechaFin = (e) => {
-        const isValid = isValidFunction(state.fechaInicio, e.target.value);
-        setState({...state, fechaFin: e.target.value, isValid: isValid});
+        setState({...state, fechaFin: e.target.value});
     }
+
+    useEffect(() => {
+        const isValid = isValidFunction(state.fechaInicio, state.fechaFin);
+        setState({...state, isValid:isValid})
+    }, [state.fechaInicio, state.fechaFin])
 
     const showMessage = () => {
         if( !state.fechaInicio || !state.fechaFin ) {
@@ -56,7 +59,7 @@ const DateRangeComponent = (props) => {
     return (
         <div className={`form-group ${marginForm} ${classForm} row`}>
             { labelText && <label htmlFor={inputId} className={`col-md-${labelSpace} col-form-label label-input`}>
-                { labelText } <Checkbox id={inputId} checked={enabled} onChange={onChange} />
+                { labelText } { setEnabled && <Checkbox id={inputId} checked={enabled} onChange={onChange} />}
             </label> }
             <div className={ labelText ? `col-12 col-md-${12-labelSpace}` : `col-md-${14-labelSpace}`}>
                 <div className="input-group">

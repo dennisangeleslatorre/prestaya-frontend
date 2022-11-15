@@ -39,11 +39,33 @@ const Reportes = () => {
                                         <td></td>
                                     </tr>
                                     {
-                                        reportes.map(item => {
+                                        [...reportes].map(item => {
                                             if(item.c_tiporeporte === "CO000001" && item.n_grupo === 2) {
                                                 let reporteLink = "";
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reporteLink = '/reporteResumido'
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reporteLink = '/reporteDetallado'
+                                                return (
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>{item.n_reporte}</td>
+                                                        <td><Link to={reporteLink}>{item.c_nombrereporte}</Link></td>
+                                                        <td>{item.c_descripcionreporte}</td>
+                                                    </tr>
+                                                )
+                                            }
+                                        })
+                                    }
+                                    <tr>
+                                        <td></td>
+                                        <td><b>Flujo de Caja</b></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {
+                                        [...reportes].map(item => {
+                                            if(item.c_tiporeporte === "CO000001" && item.n_grupo === 3) {
+                                                let reporteLink = "";
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reporteLink = '/reporteFlujoCajaUsuario'
                                                 return (
                                                     <tr>
                                                         <td></td>

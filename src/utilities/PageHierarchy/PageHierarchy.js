@@ -83,6 +83,10 @@ const pagesArray = [
                         value: 'FORMATO PRÉSTAMO',
                         key: 'FORMATO PRÉSTAMO'
                     },{
+                        title: 'MODIFICA USUARIO OPERACIÓN',
+                        value: 'MODIFICA USUARIO OPERACIÓN',
+                        key: 'MODIFICA USUARIO OPERACIÓN'
+                    },{
                         title: 'CANCELAR PRÉSTAMO',
                         value: 'CANCELAR PRÉSTAMO',
                         key: 'CANCELAR PRÉSTAMO',
@@ -107,8 +111,35 @@ const pagesArray = [
                                 title: 'REGRESAR DE REMATE',
                                 value: 'REGRESAR DE REMATE',
                                 key: 'REGRESAR DE REMATE'
+                            },{
+                                title: 'FORMATO RECIBOS CANCELACIONES',
+                                value: 'FORMATO RECIBOS CANCELACIONES',
+                                key: 'FORMATO RECIBOS CANCELACIONES'
+                            },{
+                                title: 'FORMATO CANCELACIONES',
+                                value: 'FORMATO CANCELACIONES',
+                                key: 'FORMATO CANCELACIONES'
                             }
                         ]
+                    }
+                ]
+            },{
+                title: 'FLUJO DE CAJA USUARIOS',
+                value: 'FLUJO DE CAJA USUARIOS',
+                key: 'FLUJO DE CAJA USUARIOS',
+                children: [
+                    {
+                        title: 'FLUJO CAJA USUARIOS',
+                        value: 'FLUJO CAJA USUARIOS',
+                        key: 'FLUJO CAJA USUARIOS'
+                    },{
+                        title: 'NUEVO FLUJO CAJA USUARIOS',
+                        value: 'NUEVO FLUJO CAJA USUARIOS',
+                        key: 'NUEVO FLUJO CAJA USUARIOS'
+                    },{
+                        title: 'MODIFICAR FLUJO CAJA USUARIOS',
+                        value: 'MODIFICAR FLUJO CAJA USUARIOS',
+                        key: 'MODIFICAR FLUJO CAJA USUARIOS'
                     }
                 ]
             }
@@ -388,7 +419,7 @@ const pagesArray = [
                         key: 'ELIMINAR TIPO DE DOCUMENTO'
                     }
                 ]
-            },,{
+            },{
                 title: 'UNIDAD DE MEDIDA',
                 value: 'UNIDAD DE MEDIDA',
                 key: 'UNIDAD DE MEDIDA',
@@ -413,6 +444,33 @@ const pagesArray = [
                         title: 'ELIMINAR UNIDAD DE MEDIDA',
                         value: 'ELIMINAR UNIDAD DE MEDIDA',
                         key: 'ELIMINAR UNIDAD DE MEDIDA'
+                    }
+                ]
+            },{
+                title: 'TIPO DE MOVIMIENTO DE CAJA',
+                value: 'TIPO DE MOVIMIENTO DE CAJA',
+                key: 'TIPO DE MOVIMIENTO DE CAJA',
+                children: [
+                    {
+                        title: 'TIPOS DE MOVIMIENTOS DE CAJA',
+                        value: 'TIPOS DE MOVIMIENTOS DE CAJA',
+                        key: 'TIPOS DE MOVIMIENTOS DE CAJA'
+                    },{
+                        title: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA',
+                        value: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA',
+                        key: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA'
+                    },{
+                        title: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA',
+                        value: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA',
+                        key: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA'
+                    },{
+                        title: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA',
+                        value: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA',
+                        key: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA'
+                    },{
+                        title: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA',
+                        value: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA',
+                        key: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA'
                     }
                 ]
             }

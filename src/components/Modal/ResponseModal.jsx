@@ -2,9 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Modal from './ModalNotification';
 
-const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info"}) => {
+const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info", showCloseButton = true}) => {
     return (
-        <Modal isOpen={isOpen} title={title} onClose={onClose}>
+        <Modal isOpen={isOpen} title={title} onClose={onClose} showCloseButton={showCloseButton}>
             {/*body*/}
             <div className="modal-body">
                 <p className="modal-text">{message}</p>

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
-import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
@@ -10,12 +9,18 @@ import { cancelarPrestamo } from '../../Api/Api'
 import moment from 'moment'
 //Contexto
 import UserContext from '../../context/UserContext/UserContext'
+import PagesContext from '../../context/PagesContext/PagesContext'
+import ReactSelect from '../ReactSelect/ReactSelect'
+import InputComponentView from '../InputComponent/InputComponentView'
 
 const CancellationModal = (props) => {
     const {isOpen, onClose, elementId, ultimaCancelacion, setResponseData, setOpenResponseModal, fechaDesembolsoCancelacion, diasComisionParametros,
-            montoComisionParametros, getCancelaciones} = props;
+            montoComisionParametros, getCancelaciones, usuarios} = props;
     const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
+    //Usuario
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Estados
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [fechaVencimiento, setFechaVencimiento] = useState({value:"", isValid:null});
@@ -30,9 +35,12 @@ const CancellationModal = (props) => {
     const [montoComision, setMontoComision] = useState({value:"0.0", isValid:null});
     const [montoTotalCancelar, setMontoTotalCancelar] = useState({value:"0.0", isValid:null});
     const [observaciones, setObservaciones] = useState("");
-    //Usuario
-    const { getUserData } = useContext(UserContext);
-    const userLogedIn = getUserData().c_codigousuario;
+    const [usuarioOperacion, setUsuarioOperacion] = useState(userLogedIn);
+    //Permiso
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "MODIFICA USUARIO OPERACIÓN" })
+    const modificaOperacionPermission = userPermisssions.includes("MODIFICA USUARIO OPERACIÓN");
     //Logica tipo cancelacion
     const validacionesFuncion =  {
         C: () => Number(montoPrestamo.value) === Number(montoPrestamoCancelar.value) ? "OK" : "Se debe cancelar el total del monto de préstamo",
@@ -79,7 +87,8 @@ const CancellationModal = (props) => {
             n_montototalcancelar:montoTotalCancelar.value,
 
             c_observacionescancelar:observaciones,
-            c_ultimousuario:userLogedIn
+            c_ultimousuario:userLogedIn,
+            c_usuariooperacion: usuarioOperacion
         }
     }
 
@@ -203,12 +212,12 @@ const CancellationModal = (props) => {
                     disabledElement={false}
                 />
                 <InputComponent
-                    label="F. Cancelaion"
+                    label="F. Cancelación"
                     state={fechaCancelacion}
                     setState={setFechaCancelacion}
                     type="date"
                     placeholder="Fecha cancelación"
-                    inputId="fechaCancelaionId"
+                    inputId="fechaCancelacionId"
                     readOnly={false}
                     classForm="col-12 col-lg-6"
                 />
@@ -282,6 +291,30 @@ const CancellationModal = (props) => {
                     classForm="col-12"
                     labelSpace={1}
                 />
+                {modificaOperacionPermission ? <div className='col-12 m-0 p-0'>
+                    <ReactSelect
+                        inputId="usuarioOperacionId"
+                        labelText="Usuario Operación"
+                        placeholder="Seleccione un Usuario"
+                        valueSelected={usuarioOperacion}
+                        data={usuarios}
+                        handleElementSelected={setUsuarioOperacion}
+                        optionField="c_nombres"
+                        valueField="c_codigousuario"
+                        classForm="col-12 col-lg-6"
+                    />
+                </div>
+                : <div className='col-12 m-0 p-0'>
+                    <InputComponentView
+                        label="Usuario Operación"
+                        state={usuarioOperacion}
+                        type="text"
+                        placeholder="Usuario Operación"
+                        inputId="nrccu"
+                        readOnly={true}
+                        classForm="col-12 col-lg-6"
+                    />
+                </div>}
             </div>
             {/*Alerta*/}
             { isAlert === true && <Alert

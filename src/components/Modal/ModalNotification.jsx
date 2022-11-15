@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import './ModalStyles.css';
 
 function Modal(props) {
-  const { modal_class="Modal__container", title } = props;
+  const { modal_class="Modal__container", title, classModal="Modal", showCloseButton = true } = props;
 
     if(!props.isOpen) {
         return null;
@@ -12,14 +12,14 @@ function Modal(props) {
 
     return ReactDOM.createPortal(
         //Esto es el fondo oscuro
-        <div className="Modal">
+        <div className={classModal}>
           <div className={modal_class}>
             {/*Header del modal*/}
             <div className="modal-header">
               <h3 className="modal-title">{title}</h3>
-              <button onClick={props.onClose} className="close">
+              {showCloseButton && <button onClick={props.onClose} className="close">
                   <span aria-hidden="true">&times;</span>
-              </button>
+              </button>}
             </div>
             {props.children}
           </div>

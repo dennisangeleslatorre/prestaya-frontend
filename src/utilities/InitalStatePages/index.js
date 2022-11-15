@@ -15,6 +15,9 @@ import TipoProductoForm from '../../containers/TipoProducto/TipoProductoForm'
 //UNIDAD DE MEDIDA
 import UnidadesMedida from '../../containers/UnidadMedida/UnidadesMedida'
 import UnidadMedidaForm from '../../containers/UnidadMedida/UnidadMedidaForm'
+//TIPO DE PRODUCTO
+import TiposMovimientosCaja from '../../containers/TipoMovimientoCaja/TiposMovimientosCaja'
+import TipoMovimientoCajaForm from '../../containers/TipoMovimientoCaja/TipoMovimientoCajaForm'
 //COMPAÑIA
 import Companias from '../../containers/Compania/Companias'
 import CompaniaForm from '../../containers/Compania/CompaniaForm'
@@ -49,10 +52,17 @@ import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
 import Contrato from '../../containers/Contrato/Contrato'
 //CANCELACIONES
 import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
+import FormatoRecibos from '../../containers/Cancelar/FormatoRecibos'
+import FormatoCancelaciones from '../../containers/Cancelar/FormatoCancelaciones'
 //REPORTE
+import Reportes from '../../containers/Reporte/Reportes'
 import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
 import ReporteResumido from '../../containers/Reporte/ReporteResumido'
-import Reportes from '../../containers/Reporte/Reportes'
+import ReporteFlujoCaja from '../../containers/Reporte/ReporteFlujoCaja'
+//FLUJO CAJA
+import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
+import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
+import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChicaUsuarioxDiaMov'
 
 export default{
     initialPages: [
@@ -148,6 +158,26 @@ export default{
             path: '/visualizarTipoProduto/:id',
             exact: true,
             name: 'VISUALIZAR TIPO DE PRODUCTO'
+        },{
+            component: TiposMovimientosCaja,
+            path: '/tiposMovimientosCaja',
+            exact: true,
+            name: 'TIPOS DE MOVIMIENTOS DE CAJA'
+        },{
+            component: TipoMovimientoCajaForm,
+            path: '/nuevoTipoMovimientoCaja',
+            exact: true,
+            name: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA'
+        },{
+            component: TipoMovimientoCajaForm,
+            path: '/editarTipoMovimientoCaja/:id',
+            exact: true,
+            name: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA'
+        },{
+            component: TipoMovimientoCajaForm,
+            path: '/visualizarTipoMovimientoCaja/:id',
+            exact: true,
+            name: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA'
         },{
             component: UnidadesMedida,
             path: '/unidadesMedida',
@@ -399,6 +429,41 @@ export default{
             exact: true,
             name: 'CANCELACIONES'
         },{
+            component: FormatoRecibos,
+            path: '/formatoRecibos/:id/:nLineas',
+            exact: true,
+            name: 'FORMATO RECIBOS CANCELACIONES'
+        },{
+            component: FormatoCancelaciones,
+            path: '/formatoCancelaciones/:id',
+            exact: true,
+            name: 'FORMATO CANCELACIONES'
+        },{
+            component: BusquedaFlujoCaja,
+            path: '/flujousuarios',
+            exact: true,
+            name: 'FLUJO CAJA USUARIOS'
+        },{
+            component: FormCajaChicaUsuario,
+            path: '/nuevaCajaChicaUsuario/:companycode',
+            exact: true,
+            name: 'NUEVA CAJA CHICA USUARIO'
+        },{
+            component: FormCajaChicaUsuario,
+            path: '/actualizarCajaChicaUsuario/:companycode/:nrocorrelativo',
+            exact: true,
+            name: 'MODIFICAR CAJA CHICA USUARIO'
+        },{
+            component: FormCajaChicaUsuarioxDiaMov,
+            path: '/nuevaCUxDiaMovimiento/:companycode',
+            exact: true,
+            name: 'NUEVA CAJA C. U. X DÍA MOVIMIENTOS'
+        },{
+            component: FormCajaChicaUsuarioxDiaMov,
+            path: '/actualizarCUxDiaMovimiento/:companycode',
+            exact: true,
+            name: 'MODIFICAR CAJA C. U. X DÍA MOVIMIENTOS'
+        },{
             component: Reportes,
             path: '/reportes',
             exact: true,
@@ -413,6 +478,11 @@ export default{
             path: '/reporteResumido',
             exact: true,
             name: 'REPORTE RESUMIDO'
+        },{
+            component: ReporteFlujoCaja,
+            path: '/reporteFlujoCajaUsuario',
+            exact: true,
+            name: 'REPORTE FLUJO DE CAJA USUARIOS'
         }
     ]
 }

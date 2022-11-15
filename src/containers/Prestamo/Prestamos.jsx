@@ -103,8 +103,19 @@ const columns = [
             showTitle: false,
         },
         width: 180
-    },
-    {
+    },{
+        title: 'Producto',
+        dataIndex: 'c_descripcionproducto',
+        ellipsis: {
+            showTitle: false,
+        },
+        render: c_descripcionproducto => (
+            <Tooltip placement="topLeft" title={c_descripcionproducto}>
+              {c_descripcionproducto}
+            </Tooltip>
+        ),
+        width: 220
+    },{
         title: 'Telefono',
         dataIndex: 'c_telefono1',
         sorter: {
@@ -165,8 +176,7 @@ const columns = [
             showTitle: false,
         },
         width: 120
-    },
-    {
+    },{
         title: 'Monto Prestamo',
         dataIndex: 'n_montoprestamo',
         sorter: {
@@ -176,7 +186,8 @@ const columns = [
         ellipsis: {
             showTitle: false,
         },
-        width: 160
+        width: 160,
+        className: 'text-numbers-table'
     },
     {
         title: '% Tasa Interes',
@@ -188,7 +199,8 @@ const columns = [
         ellipsis: {
             showTitle: false,
         },
-        width: 140
+        width: 140,
+        className: 'text-numbers-table'
     },
     {
         title: 'Monto Intereses',
@@ -200,7 +212,8 @@ const columns = [
         ellipsis: {
             showTitle: false,
         },
-        width: 160
+        width: 160,
+        className: 'text-numbers-table'
     },
     {
         title: 'Monto Total P.',
@@ -212,25 +225,27 @@ const columns = [
         ellipsis: {
             showTitle: false,
         },
-        width: 160
+        width: 160,
+        className: 'text-numbers-table'
     },
     {
         title: 'Monto Valor Prod.',
-        dataIndex: 'calc_montovalorproducto',
+        dataIndex: 'n_montoproducto',
         sorter: {
-            compare: (a, b) => a.calc_montovalorproducto - b.calc_montovalorproducto,
+            compare: (a, b) => a.n_montoproducto - b.n_montoproducto,
             multiple: 13,
         },
         ellipsis: {
             showTitle: false,
         },
-        width: 160
+        width: 160,
+        className: 'text-numbers-table'
     },
     {
         title: 'Dias Plazo Totales',
-        dataIndex: 'calc_diastotalesplazo',
+        dataIndex: 'n_plazototales',
         sorter: {
-            compare: (a, b) => a.calc_diastotalesplazo - b.calc_diastotalesplazo,
+            compare: (a, b) => a.n_plazototales - b.n_plazototales,
             multiple: 14,
         },
         ellipsis: {
@@ -240,7 +255,7 @@ const columns = [
     },
     {
         title: 'F. Vcto. Reprog.',
-        dataIndex: 'calc_fechaultimovencimiento',
+        dataIndex: 'd_fvencimientorepro',
         ellipsis: {
             showTitle: false,
         },
@@ -248,9 +263,9 @@ const columns = [
     },
     {
         title: 'Dias Transcurridos',
-        dataIndex: 'calc_diastotalestranscurridos',
+        dataIndex: 'n_diastranscurridos',
         sorter: {
-            compare: (a, b) => a.calc_diastotalestranscurridos - b.calc_diastotalestranscurridos,
+            compare: (a, b) => a.n_diastranscurridos - b.n_diastranscurridos,
             multiple: 15,
         },
         ellipsis: {
@@ -260,9 +275,9 @@ const columns = [
     },
     {
         title: 'Dias Vencido',
-        dataIndex: 'calc_diasvencido',
+        dataIndex: 'n_diasvencidos',
         sorter: {
-            compare: (a, b) => a.calc_diasvencido - b.calc_diasvencido,
+            compare: (a, b) => a.n_diasvencidos - b.n_diasvencidos,
             multiple: 16,
         },
         ellipsis: {
@@ -272,9 +287,9 @@ const columns = [
     },
     {
         title: 'Vencido',
-        dataIndex: 'calc_esvencido',
+        dataIndex: 'c_vencido',
         sorter: {
-            compare: (a, b) => a.calc_esvencido.localeCompare(b.calc_esvencido),
+            compare: (a, b) => a.c_vencido.localeCompare(b.c_vencido),
             multiple: 17,
         },
         ellipsis: {
@@ -284,7 +299,7 @@ const columns = [
     },
     {
         title: 'F. Cancelacion',
-        dataIndex: 'calc_fechaultimacancelacion',
+        dataIndex: 'd_fechacancelacion',
         ellipsis: {
             showTitle: false,
         },
@@ -292,51 +307,55 @@ const columns = [
     },
     {
         title: 'Interes Cancelado',
-        dataIndex: 'calc_sumainterescancelado',
+        dataIndex: 'n_montointeresescancelar',
         sorter: {
-            compare: (a, b) => a.calc_sumainterescancelado - b.calc_sumainterescancelado,
+            compare: (a, b) => a.n_montointeresescancelar - b.n_montointeresescancelar,
             multiple: 18,
         },
         ellipsis: {
             showTitle: false,
         },
-        width: 160
+        width: 160,
+        className: 'text-numbers-table'
     },
     {
         title: 'Monto Prest. Cancelado',
-        dataIndex: 'calc_sumamontoprestamocancelado',
+        dataIndex: 'n_montoprestamocancelar',
         sorter: {
-            compare: (a, b) => a.calc_sumamontoprestamocancelado - b.calc_sumamontoprestamocancelado,
+            compare: (a, b) => a.n_montoprestamocancelar - b.n_montoprestamocancelar,
             multiple: 19,
         },
         ellipsis: {
             showTitle: false,
         },
-        width: 190
+        width: 190,
+        className: 'text-numbers-table'
     },
     {
         title: 'Mnto. Comision Canc.',
-        dataIndex: 'calc_sumamontocomisioncancelado',
+        dataIndex: 'n_montocomisioncancelar',
         sorter: {
-            compare: (a, b) => a.calc_sumamontocomisioncancelado - b.calc_sumamontocomisioncancelado,
+            compare: (a, b) => a.n_montocomisioncancelar - b.n_montocomisioncancelar,
             multiple: 20,
         },
         ellipsis: {
             showTitle: false,
         },
-        width: 180
+        width: 180,
+        className: 'text-numbers-table'
     },
     {
         title: 'Mnto. Total Cancelado',
-        dataIndex: 'calc_sumamontototalcancelado',
+        dataIndex: 'n_montototalcancelar',
         sorter: {
-            compare: (a, b) => a.calc_sumamontototalcancelado - b.calc_sumamontototalcancelado,
+            compare: (a, b) => a.n_montototalcancelar - b.n_montototalcancelar,
             multiple: 21,
         },
         ellipsis: {
             showTitle: false,
         },
-        width: 180
+        width: 180,
+        className: 'text-numbers-table'
     },
     {
         title: 'Estado',
@@ -636,7 +655,6 @@ const Prestamos = () => {
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     //Contexto
-    //Contextos
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
     const { getPagesKeysForUser } = useContext(PagesContext);
@@ -918,6 +936,8 @@ const Prestamos = () => {
             item.d_fechaentrega = item.d_fechaentrega ? moment(item.d_fechaentrega).format('DD/MM/yyyy HH:mm:ss') : "";
             item.d_fechaRemate = item.d_fechaRemate ? moment(item.d_fechaRemate).format('DD/MM/yyyy') : "";
             item.d_fechaanulacion = item.d_fechaanulacion ? moment(item.d_fechaanulacion).format('DD/MM/yyyy HH:mm:ss') : "";
+            item.d_fvencimientorepro = item.d_fvencimientorepro ? moment(item.d_fvencimientorepro).format('DD/MM/yyyy') : "";
+            item.d_fechacancelacion = item.d_fechacancelacion ? moment(item.d_fechacancelacion).format('DD/MM/yyyy') : "";
             item.n_montoprestamo = (
                 <div className="col-12 text-center">
                     {item.n_montoprestamo ? separator(Number(item.n_montoprestamo).toFixed(2)) : ""}
@@ -934,32 +954,32 @@ const Prestamos = () => {
                     {item.n_montototalprestamo ? separator(Number(item.n_montototalprestamo).toFixed(2)) : ""}
                 </div>
             );
-            item.calc_montovalorproducto = (
+            item.n_montoproducto = (
                 <div className="col-12 text-end">
-                    {item.calc_montovalorproducto ? separator(Number(item.calc_montovalorproducto).toFixed(2)) : ""}
+                    {item.n_montoproducto ? separator(Number(item.n_montoproducto).toFixed(2)) : ""}
                 </div>
             );
-            item.calc_diastotalesplazo = item.calc_diastotalesplazo ? Number(item.calc_diastotalesplazo).toFixed(0) : "";
-            item.calc_diastotalestranscurridos = item.calc_diastotalestranscurridos ? Number(item.calc_diastotalestranscurridos).toFixed(0) : "";
-            item.calc_diasvencido = item.calc_diasvencido ? Number(item.calc_diasvencido).toFixed(0) : "";
-            item.calc_sumainterescancelado = (
+            item.n_plazototales = item.n_plazototales ? Number(item.n_plazototales).toFixed(0) : "";
+            item.n_diastranscurridos = item.n_diastranscurridos ? Number(item.n_diastranscurridos).toFixed(0) : "";
+            item.n_diasvencidos = item.n_diasvencidos ? Number(item.n_diasvencidos).toFixed(0) : "";
+            item.n_montointeresescancelar = (
                 <div className="col-12 text-end">
-                    {item.calc_sumainterescancelado ? separator(Number(item.calc_sumainterescancelado).toFixed(2)) : ""}
+                    {item.n_montointeresescancelar ? separator(Number(item.n_montointeresescancelar).toFixed(2)) : ""}
                 </div>
             );
-            item.calc_sumamontoprestamocancelado = (
+            item.n_montoprestamocancelar = (
                 <div className="col-12 text-end">
-                    {item.calc_sumamontoprestamocancelado ? separator(Number(item.calc_sumamontoprestamocancelado).toFixed(2)) : ""}
+                    {item.n_montoprestamocancelar ? separator(Number(item.n_montoprestamocancelar).toFixed(2)) : ""}
                 </div>
             );
-            item.calc_sumamontocomisioncancelado = (
+            item.n_montocomisioncancelar = (
                 <div className="col-12 text-end">
-                    {item.calc_sumamontocomisioncancelado ? separator(Number(item.calc_sumamontocomisioncancelado).toFixed(2)) : ""}
+                    {item.n_montocomisioncancelar ? separator(Number(item.n_montocomisioncancelar).toFixed(2)) : ""}
                 </div>
             );
-            item.calc_sumamontototalcancelado = (
+            item.n_montototalcancelar = (
                 <div className="col-12 text-end">
-                    {item.calc_sumamontototalcancelado ? separator(Number(item.calc_sumamontototalcancelado).toFixed(2)) : ""}
+                    {item.n_montototalcancelar ? separator(Number(item.n_montototalcancelar).toFixed(2)) : ""}
                 </div>
             );
             item.peso = <Checkbox checked={ (Number(item.n_pesonetototal) > 0 ||  Number(item.n_pesobrutototal) > 0) ? true : false} />

@@ -50,7 +50,7 @@ export const getUserByCodigoUsuario = async (id) => {
     return response;
 };
 export const registerUser = async (body) => {
-    console.log('---API--- : listUsers');
+    console.log('---API--- : registerUser');
     const url = `${port}/user/register`;
     const response = await consumer(url, 'post', body);
     return response;
@@ -218,6 +218,43 @@ export const updateTipoProducto = async ({body, id}) => {
 export const deleteTipoProducto = async (c_tipoproducto) => {
     console.log('---API--- : deleteTipoProducto');
     const url = `${port}/tipoproducto/${c_tipoproducto}/delete`;
+    const response = await consumer(url, 'post', {});
+    return response;
+};
+//Tipo Movimiento caja
+export const listTipoMovimientoCaja = async () => {
+    console.log('---API--- : listTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/list`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listAllTipoMovimientoCaja = async () => {
+    console.log('---API--- : listAllTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const getTipoMovimientoCajaByCodigoTipoMovimientoCaja = async (id) => {
+    console.log('---API--- : getTipoMovimientoCajaByCodigoTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/${id}/getTipoMovimientoCajaByCodigoTipoMovimientoCaja`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const registerTipoMovimientoCaja = async (body) => {
+    console.log('---API--- : registerTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateTipoMovimientoCaja = async ({body, id}) => {
+    console.log('---API--- : updateTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/${id}/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteTipoMovimientoCaja = async (c_tipoproducto) => {
+    console.log('---API--- : deleteTipoMovimientoCaja');
+    const url = `${port}/tipomovimientocaja/${c_tipoproducto}/delete`;
     const response = await consumer(url, 'post', {});
     return response;
 };
@@ -573,6 +610,12 @@ export const getPrestamoByCodigoPrestamo = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getPrestamoByCodigoPrestamoParaTicket = async (body) => {
+    console.log('---API--- : getPrestamoByCodigoPrestamoParaTicket');
+    const url = `${port}/prestamo/getPrestamoByCodigoPrestamoParaTicket`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const registerPrestamo = async (body) => {
     console.log('---API--- : registerPrestamo');
     const url = `${port}/prestamo/register`;
@@ -677,6 +720,12 @@ export const getCancelacionesByCodigoPrestamo = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getCancelacionesByNLinea = async (body) => {
+    console.log('---API--- : getCancelacionesByNLinea');
+    const url = `${port}/prestamo/getCancelacionesByNLinea`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const cancelarPrestamo = async (body) => {
     console.log('---API--- : cancelarPrestamo');
     const url = `${port}/prestamo/cancelarPrestamo`;
@@ -730,6 +779,49 @@ export const getReportes = async () => {
 export const assignReportToProfile = async (body) => {
     console.log('---API--- : assignReportToProfile');
     const url = `${port}/reporte/assignReportToProfile`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getDataReporteFlujoCaja = async (body) => {
+    console.log('---API--- : getDataReporteFlujoCaja');
+    const url = `${port}/reporte/getDataReporteFlujoCaja`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Flujo Caja
+export const registerFlujoCaja = async (body) => {
+    console.log('---API--- : registerFlujoCaja');
+    const url = `${port}/flujocaja/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateFlujoCaja = async (body) => {
+    console.log('---API--- : updateFlujoCaja');
+    const url = `${port}/flujocaja/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getFlujoCajaByCodigo = async (body) => {
+    console.log('---API--- : getFlujoCajaByCodigo');
+    const url = `${port}/flujocaja/getFlujoCajaByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaDinamico = async (body) => {
+    console.log('---API--- : getFlujoCajaDinamico');
+    const url = `${port}/flujocaja/getFlujoCajaDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaDiasByCodigo = async (body) => {
+    console.log('---API--- : getFlujoCajaDiasByCodigo');
+    const url = `${port}/flujocaja/getFlujoCajaDiasByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaMovimientosByCodigo = async (body) => {
+    console.log('---API--- : getFlujoCajaMovimientosByCodigo');
+    const url = `${port}/flujocaja/getFlujoCajaMovimientosByCodigo`;
     const response = await consumer(url, 'post', body);
     return response;
 };

@@ -71,6 +71,7 @@ const Login = (props) => {
                     response2.body.data.forEach(item => {
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reportes.push('REPORTE RESUMIDO');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reportes.push('REPORTE DETALLADO');
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reportes.push('REPORTE FLUJO DE CAJA USUARIOS');
                     });
                     if(response2.body.data.length > 0) {
                         reportes.push('REPORTES');
@@ -91,6 +92,16 @@ const Login = (props) => {
 
     useEffect(() => {
         if(user) {
+            if(user.a_paginas.includes("NUEVO FLUJO CAJA USUARIOS")) {
+                user.a_paginas.push("NUEVA CAJA CHICA USUARIO");
+                user.a_paginas.push("NUEVA CAJA C. U. X DÍA MOVIMIENTOS");
+            }
+            if(user.a_paginas.includes("MODIFICAR FLUJO CAJA USUARIOS")) {
+                user.a_paginas.push("MODIFICAR CAJA CHICA USUARIO");
+                user.a_paginas.push("ELIMINAR CAJA CHICA USUARIO");
+                user.a_paginas.push("MODIFICAR CAJA C. U. X DÍA MOVIMIENTOS");
+                user.a_paginas.push("ELIMINAR CAJA C. U. X DÍA MOVIMIENTOS");
+            }
             const keys = [...user.a_paginas, ...user.reportes];
             handleSetData(keys, user);
         }

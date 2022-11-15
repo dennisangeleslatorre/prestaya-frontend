@@ -22,7 +22,7 @@ const monedas = [
     { name: 'EXTERIOR', value: 'E' }
 ]
 
-const FormDataPrestamo = ({setIsLoading, elementId, setFechaDesembolsoPrestamo, setEstadoPrestamo, prestamo}) => {
+const FormDataPrestamo = ({setIsLoading, setFechaDesembolsoPrestamo, setEstadoPrestamo, prestamo }) => {
     const [compania, setCompania] = useState("");
     const [nPrestamo, setNPrestamo] = useState({value:"", isValid:null});
     const [estado, setEstado] = useState("");

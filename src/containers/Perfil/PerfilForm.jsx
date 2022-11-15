@@ -82,10 +82,11 @@ const PerfilForm = (props) => {
 
     const assignReportesToProfile = async () => {
         const reportesAux = reportes.map(reporte => {
+            const reporteArray = reporte.split('-');
             return {
-                c_tiporeporte: 'CO000001',
-                n_grupo: 2,
-                n_reporte: reporte
+                c_tiporeporte: reporteArray[0],
+                n_grupo: reporteArray[1],
+                n_reporte: reporteArray[2]
             }
         })
         await assignReportToProfile({
@@ -152,16 +153,29 @@ const PerfilForm = (props) => {
                             value: 'CLIENTES',
                             key: 'CLIENTES',
                             children: []
+                        },{
+                            title: 'FLUJO DE CAJA',
+                            value: 'FLUJO DE CAJA',
+                            key: 'FLUJO DE CAJA',
+                            children: []
                         }
                     ]
-                }
+                },
             ]
             data.filter(item => item.c_tiporeporte === 'CO000001' && item.n_grupo === 2)
             .forEach(report => resportListAux[0].children[0].children.push(
                 {
                     title: report.c_nombrereporte,
-                    value: report.n_reporte,
-                    key: report.n_reporte
+                    value: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
+                    key: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`
+                }
+            ));
+            data.filter(item => item.c_tiporeporte === 'CO000001' && item.n_grupo === 3)
+            .forEach(report => resportListAux[0].children[1].children.push(
+                {
+                    title: report.c_nombrereporte,
+                    value: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
+                    key: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`
                 }
             ));
             setReportsArray(resportListAux);
@@ -185,8 +199,8 @@ const PerfilForm = (props) => {
         const response = await getReportesByPerfil({n_perfil: elementId});
         if(response.status === 200) {
             const data = response.body.data;
-            let reportesAux = data.filter(item => item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.c_acceso === 'S')
-            .map(reporte => reporte.n_reporte);
+            let reportesAux = data.filter(item => item.c_tiporeporte === 'CO000001' && item.c_acceso === 'S')
+            .map(reporte => `${reporte.c_tiporeporte}-${reporte.n_grupo}-${reporte.n_reporte}`);
             setReportes(reportesAux);
         } else {
             prepareNotificationDanger("Error obteniendo datos", response.message);

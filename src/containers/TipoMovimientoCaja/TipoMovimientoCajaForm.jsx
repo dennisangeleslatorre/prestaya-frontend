@@ -10,13 +10,14 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { getTipoDocumentoByCodigoTipoDocumento, registerTipoDocumento, updateTipoDocumento } from '../../Api/Api'
+import { getTipoMovimientoCajaByCodigoTipoMovimientoCaja, registerTipoMovimientoCaja, updateTipoMovimientoCaja } from '../../Api/Api'
 
-const TipoDocumentoForm = (props) => {
+const TipoMovimientoCajaForm = (props) => {
     //Estados
-    const [codigoTipoDocumento, setCodigoTipoDocumento] = useState({value: "", isValid:null});
+    const [codigoTipoMovimientoCaja, setCodigoTipoMovimientoCaja] = useState({value: "", isValid:null});
     const [descripcion, setDescripcion] = useState({value: "", isValid:null});
-    const [numeroDigitos, setNumeroDigitos] = useState({value: "0", isValid:true});
+    const [flagUsuario, setFlagUsuario] = useState("S");
+    const [claseTipoMovimiento, setClaseTipoMovimiento] = useState("I");
     const [estado, setEstado] = useState("A");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
@@ -36,22 +37,22 @@ const TipoDocumentoForm = (props) => {
     let history = useHistory();
     const urlFragment = location.pathname.split('/')[1];
     const buttonTypes = {
-        nuevoTipoDocumento: {label:"Guardar", class:"btn btn-primary btn-form"},
-        editarTipoDocumento: {label:"Actualizar", class:"btn btn-warning btn-form"},
-        visualizarTipoDocumento: {label:"Ir a lista", class:"btn btn-info btn-form"}
+        nuevoTipoMovimientoCaja: {label:"Guardar", class:"btn btn-primary btn-form"},
+        editarTipoMovimientoCaja: {label:"Actualizar", class:"btn btn-warning btn-form"},
+        visualizarTipoMovimientoCaja: {label:"Ir a lista", class:"btn btn-info btn-form"}
     }
-    const readOnlyView = urlFragment === "visualizarTipoDocumento" ? true : false;
-    const readOnlyCode = urlFragment !== "nuevoTipoDocumento" ? true : false;
+    const readOnlyView = urlFragment === "visualizarTipoMovimientoCaja" ? true : false;
+    const readOnlyCode = urlFragment !== "nuevoTipoMovimientoCaja" ? true : false;
 
     const formFunctions = {
-        nuevoTipoDocumento: ()=> handleRegister(),
-        editarTipoDocumento: ()=> handleUpdate()
+        nuevoTipoMovimientoCaja: ()=> handleRegister(),
+        editarTipoMovimientoCaja: ()=> handleUpdate()
     }
 
     const prepareNotificationSuccess = (message) => {
         setIsAlert(true);
         setNotification({title:"Operación exitosa", type:"alert-success", message:message});
-        setResponseData({message: message, title: "Operación exitosa", url:"/tiposDocumento"});
+        setResponseData({message: message, title: "Operación exitosa", url:"/tiposMovimientosCaja"});
         setOpenResponseModal(true);
     }
 
@@ -61,15 +62,16 @@ const TipoDocumentoForm = (props) => {
     }
 
     const validate = () => {
-        if(!codigoTipoDocumento.isValid || !descripcion.isValid || !numeroDigitos.isValid) return false;
+        if(!codigoTipoMovimientoCaja.isValid || !descripcion.isValid) return false;
         return true;
     }
 
     const prepareData = () => {
         const data = {
-            c_tipodocumento: codigoTipoDocumento.value.toUpperCase(),
-            c_descripcion: descripcion.value,
-            n_numerodigitos: numeroDigitos.value,
+            c_tipomovimientocc: codigoTipoMovimientoCaja.value.toUpperCase(),
+            c_descricpion: descripcion.value,
+            c_clasetipomov: claseTipoMovimiento,
+            c_flagusuario: flagUsuario,
             c_estado: estado
         }
         return data;
@@ -80,8 +82,8 @@ const TipoDocumentoForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_usuarioregistro = userLogedIn;
-        const response = await registerTipoDocumento(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el tipo de documento") : prepareNotificationDanger("Error al registrar", response.message);
+        const response = await registerTipoMovimientoCaja(data);
+        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el tipo de movimiento de caja") : prepareNotificationDanger("Error al registrar", response.message);
         setIsLoading(false);
     }
 
@@ -90,32 +92,33 @@ const TipoDocumentoForm = (props) => {
         await setIsLoading(true);
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
-        const response = await updateTipoDocumento({body:data, id:elementId});
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el tipo de documento") : prepareNotificationDanger("Error al actualizar", response.message);
+        const response = await updateTipoMovimientoCaja({body:data, id:elementId});
+        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el tipo de movimiento de caja") : prepareNotificationDanger("Error al actualizar", response.message);
         setIsLoading(false);
     }
 
     const handleClick = () => {
-        if(urlFragment !== "visualizarTipoDocumento") {
+        if(urlFragment !== "visualizarTipoMovimientoCaja") {
             if(validate()) {
                 setOpen(true);
-                if(urlFragment === "nuevoTipoDocumento") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
-                if(urlFragment === "editarTipoDocumento") setModalAttributes({title:"Aviso de actualización", message:"¿Seguro que desea actualizar este elemento?"});
+                if(urlFragment === "nuevoTipoMovimientoCaja") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
+                if(urlFragment === "editarTipoMovimientoCaja") setModalAttributes({title:"Aviso de actualización", message:"¿Seguro que desea actualizar este elemento?"});
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
         } else {
-            history.push("/tiposDocumento")
+            history.push("/tiposMovimientosCaja")
         }
     }
 
     const getData = async () => {
-        const response = await getTipoDocumentoByCodigoTipoDocumento(elementId);
+        const response = await getTipoMovimientoCajaByCodigoTipoMovimientoCaja(elementId);
         if(response.status === 200) {
             const data = response.body.data;
-            setCodigoTipoDocumento({value:data.c_tipodocumento, isValid: true});
-            setDescripcion({value:data.c_descripcion, isValid: true});
-            setNumeroDigitos({value:data.n_numerodigitos, isValid: true});
+            setCodigoTipoMovimientoCaja({value:data.c_tipomovimientocc, isValid: true});
+            setDescripcion({value:data.c_descricpion, isValid: true});
+            setClaseTipoMovimiento(data.c_clasetipomov);
+            setFlagUsuario(data.c_flagusuario);
             setEstado(data.c_estado);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
@@ -125,21 +128,21 @@ const TipoDocumentoForm = (props) => {
     useEffect(async () => {
         await setIsLoading(true);
         setButtonAttributes(buttonTypes[urlFragment]);
-        if(urlFragment !== "nuevoTipoDocumento") await getData();
+        if(urlFragment !== "nuevoTipoMovimientoCaja") await getData();
         setIsLoading(false);
     }, [])
 
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
-            goList={()=>history.push("/tiposDocumento")} view={readOnlyView}>
+            goList={()=>history.push("/tiposMovimientosCaja")} view={readOnlyView}>
                 <InputComponent
-                    state={codigoTipoDocumento}
-                    setState={setCodigoTipoDocumento}
+                    state={codigoTipoMovimientoCaja}
+                    setState={setCodigoTipoMovimientoCaja}
                     type="text"
-                    label="Tipo de documento"
-                    placeholder="Tipo de documento"
-                    inputId="codigoTipoDocumentoInput"
+                    label="Tipo de Movimiento"
+                    placeholder="Tipo de movimiento"
+                    inputId="codigoTipoMovimientoInput"
                     validation="numberAndTextWithRange"
                     min={1}
                     max={3}
@@ -156,15 +159,27 @@ const TipoDocumentoForm = (props) => {
                     max={60}
                     readOnly={readOnlyView}
                 />
-                <InputComponent
-                    state={numeroDigitos}
-                    setState={setNumeroDigitos}
-                    type="text"
-                    label="N° de dígitos"
-                    placeholder="N° de dígitos"
-                    inputId="numeroDigitosInput"
-                    validation="number"
-                    readOnly={readOnlyView}
+                <SelectComponent
+                    labelText="Clase"
+                    defaultValue="Seleccione una clase"
+                    items={[{name: "Ingreso", value:"I"}, {name: "Salida", value:"S"}]}
+                    selectId="claseId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={claseTipoMovimiento}
+                    handleChange={setClaseTipoMovimiento}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag"
+                    defaultValue="Seleccione un flag usuario"
+                    items={[{name: "SI", value:"S"}, {name: "NO", value:"N"}]}
+                    selectId="flagId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagUsuario}
+                    handleChange={setFlagUsuario}
+                    disabledElement={readOnlyView}
                 />
                 <SelectComponent
                     labelText="Estado"
@@ -197,4 +212,4 @@ const TipoDocumentoForm = (props) => {
     )
 }
 
-export default TipoDocumentoForm
+export default TipoMovimientoCajaForm

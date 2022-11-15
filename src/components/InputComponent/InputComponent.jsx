@@ -71,6 +71,7 @@ const InputComponent = (props) => {
                         {validationObject.errorMessage}
                     </div>
                 }
+                {props.children}
             </div>
         </div>
     )

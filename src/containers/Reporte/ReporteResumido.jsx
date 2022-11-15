@@ -282,18 +282,12 @@ const ReporteResumido = () => {
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                     <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
                 </div>
-                <div className="row">
-                    <div className="col-12">
-                        <Space style={{ marginBottom: 16 }}>
-                            <ButtonDownloadExcel
-                                fileName="reporteResumido"
-                                sheet="reporte"
-                                columns={columnsExportExcel}
-                                content={dataReportToTable}
-                            />
-                        </Space>
-                    </div>
-                </div>
+                <ButtonDownloadExcel
+                    fileName="reporteResumido"
+                    sheet="reporte"
+                    columns={columnsExportExcel}
+                    content={dataReportToTable}
+                />
                 <div className="col-12">
                     {elementPdf ? <PDFViewer
                         className="col-12"
