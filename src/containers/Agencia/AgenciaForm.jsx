@@ -20,6 +20,7 @@ const AgenciaForm = (props) => {
     const [descripcion, setDescripcion] = useState({value: "", isValid:null});
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
+    const [flagCU, setFlagCU] = useState("N");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +73,8 @@ const AgenciaForm = (props) => {
             c_compania: compania,
             c_agencia: agenciacodigo.value,
             c_descripcion: descripcion.value,
-            c_estado: estado
+            c_estado: estado,
+            c_flagvalidacju: flagCU
         }
         return data;
     }
@@ -120,6 +122,7 @@ const AgenciaForm = (props) => {
             setAgenciacodigo({value:data.c_agencia, isValid: true});
             setDescripcion({value:data.c_descripcion, isValid: true});
             setEstado(data.c_estado);
+            setFlagCU(data.c_flagvalidacju);
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -164,7 +167,7 @@ const AgenciaForm = (props) => {
                     type="text"
                     placeholder="Código de agencia"
                     inputId="agenciacodigoId"
-                    validation="textWithRange"
+                    validation="numberAndTextWithRange"
                     min={1}
                     max={2}
                     readOnly={readOnlyCode}
@@ -189,6 +192,17 @@ const AgenciaForm = (props) => {
                     optionField="name"
                     valueSelected={estado}
                     handleChange={setEstado}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag Usuario"
+                    defaultValue="Seleccione"
+                    items={[{name: "Si", value:"S"}, {name: "No", value:"N"}]}
+                    selectId="estadoId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagCU}
+                    handleChange={setFlagCU}
                     disabledElement={readOnlyView}
                 />
             </FormContainer>

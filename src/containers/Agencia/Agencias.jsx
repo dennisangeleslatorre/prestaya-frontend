@@ -74,7 +74,8 @@ const Agencias = () => {
         {name:'companyname', label: 'Compañía', sortVar:1 },
         {name:'c_agencia', label: 'Agencia', sortVar:1 },
         {name:'c_descripcion', label: 'Descripción', sortVar:1 },
-        {name:'c_estado', label: 'Estado', sortVar:1 },
+        {name:'c_estado', label: 'Estado', sortVar:0 },
+        {name:'flagvalidacu', label: 'Flag Valida U.', sortVar:1 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
@@ -86,7 +87,8 @@ const Agencias = () => {
         { name: 'c_agencia' },
         { name: 'companyname' },
         { name: 'c_descripcion' },
-        { name: 'c_estado' }
+        { name: 'c_estado' },
+        { name: 'flagvalidacu' }
     ];
 
     //consumo de api
@@ -137,6 +139,7 @@ const Agencias = () => {
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
+            aux.flagvalidacu = item.flagvalidacu;
             const keyCodes = { c_agencia: item.c_agencia, c_compania: item.c_compania }
             aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);

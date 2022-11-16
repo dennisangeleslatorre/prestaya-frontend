@@ -368,7 +368,7 @@ const BusquedaFlujoCaja = () => {
             aux.d_fechaInicioMov = item.d_fechaInicioMov ? moment(item.d_fechaInicioMov).local().format('DD/MM/yyyy') : "";
             aux.d_fechaFinMov = item.d_fechaFinMov ? moment(item.d_fechaFinMov).local().format('DD/MM/yyyy') : "";
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
-            aux.c_monedafcu = item.c_monedafcu === "L" ? "ACTIVO" : "INACTIVO";
+            aux.c_monedafcu = item.c_monedafcu === "L" ? "LOCAL" : "EXTRANJERO";
             aux.n_montoingresos = item.n_montoingresos ? separator(Number(item.n_montoingresos).toFixed(2)) : "0.00";
             aux.n_montosalidas = item.n_montosalidas ? separator(Number(item.n_montosalidas).toFixed(2)) : "0.00";
             aux.n_saldo = separator(Number(item.n_montoingresos - item.n_montosalidas).toFixed(2));
