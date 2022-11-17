@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         marginTop: '0.5cm'
     },
     table__container: {
-        marginTop: '0.5cm',
+        marginTop: '0.3cm',
         width: '100%',
         display: 'flex',
     },
@@ -104,6 +104,10 @@ const styles = StyleSheet.create({
     table__text__body: {
         fontSize: '0.22cm',
         textAlign: 'center'
+    },
+    table__text__body_price: {
+        fontSize: '0.22cm',
+        textAlign: 'right'
     }
 })
 
@@ -182,10 +186,10 @@ const renderHeaderTable = () => (
         <View style={[styles.table__header, {width:'1.5cm'}]}>
             <Text style={[styles.table__text__header]}>FECHA</Text>
         </View>
-        <View style={[styles.table__header, {width:'3.1cm'}]}>
+        <View style={[styles.table__header, {width:'2.8cm'}]}>
             <Text style={[styles.table__text__header]}>OBSERVACIONES</Text>
         </View>
-        <View style={[styles.table__header, {width:'1.5cm'}]}>
+        <View style={[styles.table__header, {width:'1.4cm'}]}>
             <Text style={[styles.table__text__header]}>ESTADO</Text>
         </View>
         <View style={[styles.table__header, {width:'0.8cm'}]}>
@@ -197,23 +201,26 @@ const renderHeaderTable = () => (
         <View style={[styles.table__header, {width:'2.0cm'}]}>
             <Text style={[styles.table__text__header]}>Usuario Mov.</Text>
         </View>
-        <View style={[styles.table__header, {width:'3.1cm'}]}>
+        <View style={[styles.table__header, {width:'3.0cm'}]}>
             <Text style={[styles.table__text__header]}>Observaciones</Text>
         </View>
-        <View style={[styles.table__header, {width:'2.2cm'}]}>
+        <View style={[styles.table__header, {width:'2.0cm'}]}>
             <Text style={[styles.table__text__header]}>Mnt. Interes a Cancelar</Text>
         </View>
-        <View style={[styles.table__header, {width:'2.3cm'}]}>
+        <View style={[styles.table__header, {width:'2.1cm'}]}>
             <Text style={[styles.table__text__header]}>Mnt. Prestamo a Cancelar</Text>
         </View>
-        <View style={[styles.table__header, {width:'2.2cm'}]}>
+        <View style={[styles.table__header, {width:'2.0cm'}]}>
             <Text style={[styles.table__text__header]}>Mnt. Comision</Text>
         </View>
-        <View style={[styles.table__header, {width:'2.0cm'}]}>
+        <View style={[styles.table__header, {width:'1.8cm'}]}>
             <Text style={[styles.table__text__header]}>Mnt. Total</Text>
         </View>
-        <View style={[styles.table__header, {width:'1.8cm'}]}>
+        <View style={[styles.table__header, {width:'1.6cm'}]}>
             <Text style={[styles.table__text__header]}>Fuente</Text>
+        </View>
+        <View style={[styles.table__header, {width:'1.7cm'}]}>
+            <Text style={[styles.table__text__header]}>CP</Text>
         </View>
     </View>
 )
@@ -231,10 +238,10 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
                             <View style={[styles.table__data, {width: '1.5cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{indexm > 0 ? "" : moment(fecha.fecha).format("DD/MM/yyyy")}</Text>
                             </View>
-                            <View style={[styles.table__data, {width: '3.1cm', border:'1px'}]}>
+                            <View style={[styles.table__data, {width: '2.8cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{indexm > 0 ? "" : fecha.observacion}</Text>
                             </View>
-                            <View style={[styles.table__data, {width: '1.5cm', border:'1px'}]}>
+                            <View style={[styles.table__data, {width: '1.4cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{indexm > 0 ? "" : (fecha.estado)}</Text>
                             </View>
                             <View style={[styles.table__data, {width: '0.8cm', border:'1px'}]}>
@@ -246,23 +253,26 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
                             <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{mov.usuariomov}</Text>
                             </View>
-                            <View style={[styles.table__data, {width: '3.1cm', border:'1px'}]}>
+                            <View style={[styles.table__data, {width: '3.0cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{mov.observacion}</Text>
                             </View>
-                            <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-                                <Text style={styles.table__text__body}>{mov.montointerescancelar ? separator(Number(mov.montointerescancelar).toFixed(2)) : ""}</Text>
+                            <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
+                                <Text style={styles.table__text__body_price}>{mov.montointerescancelar ? separator(Number(mov.montointerescancelar).toFixed(2)) : ""}</Text>
                             </View>
-                            <View style={[styles.table__data, {width: '2.3cm', border:'1px'}]}>
-                                <Text style={styles.table__text__body}>{mov.montoprestamocancelar ? separator(Number(mov.montoprestamocancelar).toFixed(2)) : ""}</Text>
-                            </View>
-                            <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-                                <Text style={styles.table__text__body}>{mov.montocomisioncancelar ? separator(Number(mov.montocomisioncancelar).toFixed(2)) : ""}</Text>
+                            <View style={[styles.table__data, {width: '2.1cm', border:'1px'}]}>
+                                <Text style={styles.table__text__body_price}>{mov.montoprestamocancelar ? separator(Number(mov.montoprestamocancelar).toFixed(2)) : ""}</Text>
                             </View>
                             <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
-                                <Text style={styles.table__text__body}>{`${mov.clasemov === 'S' ? '-' : ''} ${separator(Number(mov.montomov).toFixed(2))}`}</Text>
+                                <Text style={styles.table__text__body_price}>{mov.montocomisioncancelar ? separator(Number(mov.montocomisioncancelar).toFixed(2)) : ""}</Text>
                             </View>
                             <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
+                                <Text style={[styles.table__text__body_price, mov.clasemov === 'S' ? {color:'red'} : '']}>{separator(Number(mov.montomov).toFixed(2))}</Text>
+                            </View>
+                            <View style={[styles.table__data, {width: '1.6cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{mov.fuente}</Text>
+                            </View>
+                            <View style={[styles.table__data, {width: '1.7cm', border:'1px'}]}>
+                                <Text style={styles.table__text__body}>{mov.c_prestamo}</Text>
                             </View>
                         </View>
                     ))}
@@ -277,10 +287,10 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
             <View style={[styles.table__data, {width: '1.5cm'}]}>
                 <Text style={styles.table__text__body}></Text>
             </View>
-            <View style={[styles.table__data, {width: '3.1cm'}]}>
+            <View style={[styles.table__data, {width: '2.8cm'}]}>
                 <Text style={styles.table__text__body}></Text>
             </View>
-            <View style={[styles.table__data, {width: '1.5cm'}]}>
+            <View style={[styles.table__data, {width: '1.4cm'}]}>
                 <Text style={styles.table__text__body}></Text>
             </View>
             <View style={[styles.table__data, {width: '0.8cm'}]}>
@@ -292,22 +302,27 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
             <View style={[styles.table__data, {width: '2.0cm'}]}>
                 <Text style={styles.table__text__body}></Text>
             </View>
-            <View style={[styles.table__data, {width: '3.1cm', border:'1px'}]}>
+            <View style={[styles.table__data, {width: '3.0cm', border:'1px'}]}>
                 <Text style={styles.table__text__body}>TOTALES S/. X FLUJO C.U.:</Text>
             </View>
-            <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-                <Text style={styles.table__text__body}>{separator(Number(sumas.suma_montointerescancelar).toFixed(2))}</Text>
+            <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
+                <Text style={styles.table__text__body_price}>{separator(Number(sumas.suma_montointerescancelar).toFixed(2))}</Text>
             </View>
-            <View style={[styles.table__data, {width: '2.3cm', border:'1px'}]}>
-                <Text style={styles.table__text__body}>{separator(Number(sumas.suma_montoprestamocancelar).toFixed(2))}</Text>
-            </View>
-            <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-                <Text style={styles.table__text__body}>{separator(Number(sumas.suma_montocomisioncancelar).toFixed(2))}</Text>
+            <View style={[styles.table__data, {width: '2.1cm', border:'1px'}]}>
+                <Text style={styles.table__text__body_price}>{separator(Number(sumas.suma_montoprestamocancelar).toFixed(2))}</Text>
             </View>
             <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
-                <Text style={styles.table__text__body}>{separator(Number(sumas.suma_montototalcancelar).toFixed(2))}</Text>
+                <Text style={styles.table__text__body_price}>{separator(Number(sumas.suma_montocomisioncancelar).toFixed(2))}</Text>
             </View>
-            <View style={[styles.table__data, {width: '1.8cm'}]}>
+            <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
+                <Text style={[styles.table__text__body_price, Number(sumas.suma_montototalcancelar) < 0 && {color:'red'}]}>
+                    { Number(sumas.suma_montototalcancelar) > 0 ? separator(Number(sumas.suma_montototalcancelar).toFixed(2)) : separator(Number(sumas.suma_montototalcancelar * -1).toFixed(2)) }
+                </Text>
+            </View>
+            <View style={[styles.table__data, {width: '1.6cm'}]}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={[styles.table__data, {width: '1.7cm'}]}>
                 <Text style={styles.table__text__body}></Text>
             </View>
         </View>
@@ -322,10 +337,10 @@ const renderTotales = (totalesPxC, totalesFC) => (
         <View style={[styles.table__data, {width: '1.5cm'}]}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={[styles.table__data, {width: '3.1cm'}]}>
+        <View style={[styles.table__data, {width: '2.8cm'}]}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={[styles.table__data, {width: '1.5cm'}]}>
+        <View style={[styles.table__data, {width: '1.4cm'}]}>
             <Text style={styles.table__text__body}></Text>
         </View>
         <View style={[styles.table__data, {width: '0.8cm'}]}>
@@ -337,22 +352,27 @@ const renderTotales = (totalesPxC, totalesFC) => (
         <View style={[styles.table__data, {width: '2.0cm'}]}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={[styles.table__data, {width: '3.1cm', border:'1px'}]}>
+        <View style={[styles.table__data, {width: '3.0cm', border:'1px'}]}>
             <Text style={styles.table__text__body}>TOTALES:</Text>
         </View>
-        <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-            <Text style={styles.table__text__body}>{separator(Number(totalesPxC.suma_montointerescancelar + totalesFC.suma_montointerescancelar).toFixed(2))}</Text>
+        <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
+            <Text style={styles.table__text__body_price}>{separator(Number(totalesPxC.suma_montointerescancelar + totalesFC.suma_montointerescancelar).toFixed(2))}</Text>
         </View>
-        <View style={[styles.table__data, {width: '2.3cm', border:'1px'}]}>
-            <Text style={styles.table__text__body}>{separator(Number(totalesPxC.suma_montoprestamocancelar + totalesFC.suma_montoprestamocancelar).toFixed(2))}</Text>
-        </View>
-        <View style={[styles.table__data, {width: '2.2cm', border:'1px'}]}>
-            <Text style={styles.table__text__body}>{separator(Number(totalesPxC.suma_montocomisioncancelar + totalesFC.suma_montocomisioncancelar).toFixed(2))}</Text>
+        <View style={[styles.table__data, {width: '2.1cm', border:'1px'}]}>
+            <Text style={styles.table__text__body_price}>{separator(Number(totalesPxC.suma_montoprestamocancelar + totalesFC.suma_montoprestamocancelar).toFixed(2))}</Text>
         </View>
         <View style={[styles.table__data, {width: '2.0cm', border:'1px'}]}>
-            <Text style={styles.table__text__body}>{separator(Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar).toFixed(2))}</Text>
+            <Text style={styles.table__text__body_price}>{separator(Number(totalesPxC.suma_montocomisioncancelar + totalesFC.suma_montocomisioncancelar).toFixed(2))}</Text>
         </View>
-        <View style={[styles.table__data, {width: '1.8cm'}]}>
+        <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
+            <Text style={[styles.table__text__body_price,  Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar) < 0 && {color:'red'}]}>
+            {Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar) > 0 ? separator(Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar).toFixed(2)) : separator(Number((totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar)*-1).toFixed(2))}
+            </Text>
+        </View>
+        <View style={[styles.table__data, {width: '1.6cm'}]}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={[styles.table__data, {width: '1.7cm'}]}>
             <Text style={styles.table__text__body}></Text>
         </View>
     </View>

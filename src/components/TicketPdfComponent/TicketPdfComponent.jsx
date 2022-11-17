@@ -121,12 +121,12 @@ const renderLine = () => (
   </View>
 )
 
-const TicketPdfComponent = ({cancelaciones=[], prestamo, productos}) => (
+const TicketPdfComponent = ({cancelaciones=[], prestamo, productos, nLineasFormatos=[]}) => (
   <Document>
     <Page size={[226.78]} style={styles.page} wrap={false}>
       {/*CADA OPERACIONE ES UN TICKET*/}
       {
-        cancelaciones.map((item, index) => (
+        [...cancelaciones].filter(ca => nLineasFormatos.includes(ca.n_linea)).map((item, index) => (
             <View style={styles.ticket__container} key={item.n_linea}>
                 <View style={styles.item__ticket__container}>
                 <Text style={styles.company_name}>
@@ -186,10 +186,10 @@ const TicketPdfComponent = ({cancelaciones=[], prestamo, productos}) => (
                     {groupNumber('DIAS TRANS', item.n_diastranscurridos, true, false)}
                     {/*LINEA DE SEPARACIÓN*/}
                     {renderLine()}
-                    {groupNumber('NUEVO SALDO', cancelaciones.length !== index + 1 ? Number(cancelaciones[index+1].n_montoprestamo).toFixed(2) : "0.00", true, false)}
-                    {groupNumber('INTERESES', cancelaciones.length !== index + 1 ? Number(cancelaciones[index+1].n_montointereses).toFixed(2) : "0.00", true, false)}
-                    {groupNumber('F. PROX VCTO', cancelaciones.length !== index + 1 ? moment(cancelaciones[index+1].d_fechavencimiento).format('DD/MM/yyyy') : "", true, false)}
-                    {groupNumber('PLAZO', cancelaciones.length !== index + 1 ? prestamo.n_diasplazo : "", true, false)}
+                    {groupNumber('NUEVO SALDO', cancelaciones[item.n_linea] ? Number(cancelaciones[item.n_linea].n_montoprestamo).toFixed(2) : "0.00", true, false)}
+                    {groupNumber('INTERESES', cancelaciones[item.n_linea] ? Number(cancelaciones[item.n_linea].n_montointereses).toFixed(2) : "0.00", true, false)}
+                    {groupNumber('F. PROX VCTO', cancelaciones[item.n_linea] ? moment(cancelaciones[item.n_linea].d_fechavencimiento).format('DD/MM/yyyy') : "", true, false)}
+                    {groupNumber('PLAZO', nLineasFormatos.length !== index + 1 ? prestamo.n_diasplazo : "", true, false)}
                     {/*LINEA DE SEPARACIÓN*/}
                     {renderLine()}
                 </View>

@@ -52,18 +52,6 @@ const columns = [
         width: 140
     },
     {
-        title: 'Cliente',
-        dataIndex: 'n_cliente',
-        sorter: {
-            compare: (a, b) => a.n_cliente - b.n_cliente,
-            multiple: 2,
-        },
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 100,
-    },
-    {
         title: 'Nombre Completo',
         dataIndex: 'c_nombrescompleto',
         width: 250,
@@ -126,6 +114,18 @@ const columns = [
             showTitle: false,
         },
         width: 180
+    },
+    {
+        title: 'Cliente',
+        dataIndex: 'n_cliente',
+        sorter: {
+            compare: (a, b) => a.n_cliente - b.n_cliente,
+            multiple: 2,
+        },
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
     },
     {
         title: () => <label className='text-audit-table'>F. Registro</label>,

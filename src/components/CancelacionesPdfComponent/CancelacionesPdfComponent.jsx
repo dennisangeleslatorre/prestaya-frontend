@@ -567,15 +567,53 @@ const getPrestamoData = (prestamo, estadosPrestamo) => (
                     <View style={[styles.table__body__general, {width:'1.5cm'}]}>
                         <Text style={styles.text__prestamo}>{separator(Number(prestamo.n_montointereses).toFixed(2))}</Text>
                     </View>
+                    {/*Mnt. Total P.*/}
+                    <View style={[styles.table__body__general, {width:'2.4cm'}]}>
+                        <Text style={styles.text__prestamo__bold}>Mnt. Total P.:</Text>
+                    </View>
+                    <View style={[styles.table__body__general, {width:'1.5cm'}]}>
+                        <Text style={styles.text__prestamo}>{separator(Number(prestamo.n_montototalprestamo).toFixed(2))}</Text>
+                    </View>
+                </View>
+                <View style={styles.table__row__container}>
+                    {/*Mnt. interés Diario*/}
+                    <View style={[styles.table__body__general, {width:'3.2cm'}]}>
+                        <Text style={styles.text__prestamo__bold}>Mnt. interés Diario:</Text>
+                    </View>
+                    <View style={[styles.table__body__general, {width:'1.2cm'}]}>
+                        <Text style={styles.text__prestamo}>{separator(Number(prestamo.n_montointeresesdiario).toFixed(2))}</Text>
+                    </View>
+                    {/*F. Desembolso*/}
+                    <View style={[styles.table__body__general, {width:'2.6cm'}]}>
+                        <Text style={styles.text__prestamo__bold}>F. Desembolso:</Text>
+                    </View>
+                    <View style={[styles.table__body__general, {width:'2.0cm'}]}>
+                        <Text style={styles.text__prestamo}>{moment(prestamo.d_fechadesembolso).format('DD/MM/yyyy')}</Text>
+                    </View>
+                    {/*Plazo (días)*/}
+                    <View style={[styles.table__body__general, {width:'2.3cm'}]}>
+                        <Text style={styles.text__prestamo__bold}>Plazo (días):</Text>
+                    </View>
+                    <View style={[styles.table__body__general, {width:'0.8cm'}]}>
+                        <Text style={styles.text__prestamo}>{prestamo.n_diasplazo}</Text>
+                    </View>
+                    {/*F. Vencimiento*/}
+                    <View style={[styles.table__body__general, {width:'2.6cm'}]}>
+                        <Text style={styles.text__prestamo__bold}>F. Vencimiento:</Text>
+                    </View>
+                    <View style={[styles.table__body__general, {width:'1.5cm'}]}>
+                        <Text style={styles.text__prestamo}>{moment(prestamo.d_fechavencimiento).format('DD/MM/yyyy')}</Text>
+                    </View>
                 </View>
             </View>
         </View>
     </View>
 )
 
-const getTableProductos = (productos) => {
+const getTableProductos = (productos, productosConPeso) => {
     let sumaPesoNeto=0.00;
     let sumaPesoBruto=0.00;
+    console.log("AAA", productosConPeso)
     return (
         <View style={styles.body__container}>
             <View style={styles.body__section}>
@@ -598,12 +636,15 @@ const getTableProductos = (productos) => {
                         <View style={styles.table__header__descripcion}>
                             <Text style={styles.table__text__header}>OBSERVACIONES</Text>
                         </View>
-                        <View style={styles.table__header__peso}>
-                            <Text style={styles.table__text__header}>PESO BRUTO</Text>
-                        </View>
-                        <View style={styles.table__header__peso}>
-                            <Text style={styles.table__text__header}>PESO NETO</Text>
-                        </View>
+                        { productosConPeso.length > 0 &&
+                        <>
+                            <View style={styles.table__header__peso}>
+                                <Text style={styles.table__text__header}>PESO BRUTO</Text>
+                            </View>
+                            <View style={styles.table__header__peso}>
+                                <Text style={styles.table__text__header}>PESO NETO</Text>
+                            </View>
+                        </> }
                     </View>
                     {/*Body*/}
                     {productos.map((item, index) => {
@@ -612,7 +653,7 @@ const getTableProductos = (productos) => {
                         return (
                             <View style={styles.table__row__container} key={index}>
                                 <View style={[styles.table__body__cnt, styles.table__border]}>
-                                    <Text style={styles.table__text__body}>{item.n_linea}</Text>
+                                    <Text style={styles.table__text__body}>{Number(item.n_cantidad).toFixed(0)}</Text>
                                 </View>
                                 <View style={[styles.table__body__und, styles.table__border]}>
                                     <Text style={styles.table__text__body}>{item.unidadmedidadesc}</Text>
@@ -626,38 +667,46 @@ const getTableProductos = (productos) => {
                                 <View style={[styles.table__body__descripcion, styles.table__border]}>
                                     <Text style={styles.table__text__body}>{item.c_observaciones}</Text>
                                 </View>
-                                <View style={[styles.table__body__peso, styles.table__border]}>
-                                    <Text style={styles.table__text__body}>{item.n_pesobruto ? Number(item.n_pesobruto).toFixed(4) : "0.0000"}</Text>
-                                </View>
-                                <View style={[styles.table__body__peso, styles.table__border]}>
-                                    <Text style={styles.table__text__body}>{item.n_pesoneto ? Number(item.n_pesoneto).toFixed(4) : "0.0000"}</Text>
-                                </View>
+                                { productosConPeso.length > 0 &&
+                                <>
+                                    <View style={[styles.table__body__peso, styles.table__border]}>
+                                        <Text style={styles.table__text__body}>{item.n_pesobruto ? Number(item.n_pesobruto).toFixed(4) : "0.0000"}</Text>
+                                    </View>
+                                    <View style={[styles.table__body__peso, styles.table__border]}>
+                                        <Text style={styles.table__text__body}>{item.n_pesoneto ? Number(item.n_pesoneto).toFixed(4) : "0.0000"}</Text>
+                                    </View>
+                                </>
+                                }
                             </View>
                         )
                     })}
-                    <View style={styles.table__row__container}>
-                        <View style={styles.table__body__cnt}>
-                            <Text style={styles.table__text__body}></Text>
+                    {productosConPeso.length > 0 &&
+                    <>
+                        <View style={styles.table__row__container}>
+                            <View style={styles.table__body__cnt}>
+                                <Text style={styles.table__text__body}></Text>
+                            </View>
+                            <View style={styles.table__body__und}>
+                                <Text style={styles.table__text__body}></Text>
+                            </View>
+                            <View style={styles.table__body__tipo}>
+                                <Text style={styles.table__text__body}></Text>
+                            </View>
+                            <View style={styles.table__body__descripcion}>
+                                <Text style={styles.table__text__body}></Text>
+                            </View>
+                            <View style={[styles.table__body__descripcion, styles.table__border]}>
+                                <Text style={styles.table__text__body}>TOTALES PESO:</Text>
+                            </View>
+                            <View style={[styles.table__body__peso, styles.table__border]}>
+                                <Text style={styles.table__text__body}>{sumaPesoBruto.toFixed(4)}</Text>
+                            </View>
+                            <View style={[styles.table__body__peso, styles.table__border]}>
+                                <Text style={styles.table__text__body}>{sumaPesoNeto.toFixed(4)}</Text>
+                            </View>
                         </View>
-                        <View style={styles.table__body__und}>
-                            <Text style={styles.table__text__body}></Text>
-                        </View>
-                        <View style={styles.table__body__tipo}>
-                            <Text style={styles.table__text__body}></Text>
-                        </View>
-                        <View style={styles.table__body__descripcion}>
-                            <Text style={styles.table__text__body}></Text>
-                        </View>
-                        <View style={[styles.table__body__descripcion, styles.table__border]}>
-                            <Text style={styles.table__text__body}>TOTALES PESO:</Text>
-                        </View>
-                        <View style={[styles.table__body__peso, styles.table__border]}>
-                            <Text style={styles.table__text__body}>{sumaPesoBruto.toFixed(4)}</Text>
-                        </View>
-                        <View style={[styles.table__body__peso, styles.table__border]}>
-                            <Text style={styles.table__text__body}>{sumaPesoNeto.toFixed(4)}</Text>
-                        </View>
-                    </View>
+                    </>
+                    }
                 </View>
             </View>
         </View>
@@ -797,19 +846,19 @@ const getTableCancelaciones = (cancelaciones) => {
                             <Text style={styles.table__text__body}>TOTALES:</Text>
                         </View>
                         <View style={[styles.table__body__mtInteresDiario, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaIntDiario)}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaIntDiario.toFixed(2))}</Text>
                         </View>
                         <View style={[styles.table__body__mntInteresesCancelar, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaIntCancelar)}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaIntCancelar.toFixed(2))}</Text>
                         </View>
                         <View style={[styles.table__body__mntPrestamoCancelar, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaIntPrestamoCancelar)}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaIntPrestamoCancelar.toFixed(2))}</Text>
                         </View>
                         <View style={[styles.table__body__mntComision, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaComision)}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaComision.toFixed(2))}</Text>
                         </View>
                         <View style={[styles.table__body__mntTotalCancelar, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaMontoTotalCancelar)}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaMontoTotalCancelar.toFixed(2))}</Text>
                         </View>
                         <View style={styles.table__body__observaciones}>
                             <Text style={styles.table__text__body}></Text>
@@ -824,14 +873,14 @@ const getTableCancelaciones = (cancelaciones) => {
     )
 }
 
-const CancelacionesPdfComponent = ({cancelaciones=[], prestamo, productos, estadosPrestamo}) => (
+const CancelacionesPdfComponent = ({cancelaciones=[], prestamo, productos, estadosPrestamo, productosConPeso}) => (
     <Document>
         <Page size="A4" orientation='landscape' style={styles.page}>
             {prestamo && (
                 <>
                     {getHeaderPage(prestamo)}
                     {getPrestamoData(prestamo, estadosPrestamo)}
-                    {getTableProductos(productos)}
+                    {getTableProductos(productos, productosConPeso)}
                     {getTableCancelaciones(cancelaciones)}
                 </>
             )}

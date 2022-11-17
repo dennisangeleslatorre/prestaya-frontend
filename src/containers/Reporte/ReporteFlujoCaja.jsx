@@ -145,7 +145,18 @@ const ReporteFlujoCaja = () => {
     }
     const getTiposMovimientosCaja = async () => {
         const response = await listAllTipoMovimientoCaja();
-        if(response && response.status === 200 && response.body.data) setTiposMovimientos([{c_tipomovimientocc:"T", c_descricpion:"TODAS"}, ...response.body.data]);
+        if(response && response.status === 200 && response.body.data) {
+            let responseList = response.body.data.sort((a, b) => {
+                if(a.c_clasetipomov > b.c_clasetipomov) return 1;
+                else if(a.c_clasetipomov < b.c_clasetipomov) return -1;
+                else {
+                    if(a.c_descricpion > b.c_descricpion) return 1;
+                    else if(a.c_descricpion < b.c_descricpion) return -1;
+                    return 0;
+                }
+            })
+            setTiposMovimientos([{c_tipomovimientocc:"T", c_descricpion:"TODAS"}, ...responseList]);
+        };
     }
     const onHandleSearch = async () => {
         await setIsLoading(true);
@@ -200,7 +211,7 @@ const ReporteFlujoCaja = () => {
             if(nuevoArray[indexmpc].fechas.findIndex(fecha => fecha.fecha === item.fechamov) < 0) {
                 nuevoArray[indexmpc].fechas.push({
                   fecha: item.fechamov,
-                  estado: '',
+                  estado: item.diaestado,
                   observacion: '',
                   movimientos: []
                 });
@@ -217,7 +228,8 @@ const ReporteFlujoCaja = () => {
                 montocomisioncancelar: item.n_montocomisioncancelar || "",
                 montomov: item.n_montoxdiamov,
                 clasemov: item.c_clasetipomov,
-                fuente: 'Prestamos'
+                fuente: item.c_fuente,
+                c_prestamo: item.c_prestamo
             })
 
             nuevoArray[indexmpc].sumas.suma_montointerescancelar = nuevoArray[indexmpc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0);
@@ -284,7 +296,8 @@ const ReporteFlujoCaja = () => {
                 montocomisioncancelar: item.n_montocomisioncancelar || "",
                 montomov: item.n_montoxdiamov,
                 clasemov: item.c_clasetipomov,
-                fuente: item.c_fuente
+                fuente: item.c_fuente,
+                c_prestamo: item.c_prestamo
             })
 
             nuevoArray[indexfc].sumas.suma_montointerescancelar = nuevoArray[indexfc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0);

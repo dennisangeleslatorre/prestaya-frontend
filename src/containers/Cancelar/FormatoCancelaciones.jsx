@@ -97,6 +97,7 @@ const FormatoCancelaciones = () => {
   const [tableCancelaciones, setTableCancelaciones] = useState([]);
   const [prestamo, setPrestamo] = useState(null);
   const [productos, setProductos] = useState([]);
+  const [productosConPeso, setProductosConPeso] = useState([]);
 
   const getPrestamoByCodigo = async () => {
     const [c_compania, c_prestamo] = id.split('-');
@@ -117,7 +118,12 @@ const FormatoCancelaciones = () => {
   const getProductos = async () => {
       const [c_compania, c_prestamo] = id.split('-');
       const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
-      if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) setProductos(responseProducts.body.data);
+      if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) {
+        const productos = responseProducts.body.data;
+        const productosP = [...productos].filter(item => Number(item.n_pesobruto) > 0 || Number(item.n_pesoneto) > 0);
+        setProductos(productos);
+        setProductosConPeso(productosP);
+      };
   }
 
   const getDataForTable = (cancelaciones) => {
@@ -166,7 +172,8 @@ const FormatoCancelaciones = () => {
         <PDFViewer
           className="col-12"
           style={{height: "800px"}}
-          children={<CancelacionesPdfComponent estadosPrestamo={estadosPrestamo} prestamo={prestamo} cancelaciones={tableCancelaciones} productos={productos} />}
+          children={<CancelacionesPdfComponent estadosPrestamo={estadosPrestamo} prestamo={prestamo} productosConPeso={productosConPeso}
+          cancelaciones={tableCancelaciones} productos={productos} />}
         />
         <div className="col-12 text-center">
           <button onClick={()=>history.push(`/cancelaciones/${id}`)} className="btn btn-light btn-form ml-2">Regresar</button>

@@ -15,6 +15,7 @@ const FormatoRecibos = () => {
     const [prestamo, setPrestamo] = useState(null);
     const [cancelaciones, setCancelaciones] = useState([]);
     const [productos, setProductos] = useState([]);
+    const [nLineasFormatos, setNLineasFormatos] = useState([]);
     const [instance, updateInstance] = usePDF({ document: TicketPdfComponent({cancelaciones, prestamo, productos}) });
 
     const getPrestamoByCodigo = async () => {
@@ -27,9 +28,10 @@ const FormatoRecibos = () => {
 
     const getCancelaciones = async () => {
         const [c_compania, c_prestamo] = id.split('-');
-        const response = await getCancelacionesByNLinea({c_compania:c_compania, c_prestamo:c_prestamo, nlineas:nLineas});
+        const response = await getCancelacionesByNLinea({c_compania:c_compania, c_prestamo:c_prestamo});
         if(response && response.status === 200 && response.body.data) {
             setCancelaciones(response.body.data);
+            setNLineasFormatos(nLineas.split(',').map(item => Number(item)));
         }
     }
 
@@ -51,7 +53,7 @@ const FormatoRecibos = () => {
         return <PDFViewer
         className="col-12"
         style={{height: "800px"}}
-        children={<TicketPdfComponent prestamo={prestamo} cancelaciones={cancelaciones} productos={productos} />}
+        children={<TicketPdfComponent prestamo={prestamo} cancelaciones={cancelaciones} productos={productos} nLineasFormatos={nLineasFormatos} />}
         />;
     }
 

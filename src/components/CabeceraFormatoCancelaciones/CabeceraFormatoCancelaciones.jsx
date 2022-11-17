@@ -56,7 +56,7 @@ const CabeceraFormatoCancelaciones = ({prestamo, estados}) => {
                 setState={()=>{}}
                 type="text"
                 placeholder="Tipo documento"
-                inputId="estado"
+                inputId="tipodocumento"
                 readOnly={true}
                 classForm="col-12 col-lg-6"
             />
@@ -66,7 +66,7 @@ const CabeceraFormatoCancelaciones = ({prestamo, estados}) => {
                 setState={()=>{}}
                 type="text"
                 placeholder="N° documento"
-                inputId="estado"
+                inputId="ndocumento"
                 readOnly={true}
                 classForm="col-12 col-lg-6"
             />

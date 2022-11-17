@@ -63,7 +63,7 @@ const columns = [
         dataIndex: 'd_fecharegistro_format'
     },{
         title: 'U. Usuario',
-        dataIndex: 'c_ultimousuario'
+        dataIndex: 'c_usuariocanceremat'
     },{
         title: 'U. Fecha Modificación',
         dataIndex: 'd_ultimafechamodificacion_format'
@@ -143,7 +143,7 @@ const FormCancelaciones = (props) => {
             item.d_fechavencimiento_format = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy') : "";
             item.d_fechacancelacion_format = item.d_fechacancelacion ? moment(item.d_fechacancelacion).format('DD/MM/yyyy') : "";
             item.d_fecharegistro_format = moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss');
-            item.d_ultimafechamodificacion_format = moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss');
+            item.d_ultimafechamodificacion_format = item.d_fechacanceremat ? moment(item.d_fechacanceremat).format('DD/MM/yyyy HH:mm:ss') : "";
             item.n_montoprestamo = item.n_montoprestamo ? Number(item.n_montoprestamo).toFixed(2) : "";
             item.n_montointereses = item.n_montointereses ? Number(item.n_montointereses).toFixed(2) : "";
             item.n_montointeresesdiario = item.n_montointeresesdiario ? Number(item.n_montointeresesdiario).toFixed(4) : "";
