@@ -788,6 +788,12 @@ export const getDataReporteFlujoCaja = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getDataReporteVencidosyNoVencidos = async (body) => {
+    console.log('---API--- : getDataReporteVencidosyNoVencidos');
+    const url = `${port}/reporte/getDataReporteVencidosyNoVencidos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Flujo Caja
 export const registerFlujoCaja = async (body) => {
     console.log('---API--- : registerFlujoCaja');

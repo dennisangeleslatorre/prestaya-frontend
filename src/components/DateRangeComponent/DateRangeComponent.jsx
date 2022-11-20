@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useEffect } from 'react';
 import { Checkbox } from 'antd';
-import { useEffect } from 'react';
 import moment from 'moment';
 
 const MessageComponent = ({message, classComponent}) => (
@@ -28,7 +27,7 @@ const DateRangeComponent = (props) => {
     }
 
     const isValidFunction = (fechaInicio, fechaFin) => {
-        if(!fechaInicio || !fechaFin || validateRangeDate() <= 0) return false
+        if(!fechaInicio || !fechaFin || validateRangeDate() < 0) return false
         else return true;
     }
 
@@ -50,8 +49,8 @@ const DateRangeComponent = (props) => {
             return <MessageComponent message="Selecciona fecha de inicio y fin." classComponent={"invalid__message__data"} />
         } else {
             const diff = validateRangeDate();
-            if(diff <= 0) {
-                return <MessageComponent message="La fecha de fin debe ser mayor." classComponent={"invalid__message__data"} />
+            if(diff < 0) {
+                return <MessageComponent message="La fecha de fin debe ser mayor o igual." classComponent={"invalid__message__data"} />
             }
         }
     }

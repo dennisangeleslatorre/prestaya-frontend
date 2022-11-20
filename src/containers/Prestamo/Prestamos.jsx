@@ -904,7 +904,6 @@ const Prestamos = () => {
             body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
-        console.log('body', body)
         return body;
     }
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Space } from 'antd'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'

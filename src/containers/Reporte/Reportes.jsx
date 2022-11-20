@@ -42,8 +42,9 @@ const Reportes = () => {
                                         [...reportes].map(item => {
                                             if(item.c_tiporeporte === "CO000001" && item.n_grupo === 2) {
                                                 let reporteLink = "";
-                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reporteLink = '/reporteResumido'
-                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reporteLink = '/reporteDetallado'
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reporteLink = '/reporteResumido';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reporteLink = '/reporteDetallado';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 3) reporteLink = '/reportePrestamosVencidosyNovencidos';
                                                 return (
                                                     <tr>
                                                         <td></td>

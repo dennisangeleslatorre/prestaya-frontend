@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Space } from 'antd'
-import ReportContainer from '../../components/ReportContainer/ReportContainer'
+import LoadingModal from '../../components/Modal/LoadingModal';
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
-import SelectComponent from '../../components/SelectComponent/SelectComponent'
-import InputComponent from '../../components/InputComponent/InputComponent'
-import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
-import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent'
-import SearchModalCliente from '../../components/Modal/SearchModalCliente'
-import ResponseModal from '../../components/Modal/ResponseModal'
-import Loading from '../../components/Modal/LoadingModal'
-import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
-import { listAllCompanias, getClienteByCodigoCliente, listAllPaises, listAllDepartamentos,
-    listAllProvincias, listAllDistritos, getDataReporteDetallado} from '../../Api/Api'
-//PDF
-import { PDFViewer  } from "@react-pdf/renderer"
-import ReporteDetalladoPDFComponent from '../../components/ReporteDetalladoPDFComponent/ReporteDetalladoPDFComponent'
-import moment from 'moment'
+import ResponseModal from '../../components/Modal/ResponseModal';
+import ReportContainer from '../../components/ReportContainer/ReportContainer';
+import SearcherComponent from '../../components/SearcherComponent/SearcherComponent';
+import moment from 'moment';
+import SelectComponent from '../../components/SelectComponent/SelectComponent';
+import SearchModalCliente from '../../components/Modal/SearchModalCliente';
+import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent';
+import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRangeComponent';
+import InputComponent from '../../components/InputComponent/InputComponent';
+import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getDataReporteVencidosyNoVencidos, listAllPaises,
+    listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
+import { PDFViewer  } from "@react-pdf/renderer";
+import ReportePrestmamosVencidosPDF from '../../components/ReportePrestmamosVencidosPDF/ReportePrestmamosVencidosPDF'
 
 const columnsExportExcel = [
     {
@@ -35,10 +34,6 @@ const columnsExportExcel = [
         value: row => (row.d_fechadesembolso || '')
     },
     {
-        label: 'Dias Plazo',
-        value: row => (row.n_diasplazo || '')
-    },
-    {
         label: 'F. Vencimiento',
         value: row => (row.d_fechavencimiento || '')
     },
@@ -51,20 +46,12 @@ const columnsExportExcel = [
         value: row => (row.n_montoprestamo || '')
     },
     {
-        label: '% Tasa Interes',
-        value: row => (row.n_tasainteres || '')
-    },
-    {
         label: 'Monto Intereses',
         value: row => (row.n_montointereses || '')
     },
     {
         label: 'Monto Total P.',
         value: row => (row.n_montototalprestamo || '')
-    },
-    {
-        label: 'Monto Valor Prod.',
-        value: row => (row.calc_sumamontovalorproductos || '')
     },
     {
         label: 'Dias Plazo Totales',
@@ -107,51 +94,55 @@ const columnsExportExcel = [
         value: row => (row.c_estado || '')
     },
     {
-        label: 'Distrito',
-        value: row => (row.nombredistrito || '')
+        label: 'Agencia',
+        value: row => (row.agenciadesc || '')
+    },
+    {
+        label: 'Producto',
+        value: row => (row.c_descripcionproducto || '')
+    },
+    {
+        label: 'Teléfono',
+        value: row => (row.c_telefono1 || '')
     },
 ]
 
 const estados = [
     { name: 'TODOS', value: 'T' },
-    { name: 'PENDIENTE', value: 'PE' },
     { name: 'VIGENTE', value: 'VI' },
     { name: 'CANCELADO', value: 'CA' },
     { name: 'ENTREGADO', value: 'EN' },
-    { name: 'REMATE', value: 'RE' },
-    { name: 'ANULADO', value: 'AN' }
+    { name: 'REMATE', value: 'RE' }
 ]
 
-const ReporteDetallado = () => {
+const ReportePrestamosVencidos = () => {
+    //Filtros
     const [compania, setCompania] = useState("");
-    const [estado, setEstado] = useState("T");
-    const [excluiranulados, setExcluiranulados] = useState(false);
-    const [solovalidos, setSolovalidos] = useState(false);
+    const [agencia, setAgencia] = useState("T");
+    const [estado, setEstado] = useState("VI");
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
-    const [nPrestamo, setNPrestamo] = useState({value:""})
-    const [esVencido, setEsVencido] = useState("T");
+    const [fechaDesembolso, setFechaDesembolso] = useState({fechaInicio: "", fechaFin: "", isValid: false});
+    const [disabledFilterFechaDesembolso, setDisabledFilterFechaDesembolso] = useState(true);
+    const [fechaCancelacion, setFechaCancelacion] = useState({fechaInicio: "", fechaFin: "", isValid: false});
+    const [disabledFilterFechaCancelacion, setDisabledFilterFechaCancelacion] = useState(true);
+    const [nPrestamo, setNPrestamo] = useState({value:""});
+    const [esVencido, setEsVencido] = useState("S");
+    const [diasVencido, setDiasVencido] = useState({inicio:0, fin:0, isValid: false});
+    const [disabledFilterDiasVencido, setDisabledFilterDiasVencido] = useState(true);
+    const [fechaVencimiento, setFechaVencimiento] = useState({fechaInicio: "", fechaFin: "", isValid: false});
+    const [disabledFilterFechaVencimiento, setDisabledFilterFechaVencimiento] = useState(true);
+    const [fechaVencimientoReprogramada, setFechaVencimientoReprogramada] = useState({fechaInicio: "", fechaFin: "", isValid: false});
+    const [disabledFilterFechaVencimientoReprogramada, setDisabledFilterFechaVencimientoReprogramada] = useState(true);
     const [paisCodigo, setPaisCodigo] = useState("");
     const [departamentoCodigo, setDepartamentoCodigo] = useState("");
     const [provinciaCodigo, setProvinciaCodigo] = useState("");
     const [distritoCodigo, setDistritoCodigo] = useState("");
-    const [fechaDesembolso, setFechaDesembolso] = useState({fechaInicio: "", fechaFin: "", isValid: false});
-    const [enabledFechaDesembolso, setEnabledFechaDesembolso] = useState(true);
-    const [fechaCancelacion, setFechaCancelacion] = useState({fechaInicio: "", fechaFin: "", isValid: false});
-    const [enabledFechaCancelacion, setEnabledFechaCancelacion] = useState(true);
-    const [fechaVencimiento, setFechaVencimiento] = useState({fechaInicio: "", fechaFin: "", isValid: false});
-    const [enabledFechaVencimiento, setEnabledFechaVencimiento] = useState(true);
-    const [fechaVencimientoReprogramada, setFechaVencimientoReprogramada] = useState({fechaInicio: "", fechaFin: "", isValid: false});
-    const [enabledFechaVencimientoReprogramada, setEnabledFechaVencimientoReprogramada] = useState(true);
-    const [elementPdf, setElementPdf] = useState(null);
-    //Estados del formulario
-    const [dataReportToTable, setDataReportToTable] = useState([]);
-    const [responseData, setResponseData] = useState({});
-    const [openResponseModal , setOpenResponseModal ] = useState(false);
-    const [openSearchModal, setOpenSearchModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [fechaActual, setFechaActual] = useState({value:moment().format("yyyy-MM-DD")});
     //Listas
+    const [companias, setCompanias] = useState([]);
+    const [agencias, setAgencias] = useState([]);
     const [paises, setPaises] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
     const [provincias, setProvincias] = useState([]);
@@ -159,12 +150,15 @@ const ReporteDetallado = () => {
     const [departamentosFiltrados, setDepartamentosFiltrados] = useState([]);
     const [provinciasFiltradas, setProvinciasFiltradas] = useState([]);
     const [distritosFiltrados, setDistritosFiltrados] = useState([]);
-    const [companias, setCompanias] = useState([]);
+    //Form
+    const [dataReportToTable, setDataReportToTable] = useState([]);
+    const [elementPdf, setElementPdf] = useState(null);
+    const [general, setGeneral] = useState({esVencido:"", fechaActual:"", estado:""});
+    const [responseData, setResponseData] = useState({});
+    const [openResponseModal , setOpenResponseModal] = useState(false);
+    const [openSearchModal, setOpenSearchModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    //Modales
-    const handleOpenSearchModal = async () => {
-        setOpenSearchModal(true);
-    }
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -184,38 +178,56 @@ const ReporteDetallado = () => {
         setIsLoading(false);
     }
 
+    const handleSeleccionarCompania = (value) => {
+        setCompania(value);
+        //Deberia buscar las agencias de la compañía
+        getAgenciasByCompany(value);
+    }
+
     const prepareBodyToSearch = () => {
         let body = {};
+        let filters = {};
         if(compania) body.c_compania = compania;
+        if(agencia && agencia !== "T") body.c_agencia = agencia;
+        if(estado && estado !== "T") body.c_estado = estado;
+        filters.estado = estados.find(e => e.value === estado).name;
         if(codigoCliente) body.n_cliente = codigoCliente;
-        if(esVencido && esVencido !== 'T') body.esvencido = esVencido;
+        if(fechaDesembolso.isValid && !disabledFilterFechaDesembolso) {
+            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
+            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
+        }
+        if(fechaCancelacion.isValid && !disable) {
+            body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
+            body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
+        }
+        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
+        if(esVencido && esVencido !== "T") {
+            body.esVencido = esVencido;
+            filters.esVencido = esVencido === "S" ? "SI" : "NO";
+        } else {
+            filters.esVencido = "AMBOS";
+        }
+        if(diasVencido.isValid && !disabledFilterDiasVencido) {
+            body.n_incio = diasVencido.inicio;
+            body.n_fin = diasVencido.fin;
+        }
+        if(fechaVencimiento.isValid && !disabledFilterFechaVencimiento) {
+            body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
+            body.d_fechavencimientofin = fechaVencimiento.fechaFin;
+        }
+        if(fechaVencimientoReprogramada.isValid && !disabledFilterFechaVencimientoReprogramada) {
+            body.d_fechaentregainicio = fechaVencimientoReprogramada.fechaInicio;
+            body.d_fechaentregafin = fechaVencimientoReprogramada.fechaFin;
+        }
         if(paisCodigo) body.c_paiscodigo = paisCodigo;
         if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
         if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
         if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
-        if(estado && estado !== "T") body.c_estado = estado;
-
-        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
-
-        if(excluiranulados) body.excluiranulados = excluiranulados;
-        if(solovalidos) body.solovalidos = solovalidos;
-
-        if(fechaDesembolso.isValid && !enabledFechaDesembolso) {
-            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
-            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
-        }
-        if(fechaCancelacion.isValid && !enabledFechaCancelacion) {
-            body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
-            body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
-        }
-        if(fechaVencimiento.isValid && !enabledFechaVencimiento) {
-            body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
-            body.d_fechavencimientofin = fechaVencimiento.fechaFin;
-        }
-        if(fechaVencimientoReprogramada.isValid && !enabledFechaVencimientoReprogramada) {
-            body.d_fechavencimientoreprogramadainicio = fechaVencimientoReprogramada.fechaInicio;
-            body.d_fechavencimientoreprogramadafin = fechaVencimientoReprogramada.fechaFin;
-        }
+        if(fechaActual.value) {
+            body.d_fechaactual = fechaActual.value;
+            filters.fechaActual = fechaActual.value;
+        };
+        setGeneral(filters);
         return body;
     }
 
@@ -224,7 +236,6 @@ const ReporteDetallado = () => {
             suma_montoprestamo: 0,
             suma_montointereses: 0,
             suma_montototalprestamo: 0,
-            suma_montovalorproductos: 0,
             suma_interescancelado: 0,
             suma_montoprestamocancelado: 0,
             suma_montocomisioncancelado: 0,
@@ -235,7 +246,6 @@ const ReporteDetallado = () => {
             if(item.n_montoprestamo) element.suma_montoprestamo += Number(item.n_montoprestamo);
             if(item.n_montointereses) element.suma_montointereses += Number(item.n_montointereses);
             if(item.n_montototalprestamo) element.suma_montototalprestamo += Number(item.n_montototalprestamo);
-            if(item.calc_sumamontovalorproductos) element.suma_montovalorproductos += Number(item.calc_sumamontovalorproductos);
             if(item.calc_sumainterescancelado) element.suma_interescancelado += Number(item.calc_sumainterescancelado);
             if(item.calc_sumamontoprestamocancelado) element.suma_montoprestamocancelado += Number(item.calc_sumamontoprestamocancelado);
             if(item.calc_sumamontocomisioncancelada) element.suma_montocomisioncancelado += Number(item.calc_sumamontocomisioncancelada);
@@ -244,17 +254,9 @@ const ReporteDetallado = () => {
         return element;
     };
 
-    const getDataForPDF = (datos) => {
-        let element = {};
-        const dataReportes = getSumas(datos);
-        element = {...dataReportes};
-        element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
-        setElementPdf(element);
-    };
-
     const onHandleSearch = async () => {
-        let parametros = prepareBodyToSearch();
-        const response = await getDataReporteDetallado(parametros);
+        let parametros =  prepareBodyToSearch();
+        const response = await getDataReporteVencidosyNoVencidos(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
             getDataForTable(data);
@@ -262,11 +264,13 @@ const ReporteDetallado = () => {
         else getDataForTable([]);
     }
 
-    const onHandleClickSearch = async () => {
-        await setIsLoading(true);
-        await onHandleSearch();
-        setIsLoading(false);
-    }
+    const getDataForPDF = (datos) => {
+        let element = {};
+        const dataReportes = getSumas(datos);
+        element = {...dataReportes};
+        element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
+        setElementPdf(element);
+    };
 
     const getDataForTable = (datos) => {
         getDataForPDF(datos);
@@ -284,7 +288,13 @@ const ReporteDetallado = () => {
         setDataReportToTable(listAux);
     }
 
-    //Funciones para obtener datos
+    const onHandleClickSearch = async () => {
+        await setIsLoading(true);
+        await onHandleSearch();
+        setIsLoading(false);
+    }
+
+    //Listas
     const getCompanias =  async () => {
         const response = await listAllCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
@@ -305,11 +315,22 @@ const ReporteDetallado = () => {
         const response = await listAllDistritos();
         if(response && response.status === 200) setDistritos(response.body.data);
     }
+    const getAgenciasByCompany = async (companyCode) => {
+        const response = await listAgencias({c_compania: companyCode});
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
+    }
 
-    //Efectos
+    useEffect(() => {
+        if(clienteSeleccionado) {
+            setCodigoCliente(clienteSeleccionado.n_cliente);
+            setNombreCliente(clienteSeleccionado.c_nombrescompleto);
+        }
+    }, [clienteSeleccionado])
+
     //Listas enlazadas
     useEffect(() => {
         setDepartamentoCodigo("");
+        setDepartamentosFiltrados([]);
         if(paisCodigo && departamentos.length !== 0) {
             const departamentosAux = departamentos.filter((item) => item.c_paiscodigo === paisCodigo);
             setDepartamentosFiltrados(departamentosAux);
@@ -318,6 +339,7 @@ const ReporteDetallado = () => {
 
     useEffect(() => {
         setProvinciaCodigo("");
+        setProvinciasFiltradas([]);
         if(departamentoCodigo && provincias.length !== 0) {
             const provinciasAux = provincias.filter((item) => item.c_departamentocodigo === departamentoCodigo);
             setProvinciasFiltradas(provinciasAux);
@@ -329,6 +351,7 @@ const ReporteDetallado = () => {
 
     useEffect(() => {
         setDistritoCodigo("");
+        setDistritosFiltrados([]);
         if(provinciaCodigo && distritos.length !== 0) {
             const distritosAux = distritos.filter((item) => item.c_provinciacodigo === provinciaCodigo);
             setDistritosFiltrados(distritosAux);
@@ -338,20 +361,14 @@ const ReporteDetallado = () => {
         }
     }, [provinciaCodigo, distritos])
 
-    //Valor por defecto de la compañia
     useEffect(() => {
-        if(companias.length !== 0) setCompania(companias[0].c_compania);
+        if(companias.length !== 0) {
+            handleSeleccionarCompania(companias[0].c_compania);
+            setAgencia("T");
+        };
     }, [companias])
 
-    //Cliente seleccionado
-    useEffect(() => {
-        if(clienteSeleccionado) {
-            setCodigoCliente(clienteSeleccionado.n_cliente);
-            setNombreCliente(clienteSeleccionado.c_nombrescompleto);
-        }
-    }, [clienteSeleccionado])
-
-    useEffect( async () => {
+    useEffect(async () => {
         await setIsLoading(true);
         await getCompanias();
         await getPaises();
@@ -359,7 +376,7 @@ const ReporteDetallado = () => {
         await getProvincias();
         await getDistritos();
         setIsLoading(false);
-    }, []);
+    }, [])
 
     return (
         <>
@@ -376,7 +393,18 @@ const ReporteDetallado = () => {
                         valueField="c_compania"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
+                    />
+                    <ReactSelect
+                        inputId="agenciaCodeId"
+                        labelText="Agencia"
+                        placeholder="Seleccione una agencia"
+                        valueSelected={agencia}
+                        data={agencias}
+                        handleElementSelected={setAgencia}
+                        optionField="c_descripcion"
+                        valueField="c_agencia"
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
                     />
                     <SelectComponent
                         labelText="Estado"
@@ -389,33 +417,6 @@ const ReporteDetallado = () => {
                         handleChange={setEstado}
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
-                    />
-                    <SelectComponent
-                        labelText="Excluir anulados"
-                        defaultValue="Excluir anulados"
-                        items={[{name:"SI", value:true},{name:"NO", value:false}]}
-                        selectId="excluirAnuladosId"
-                        valueField="value"
-                        optionField="name"
-                        valueSelected={excluiranulados}
-                        handleChange={setExcluiranulados}
-                        classForm="col-12 col-md-6"
-                        marginForm="ml-0"
-                        labelSpace={3}
-                    />
-                    <SelectComponent
-                        labelText="Solo válidos"
-                        defaultValue="Solo válidos"
-                        items={[{name:"SI", value:true},{name:"NO", value:false}]}
-                        selectId="soloValidosId"
-                        valueField="value"
-                        optionField="name"
-                        valueSelected={solovalidos}
-                        handleChange={setSolovalidos}
-                        classForm="col-12 col-md-6"
-                        marginForm="ml-0"
-                        labelSpace={3}
                     />
                     <SearcherComponent
                         placeholder="Nombre del cliente"
@@ -426,14 +427,33 @@ const ReporteDetallado = () => {
                         inputId="clienteNombreId"
                         stateName={nombreCliente}
                         setStateName={setNombreCliente}
-                        onHandleClick={handleOpenSearchModal}
+                        onHandleClick={()=>setOpenSearchModal(true)}
                         onHandleBlur={findClienteByCode}
                         readOnly={true}
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                     >
                     </SearcherComponent>
+                    <DateRangeComponent
+                        inputId="fechaDesembolsoId"
+                        labelText="Fecha de desembolso"
+                        state={fechaDesembolso}
+                        setState={setFechaDesembolso}
+                        enabled={disabledFilterFechaDesembolso}
+                        setEnabled={setDisabledFilterFechaDesembolso}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
+                    <DateRangeComponent
+                        inputId="fechaCancelacionId"
+                        labelText="Fecha de cancelación"
+                        state={fechaCancelacion}
+                        setState={setFechaCancelacion}
+                        enabled={disabledFilterFechaCancelacion}
+                        setEnabled={setDisabledFilterFechaCancelacion}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
                     <InputComponent
                         state={nPrestamo}
                         setState={setNPrestamo}
@@ -443,7 +463,6 @@ const ReporteDetallado = () => {
                         inputId="nPrestamoInput"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                     />
                     <SelectComponent
                         labelText="Vencido"
@@ -456,7 +475,36 @@ const ReporteDetallado = () => {
                         handleChange={setEsVencido}
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
+                    />
+                    <NumberRangeComponent
+                        inputId="diasVencidoId"
+                        labelText="Días Vencido"
+                        state={diasVencido}
+                        setState={setDiasVencido}
+                        checked={disabledFilterDiasVencido}
+                        setChecked={setDisabledFilterDiasVencido}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
+                    <DateRangeComponent
+                        inputId="fechaVencimientoId"
+                        labelText="Fecha de vencimiento"
+                        state={fechaVencimiento}
+                        setState={setFechaVencimiento}
+                        enabled={disabledFilterFechaVencimiento}
+                        setEnabled={setDisabledFilterFechaVencimiento}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
+                    <DateRangeComponent
+                        inputId="fechaVencimientoReproId"
+                        labelText="F. Vcto. Reprog."
+                        state={fechaVencimientoReprogramada}
+                        setState={setFechaVencimientoReprogramada}
+                        enabled={disabledFilterFechaVencimientoReprogramada}
+                        setEnabled={setDisabledFilterFechaVencimientoReprogramada}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
                     />
                     <ReactSelect
                         inputId="paisCodeId"
@@ -469,7 +517,6 @@ const ReporteDetallado = () => {
                         valueField="c_paiscodigo"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                         isClear={true}
                     />
                     <ReactSelect
@@ -483,7 +530,6 @@ const ReporteDetallado = () => {
                         valueField="c_departamentocodigo"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                     />
                     <ReactSelect
                         inputId="provinciaCodeId"
@@ -496,7 +542,6 @@ const ReporteDetallado = () => {
                         valueField="c_provinciacodigo"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                     />
                     <ReactSelect
                         inputId="distritocodigoId"
@@ -509,51 +554,16 @@ const ReporteDetallado = () => {
                         valueField="c_distritocodigo"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
                     />
-                    <DateRangeComponent
-                        inputId="fechaDesembolsoId"
-                        labelText="Fecha de desembolso"
-                        state={fechaDesembolso}
-                        setState={setFechaDesembolso}
-                        enabled={enabledFechaDesembolso}
-                        setEnabled={setEnabledFechaDesembolso}
+                    <InputComponent
+                        label="Fecha Actual"
+                        state={fechaActual}
+                        setState={setFechaActual}
+                        type="date"
+                        placeholder="Fecha Actual"
+                        inputId="fechaActualId"
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
-                        labelSpace={3}
-                    />
-                    <DateRangeComponent
-                        inputId="fechaCancelacionId"
-                        labelText="Fecha de cancelación"
-                        state={fechaCancelacion}
-                        setState={setFechaCancelacion}
-                        enabled={enabledFechaCancelacion}
-                        setEnabled={setEnabledFechaCancelacion}
-                        classForm="col-12 col-md-6"
-                        marginForm="ml-0"
-                        labelSpace={3}
-                    />
-                    <DateRangeComponent
-                        inputId="fechaVencimientoId"
-                        labelText="Fecha de vencimiento"
-                        state={fechaVencimiento}
-                        setState={setFechaVencimiento}
-                        enabled={enabledFechaVencimiento}
-                        setEnabled={setEnabledFechaVencimiento}
-                        classForm="col-12 col-md-6"
-                        marginForm="ml-0"
-                        labelSpace={3}
-                    />
-                    <DateRangeComponent
-                        inputId="fechaVencimientoId"
-                        labelText="F. Vcto. Reprog."
-                        state={fechaVencimientoReprogramada}
-                        setState={setFechaVencimientoReprogramada}
-                        enabled={enabledFechaVencimientoReprogramada}
-                        setEnabled={setEnabledFechaVencimientoReprogramada}
-                        classForm="col-12 col-md-6"
-                        marginForm="ml-0"
-                        labelSpace={3}
                     />
                 </div>
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
@@ -569,13 +579,13 @@ const ReporteDetallado = () => {
                     {elementPdf ? <PDFViewer
                         className="col-12"
                         style={{height: "800px"}}
-                        children={<ReporteDetalladoPDFComponent element={elementPdf}/>}
+                        children={<ReportePrestmamosVencidosPDF element={elementPdf} general={general}/>}
                     /> : <div className="text-center">
                         <h2>No se a realizado una búsqueda</h2>
                     </div>}
                 </div>
             </ReportContainer>
-            {isLoading === true && <Loading/>}
+            {isLoading === true && <LoadingModal/>}
             <ResponseModal
                 isOpen={openResponseModal}
                 title={responseData.title}
@@ -590,6 +600,6 @@ const ReporteDetallado = () => {
             />
         </>
     )
-};
+}
 
-export default ReporteDetallado;
+export default ReportePrestamosVencidos
