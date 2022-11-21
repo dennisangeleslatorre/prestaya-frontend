@@ -1,6 +1,7 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import moment from 'moment'
+import { separator } from '../../utilities/Functions/FormatNumber';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -61,13 +62,45 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray',
         color: 'white'
     },
+    table__header__column__cod: {
+        width: '1.41cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px',
+        backgroundColor: 'gray',
+        color: 'white'
+    },
     //Body
     table__body__column: {
         width: '1.19cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
-        //borderWidth: '1px',
+        borderWidth: '1px',
+        margin: '0px'
+    },
+    table__body__column__cod: {
+        width: '1.41cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
+    table__body__column__without__border: {
+        width: '1.19cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        margin: '0px'
+    },
+    table__body__column__cod__without__border: {
+        width: '1.41cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
         margin: '0px'
     },
     //Textos
@@ -83,7 +116,7 @@ const styles = StyleSheet.create({
 
 const getHeader = () => (
     <View style={styles.table__row__container}>
-        <View style={styles.table__header__column}>
+        <View style={styles.table__header__column__cod}>
             <Text style={styles.table__text__header}># Prestamo</Text>
         </View>
         <View style={styles.table__header__column}>
@@ -155,7 +188,7 @@ const getHeader = () => (
 const getColumns = (lineasReporte) => {
     return lineasReporte.map(item => (
         <View style={styles.table__row__container}>
-            <View style={styles.table__body__column}>
+            <View style={styles.table__body__column__cod}>
                 <Text style={styles.table__text__body}>{item.c_prestamo}</Text>
             </View>
             <View style={styles.table__body__column}>
@@ -174,13 +207,13 @@ const getColumns = (lineasReporte) => {
                 <Text style={styles.table__text__body}>{item.c_monedaprestamo}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.n_montoprestamo).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.n_montoprestamo).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.n_montointereses).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.n_montointereses).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.n_montototalprestamo).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.n_montototalprestamo).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
                 <Text style={styles.table__text__body}>{item.calc_diasplazototales}</Text>
@@ -198,16 +231,16 @@ const getColumns = (lineasReporte) => {
                 <Text style={styles.table__text__body}>{item.esvencido === 'N' ? 'NO' : 'SI'}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.calc_sumainterescancelado).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.calc_sumainterescancelado).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.calc_sumamontoprestamocancelado).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.calc_sumamontoprestamocancelado).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.calc_sumamontocomisioncancelada).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.calc_sumamontocomisioncancelada).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{Number(item.calc_sumamontotalcancelado).toFixed(2)}</Text>
+                <Text style={styles.table__text__body}>{separator(Number(item.calc_sumamontotalcancelado).toFixed(2))}</Text>
             </View>
             <View style={styles.table__body__column}>
                 <Text style={styles.table__text__body}>{item.c_estado}</Text>
@@ -227,73 +260,70 @@ const getColumns = (lineasReporte) => {
 
 const getSumas = (element) => (
     <View style={styles.table__row__container}>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__cod__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>Totales</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montoprestamo).toFixed(2)}</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>Totales</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montointereses).toFixed(2)}</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montototalprestamo).toFixed(2)}</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montovalorproductos).toFixed(2)}</Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
         <View style={styles.table__body__column}>
             <Text style={styles.table__text__body}>Totales</Text>
         </View>
         <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_interescancelado).toFixed(2)}</Text>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montoprestamo).toFixed(2))}</Text>
         </View>
         <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montoprestamocancelado).toFixed(2)}</Text>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montointereses).toFixed(2))}</Text>
         </View>
         <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montocomisioncancelado).toFixed(2)}</Text>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montototalprestamo).toFixed(2))}</Text>
         </View>
-        <View style={styles.table__body__column}>
-            <Text style={styles.table__text__body}>{Number(element.suma_montototalcancelado).toFixed(2)}</Text>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column}>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
         <View style={styles.table__body__column}>
+            <Text style={styles.table__text__body}>Totales</Text>
+        </View>
+        <View style={styles.table__body__column}>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_interescancelado).toFixed(2))}</Text>
+        </View>
+        <View style={styles.table__body__column}>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montoprestamocancelado).toFixed(2))}</Text>
+        </View>
+        <View style={styles.table__body__column}>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montocomisioncancelado).toFixed(2))}</Text>
+        </View>
+        <View style={styles.table__body__column}>
+            <Text style={styles.table__text__body}>{separator(Number(element.suma_montototalcancelado).toFixed(2))}</Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
     </View>
