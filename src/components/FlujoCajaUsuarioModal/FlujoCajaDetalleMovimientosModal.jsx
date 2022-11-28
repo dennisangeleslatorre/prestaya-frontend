@@ -84,6 +84,62 @@ const columns = [
         },
         width: 180,
         className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Secuencia</label>,
+        dataIndex: 'n_secuencia',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Préstamo</label>,
+        dataIndex: 'c_prestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 120,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Linea</label>,
+        dataIndex: 'n_linea',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Flag por confirmar</label>,
+        dataIndex: 'flagConfirmar',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Flag confirmado</label>,
+        dataIndex: 'c_flagconfirmado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>U. Confirmado</label>,
+        dataIndex: 'c_usuarioconfirmado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>F. Confirmado</label>,
+        dataIndex: 'd_fechaconfirmado_format',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
     }
 ]
 
@@ -113,6 +169,13 @@ const FlujoCajaDetalleMovimientosModal = (props) => {
             aux.c_ultimousuario = item.c_ultimousuario;
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss') : "";
             aux.c_tipomovimientoccdesc = item.c_tipomovimientoccdesc;
+            aux.n_secuencia = item.n_secuencia;
+            aux.c_prestamo = item.c_prestamo;
+            aux.n_linea = item.n_linea;
+            aux.flagConfirmar = item.c_flagxconfirmar === "S" ? "SI" : "NO";
+            aux.c_flagconfirmado = item.c_flagconfirmado === "S" ? "SI" : "NO";
+            aux.c_usuarioconfirmado = item.c_usuarioconfirmado;
+            aux.d_fechaconfirmado_format = item.d_fechaconfirmado ? moment(item.d_fechaconfirmado).format("DD/MM/yyyy") : "";
             return aux;
         });
         setMovimientos(listAux);

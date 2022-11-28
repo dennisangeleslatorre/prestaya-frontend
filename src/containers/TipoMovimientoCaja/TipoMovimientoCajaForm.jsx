@@ -10,7 +10,7 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { getTipoMovimientoCajaByCodigoTipoMovimientoCaja, registerTipoMovimientoCaja, updateTipoMovimientoCaja } from '../../Api/Api'
+import { getTipoMovimientoCajaByCodigoTipoMovimientoCaja, registerTipoMovimientoCaja, updateTipoMovimientoCaja, listAllTipoMovimientoCaja } from '../../Api/Api'
 
 const TipoMovimientoCajaForm = (props) => {
     //Estados
@@ -19,6 +19,10 @@ const TipoMovimientoCajaForm = (props) => {
     const [flagUsuario, setFlagUsuario] = useState("S");
     const [claseTipoMovimiento, setClaseTipoMovimiento] = useState("I");
     const [estado, setEstado] = useState("A");
+    const [flagSinMonto, setFlagSinMonto] = useState("N");
+    const [flagConfirmar, setFlagConfirmar] = useState("N");
+    const [movimientoInverso, setMovimientoInverso] = useState("");
+    const [tiposMovimientos, setTiposMovimientos] = useState([]);
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +76,10 @@ const TipoMovimientoCajaForm = (props) => {
             c_descricpion: descripcion.value,
             c_clasetipomov: claseTipoMovimiento,
             c_flagusuario: flagUsuario,
-            c_estado: estado
+            c_estado: estado,
+            c_flagsinmonto: flagSinMonto,
+            c_flagxconfirmar: flagConfirmar,
+            c_tipomovimientoccinverso: movimientoInverso ? movimientoInverso : null
         }
         return data;
     }
@@ -120,13 +127,22 @@ const TipoMovimientoCajaForm = (props) => {
             setClaseTipoMovimiento(data.c_clasetipomov);
             setFlagUsuario(data.c_flagusuario);
             setEstado(data.c_estado);
+            setFlagSinMonto(data.c_flagsinmonto);
+            setFlagConfirmar(data.c_flagxconfirmar);
+            setMovimientoInverso(data.c_tipomovimientoccinverso || "");
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
     }
 
+    const getTiposMovimientosCaja = async () => {
+        const response = await listAllTipoMovimientoCaja();
+        if(response && response.status === 200 && response.body.data) setTiposMovimientos(response.body.data);
+    }
+
     useEffect(async () => {
         await setIsLoading(true);
+        getTiposMovimientosCaja();
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoTipoMovimientoCaja") await getData();
         setIsLoading(false);
@@ -191,6 +207,40 @@ const TipoMovimientoCajaForm = (props) => {
                     valueSelected={estado}
                     handleChange={setEstado}
                     disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag sin monto"
+                    defaultValue="Seleccione"
+                    items={[{name: "SI", value:"S"}, {name: "NO", value:"N"}]}
+                    selectId="flagSinMontoId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagSinMonto}
+                    handleChange={setFlagSinMonto}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag confirmar"
+                    defaultValue="Seleccione"
+                    items={[{name: "SI", value:"S"}, {name: "NO", value:"N"}]}
+                    selectId="flagConfirmarId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagConfirmar}
+                    handleChange={setFlagConfirmar}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Mov. Inverso"
+                    defaultValue="Sin movimiento"
+                    items={tiposMovimientos}
+                    selectId="movInversoId"
+                    valueField="c_tipomovimientocc"
+                    optionField="c_descricpion"
+                    valueSelected={movimientoInverso}
+                    handleChange={setMovimientoInverso}
+                    disabledElement={readOnlyView}
+                    disableDefaultValue={false}
                 />
             </FormContainer>
             {isLoading === true && <Loading/>}

@@ -140,6 +140,22 @@ const pagesArray = [
                         title: 'MODIFICAR FLUJO CAJA USUARIOS',
                         value: 'MODIFICAR FLUJO CAJA USUARIOS',
                         key: 'MODIFICAR FLUJO CAJA USUARIOS'
+                    },{
+                        title: 'USUARIO ACCESO TOTAL CAJA',
+                        value: 'USUARIO ACCESO TOTAL CAJA',
+                        key: 'USUARIO ACCESO TOTAL CAJA'
+                    },{
+                        title: 'USUARIO PUEDE REALIZAR INGRESOS CAJA',
+                        value: 'USUARIO PUEDE REALIZAR INGRESOS CAJA',
+                        key: 'USUARIO PUEDE REALIZAR INGRESOS CAJA'
+                    },{
+                        title: 'USUARIO PUEDE REALIZAR SALIDAS CAJA',
+                        value: 'USUARIO PUEDE REALIZAR SALIDAS CAJA',
+                        key: 'USUARIO PUEDE REALIZAR SALIDAS CAJA'
+                    },{
+                        title: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR',
+                        value: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR',
+                        key: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR'
                     }
                 ]
             }

@@ -6,17 +6,27 @@ import InputComponentView from '../InputComponent/InputComponentView'
 import Alert from '../Alert/Alert'
 import Modal from '../Modal/ModalNotification'
 import CajaContext from '../../context/CajaContext/CajaContext'
+import PagesContext from '../../context/PagesContext/PagesContext'
 import { listUsers } from '../../Api/Api'
 
 const FlujoCajaDetalleMovimientoForm = (props) => {
     const { isOpen, onClose, tiposMovimientos=[], setMovimientos, movimientos=[] } = props;
     const { movimientoSeleccionado, setMovimientoSeleccionado } = useContext(CajaContext);
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "USUARIO PUEDE REALIZAR INGRESOS CAJA" || item === "USUARIO PUEDE REALIZAR SALIDAS CAJA"
+    });
+    const realizaIngresosPermiso = userPermisssions.includes("USUARIO PUEDE REALIZAR INGRESOS CAJA");
+    const realizaSalidasPermiso = userPermisssions.includes("USUARIO PUEDE REALIZAR SALIDAS CAJA");
     const [correlativo, setCorrelativo] = useState("");
     const [tipoMovimiento, setTipoMovimiento] = useState("");
     const [flagUsuario, setFlagUsuario] = useState("S");
     const [usuarioMov, setUsuarioMov] = useState("");
     const [observaciones, setObservaciones] = useState("");
-    const [montoxMov, setMontoxMov] = useState({value:""});
+    const [montoxMov, setMontoxMov] = useState({value:"0.0"});
+    const [esPermitido, setEsPermitido] = useState(false);
+    const [flagConfirmar, setFlagConfirmar] = useState("");
+    const [flagSinMonto, setFlagSinMonto] = useState("");
     const [usuarios, setUsuarios] = useState([]);
     const [notification, setNotification]= useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
@@ -28,7 +38,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
     }
 
     const validateData = () => {
-        if(tipoMovimiento && observaciones && montoxMov.value) return true;
+        if(tipoMovimiento && observaciones) return true;
         return false;
     }
 
@@ -36,19 +46,46 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         return flagUsuario === "S" ? usuarioMov : true;
     }
 
+    const validateMonto = () => {
+        if(flagSinMonto === "N") {
+            console.log(montoxMov.value);
+            if(!isNaN(montoxMov.value) && Number(montoxMov.value) > 0) {
+                return "OK";
+            }
+            return "El valor del monto debe ser mayor a 0";
+        } else {
+            if(Number(montoxMov.value) === 0.00) {
+                return "OK";
+            }
+            return "El valor del monto debe ser 0";
+        }
+    }
+
     const handleAddMovimiento = () => {
         if(validateData()) {
             if(validateUser()) {
-                //movimientos
-                const movimiento = {
-                    ...movimientoSeleccionado.general,
-                    c_tipomovimientocc: tipoMovimiento,
-                    c_usuariomovimiento: usuarioMov,
-                    c_observaciones: observaciones,
-                    n_montoxdiamov: montoxMov.value,
+                const messageValidate = validateMonto();
+                if(messageValidate === "OK") {
+                    if(esPermitido) {
+                        //movimientos
+                        const movimiento = {
+                            ...movimientoSeleccionado.general,
+                            c_tipomovimientocc: tipoMovimiento,
+                            c_usuariomovimiento: usuarioMov,
+                            c_observaciones: observaciones,
+                            n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
+                            c_flagxconfirmar: flagConfirmar
+                        }
+                        setMovimientos([...movimientos, movimiento]);
+                        handleClose();
+                    } else {
+                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                        setIsAlert(true);
+                    }
+                } else {
+                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                    setIsAlert(true);
                 }
-                setMovimientos([...movimientos, movimiento]);
-                handleClose();
             } else {
                 setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario es obligatorio para este tipo"});
                 setIsAlert(true);
@@ -62,18 +99,30 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
     const handleUpdateMovimiento = () => {
         if(validateData()) {
             if(validateUser()) {
-                const movimientosAux = [...movimientos];
-                //movimientos
-                const movimiento = {
-                    ...movimientoSeleccionado.general,
-                    c_tipomovimientocc: tipoMovimiento,
-                    c_usuariomovimiento: usuarioMov,
-                    c_observaciones: observaciones,
-                    n_montoxdiamov: montoxMov.value,
+                const messageValidate = validateMonto();
+                if(messageValidate === "OK") {
+                    if(esPermitido) {
+                        const movimientosAux = [...movimientos];
+                        //movimientos
+                        const movimiento = {
+                            ...movimientoSeleccionado.general,
+                            c_tipomovimientocc: tipoMovimiento,
+                            c_usuariomovimiento: usuarioMov,
+                            c_observaciones: observaciones,
+                            n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
+                            c_flagxconfirmar: flagConfirmar
+                        }
+                        movimientosAux[Number(movimientoSeleccionado.general.key)-1] = movimiento;
+                        setMovimientos(movimientosAux);
+                        handleClose();
+                    } else {
+                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                        setIsAlert(true);
+                    }
+                } else {
+                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                    setIsAlert(true);
                 }
-                movimientosAux[Number(movimientoSeleccionado.general.key)-1] = movimiento;
-                setMovimientos(movimientosAux);
-                handleClose();
             } else{
                 setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario es obligatorio para este tipo"});
                 setIsAlert(true);
@@ -92,7 +141,6 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
     }
 
     const getData = () => {
-        console.log("Hola", movimientoSeleccionado);
         setCorrelativo(movimientoSeleccionado.general.key);
         if(movimientoSeleccionado.action !=="ADD") {
             setTipoMovimiento(movimientoSeleccionado.general.c_tipomovimientocc);
@@ -102,10 +150,18 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         }
     }
 
-    const handleSelectTipo = (value) => {
-        setTipoMovimiento(value);
-        setFlagUsuario(tiposMovimientos.find(item => item.c_tipomovimientocc === value).c_flagusuario);
-    }
+    useEffect(() => {
+        if(tipoMovimiento) {
+            const tipoMov = tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === tipoMovimiento);
+            setFlagConfirmar(tipoMov.c_flagxconfirmar);
+            setFlagSinMonto(tipoMov.c_flagsinmonto);
+            setFlagUsuario(tipoMov.c_flagusuario);
+            if((tipoMov.c_clasetipomov === "I" && realizaIngresosPermiso) || (tipoMov.c_clasetipomov === "S" && realizaSalidasPermiso)) {
+                setEsPermitido(true);
+            } else
+                setEsPermitido(false);
+        };
+    }, [tipoMovimiento])
 
     useEffect(() => {
         getData();
@@ -139,9 +195,9 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
                     valueField="c_tipomovimientocc"
                     optionField="c_descricpion"
                     valueSelected={tipoMovimiento}
-                    handleElementSelected={handleSelectTipo}
+                    handleElementSelected={setTipoMovimiento}
                     classForm="col-12 col-lg-6"
-                    disabledElement={movimientoSeleccionado.general.c_prestamo ? true : false}
+                    disabledElement={(movimientoSeleccionado.general.c_prestamo || movimientoSeleccionado.general.c_flagconfirmado === 'S') ? true : false}
                 />
                 <InputComponent
                     label="Monto x Mov."
@@ -151,7 +207,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
                     placeholder="Monto x Movimiento"
                     inputId="montoxValorId"
                     classForm="col-12 col-lg-6"
-                    readOnly={movimientoSeleccionado.general.c_prestamo ? true : false}
+                    readOnly={(movimientoSeleccionado.general.c_prestamo || movimientoSeleccionado.general.c_flagconfirmado === 'S') ? true : false}
                 />
                 <ReactSelect
                     inputId="usuarioId"
@@ -163,7 +219,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
                     optionField="c_nombres"
                     valueField="c_codigousuario"
                     classForm="col-12 col-lg-6"
-                    disabledElement={movimientoSeleccionado.general.c_prestamo ? true : false}
+                    disabledElement={(movimientoSeleccionado.general.c_prestamo || movimientoSeleccionado.general.c_flagconfirmado === 'S') ? true : false}
                 />
                 <TextareaComponent
                     inputId="observacionesId"

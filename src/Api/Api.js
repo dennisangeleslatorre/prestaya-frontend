@@ -831,3 +831,15 @@ export const getFlujoCajaMovimientosByCodigo = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getMovimientosCajaUsuarioxConfirmar = async (body) => {
+    console.log('---API--- : getMovimientosCajaUsuarioxConfirmar');
+    const url = `${port}/flujocaja/getMovimientosCajaUsuarioxConfirmar`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const confirmarMovimiento = async (body) => {
+    console.log('---API--- : confirmarMovimiento');
+    const url = `${port}/flujocaja/confirmarMovimiento`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

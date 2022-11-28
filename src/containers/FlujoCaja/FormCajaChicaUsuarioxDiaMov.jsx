@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Table, Space, Button, Tooltip } from 'antd'
 //Componentes
-import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
-import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent'
 import InputComponentView from '../../components/InputComponent/InputComponentView'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import InputComponent from '../../components/InputComponent/InputComponent'
@@ -13,9 +11,8 @@ import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 //Context
-import PagesContext from '../../context/PagesContext/PagesContext'
-import UserContext from '../../context/UserContext/UserContext'
 import CajaContext from '../../context/CajaContext/CajaContext'
+import PagesContext from '../../context/PagesContext/PagesContext'
 //Librerias
 import { useHistory, useLocation } from 'react-router'
 import { listTipoMovimientoCaja } from '../../Api/Api'
@@ -79,7 +76,7 @@ const columns = [
         className: 'table-audit-column text-audit-table',
     },{
         title:() => <label className='text-audit-table'>F. Registro</label>,
-        dataIndex: 'd_fecharegistro',
+        dataIndex: 'd_fecharegistro_format',
         ellipsis: {
             showTitle: false,
         },
@@ -95,7 +92,7 @@ const columns = [
         className: 'table-audit-column text-audit-table',
     },{
         title:() => <label className='text-audit-table'>F. Modificación</label>,
-        dataIndex: 'd_ultimafechamodificacion',
+        dataIndex: 'd_ultimafechamodificacion_format',
         ellipsis: {
             showTitle: false,
         },
@@ -125,6 +122,38 @@ const columns = [
         },
         width: 100,
         className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Flag por confirmar</label>,
+        dataIndex: 'flagConfirmar',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>Flag confirmado</label>,
+        dataIndex: 'c_flagconfirmado_desc',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>U. Confirmado</label>,
+        dataIndex: 'c_usuarioconfirmado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>F. Confirmado</label>,
+        dataIndex: 'd_fechaconfirmado_format',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
     }
 ]
 
@@ -138,6 +167,11 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     const urlFragment = location.pathname.split('/')[1];
     const { flujoCaja, setFlujoCaja, detalleSeleccionado, setDetalleSeleccionado, setMovimientoSeleccionado, detalles, setDetalles,
             eliminarMovimientos, setEliminarMovimientos } = useContext(CajaContext);
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "USUARIO ACCESO TOTAL CAJA"
+    });
+    const usuarioAccesoTotalCajaPermiso = userPermisssions.includes("USUARIO ACCESO TOTAL CAJA");
     //Estados del form
     const [compania, setCompania] = useState("");
     const [nroCorrelativo, setNroCorrelativo] = useState("");
@@ -199,19 +233,40 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         }
     }
 
+    const validateSaldoMovimientos = () => {
+        if(flujoCaja.general.c_flagsaldoxdia === 'S') {
+            let saldo = 0.00;
+            JSON.parse(JSON.stringify(movimientos)).forEach(mov => {
+                saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+            });
+
+            if( saldo >= 0 ) {
+                return true;
+            }
+                return false;
+        } else {
+            return true;
+        }
+    }
+
     //Funciones de selecion
     const handleAgregarDetalle = () => {
         //Valida antes
         if(fechaMov.value && validDate() && observaciones && movimientos.length !== 0) {
             const validateFechaRegistrada = detalles.find(item => item.general.d_fechamov === fechaMov.value);
             if(!validateFechaRegistrada) {
-                const detalleAux = prepareDetalle();
-                //Establece los valores
-                setFlujoCaja({...flujoCaja, firstArrival:false});
-                setDetalles([...detalles, detalleAux]);
-                setDetalleSeleccionado({general:{}, movimientos:[]});
-                history.goBack();
-
+                const isValidsaldo = validateSaldoMovimientos();
+                if(isValidsaldo) {
+                    const detalleAux = prepareDetalle();
+                    //Establece los valores
+                    setFlujoCaja({...flujoCaja, firstArrival:false});
+                    setDetalles([...detalles, detalleAux]);
+                    setDetalleSeleccionado({general:{}, movimientos:[]});
+                    history.goBack();
+                } else {
+                    setResponseData({title:"Aviso", message:"El saldo calculado por día es negativo."})
+                    setOpenResponseModal(true);
+                }
             } else {
                 setResponseData({title:"Aviso", message:"Hay un detalle registrado con esa fecha"})
                 setOpenResponseModal(true);
@@ -227,14 +282,20 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         if(fechaMov.value && validDate() && observaciones && movimientos.length !== 0) {
             const validateFechaRegistrada = detalles.find((item, index) => item.general.d_fechamov === fechaMov.value && index !== detalleSeleccionado.index);
             if(!validateFechaRegistrada) {
-                const detalleAux = prepareDetalle();
-                let detallesAux = [...detalles];
-                detallesAux[Number(detalleSeleccionado.index)] = detalleAux;
-                //Establece los valores
-                setFlujoCaja({...flujoCaja, firstArrival:false});
-                setDetalles(detallesAux);
-                setDetalleSeleccionado({general:{}, movimientos:[]});
-                history.goBack();
+                const isValidsaldo = validateSaldoMovimientos();
+                if(isValidsaldo) {
+                    const detalleAux = prepareDetalle();
+                    let detallesAux = [...detalles];
+                    detallesAux[Number(detalleSeleccionado.index)] = detalleAux;
+                    //Establece los valores
+                    setFlujoCaja({...flujoCaja, firstArrival:false});
+                    setDetalles(detallesAux);
+                    setDetalleSeleccionado({general:{}, movimientos:[]});
+                    history.goBack();
+                } else {
+                    setResponseData({title:"Aviso", message:"El saldo calculado por día es negativo."})
+                    setOpenResponseModal(true);
+                }
             } else {
                 setResponseData({title:"Aviso", message:"Hay un detalle registrado con esa fecha"})
                 setOpenResponseModal(true);
@@ -280,11 +341,11 @@ const FormCajaChicaUsuarioxDiaMov = () => {
 
     const handleSelectDelete = () => {
         if(selectedRowKeys.length > 0) {
-            if(!elementSelectedRows[0].c_prestamo) {
-                setOpenConfirmationModal(true);
-            } else {
+            if(elementSelectedRows[0].c_prestamo || elementSelectedRows[0].c_flagconfirmado === 'S') {
                 setResponseData({title:"Aviso", message:"No puedes eliminar un movimiento generado en el flujo de prestamos."})
                 setOpenResponseModal(true);
+            } else {
+                setOpenConfirmationModal(true);
             }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
@@ -328,6 +389,11 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             aux.tipoMovimiento = tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === item.c_tipomovimientocc).c_descricpion;
             aux.n_secuencia = item.n_secuencia;
             aux.n_montoxdiamov_format = item.n_montoxdiamov ? separator(Number(item.n_montoxdiamov).toFixed(2)) : "";
+            aux.flagConfirmar = item.c_flagxconfirmar === "S" ? "SI" : "NO";
+            aux.c_flagconfirmado_desc = item.c_flagconfirmado === "S" ? "SI" : "NO";
+            aux.d_fechaconfirmado_format = item.d_fechaconfirmado ? moment(item.d_fechaconfirmado).format("DD/MM/yyyy") : "";
+            aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
+            aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
             return aux;
         });
         setMovimientosCajaTabla(tableData);
@@ -412,7 +478,7 @@ const FormCajaChicaUsuarioxDiaMov = () => {
                                         valueSelected={estado}
                                         handleChange={setEstado}
                                         classForm="col-12 col-lg-6"
-                                        disabledElement={false}
+                                        disabledElement={!usuarioAccesoTotalCajaPermiso}
                                     />
                                     <TextareaComponent
                                         inputId="observacionCreacionId"

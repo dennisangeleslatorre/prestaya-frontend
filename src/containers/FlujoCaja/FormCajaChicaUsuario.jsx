@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Table, Space, Button, Tooltip } from 'antd'
+import { Space, Button } from 'antd'
 //Componentes
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
@@ -14,9 +14,10 @@ import FlujoCajaClonarDetalleModal from '../../components/FlujoCajaUsuarioModal/
 //Context
 import UserContext from '../../context/UserContext/UserContext'
 import CajaContext from '../../context/CajaContext/CajaContext'
+import PagesContext from '../../context/PagesContext/PagesContext'
 //Librerias
 import { useHistory, useParams, useLocation } from 'react-router'
-import { listCompanias, listAgencias, listUsers, registerFlujoCaja, getFlujoCajaByCodigo, updateFlujoCaja } from '../../Api/Api'
+import { listCompanias, listAgencias, listUsers, registerFlujoCaja, getFlujoCajaByCodigo, updateFlujoCaja, listTipoMovimientoCaja } from '../../Api/Api'
 import moment from 'moment'
 import HeaderForm from '../../components/HeaderForm/HeaderForm'
 
@@ -38,10 +39,16 @@ const FormCajaChicaUsuario = () => {
     let location = useLocation();
     const urlFragment = location.pathname.split('/')[1];
     const { companycode, nrocorrelativo } = useParams();
+    //Contexto
     const { flujoCaja, setFlujoCaja, setDetalleSeleccionado, detalles, setDetalles, auditoria, setAuditoria,
             eliminarDetalles, setEliminarDetalles, eliminarMovimientos, setEliminarMovimientos } = useContext(CajaContext);
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "USUARIO ACCESO TOTAL CAJA"
+    });
+    const usuarioAccesoTotalCajaPermiso = userPermisssions.includes("USUARIO ACCESO TOTAL CAJA");
     //Estados del form
     const [companiaName, setCompaniaName] = useState("");
     const [agencia, setAgencia] = useState("");
@@ -51,6 +58,7 @@ const FormCajaChicaUsuario = () => {
     const [usuarioCajaChica, setUsuarioCajaChica] = useState("");
     const [fechaMovimiento, setFechaMovimiento] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [observaciones, setObservaciones] = useState("");
+    const [flagSaldoxDia, setFlagSaldoxDia] = useState("S");
     const [usuarioRegistro, setUsuarioRegistro] = useState("");
     const [fechaRegistro, setFechaRegistro] = useState("");
     const [usuarioModiciacion, setUsuarioModiciacion] = useState("");
@@ -66,6 +74,7 @@ const FormCajaChicaUsuario = () => {
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
+    const [tiposMovimientos, setTiposMovimientos] = useState([]);
     //Estadostablas
     const [flujosCajaDetalleTabla, setFlujosCajaDetalleTabla] = useState([]);
     //Atributos de la tabla
@@ -127,7 +136,7 @@ const FormCajaChicaUsuario = () => {
     }
 
     const prepareNewDetailsToSend = (nuevosDetalles) => {
-        return [...nuevosDetalles].map(detalle => `'${detalle.general.d_fechamov}','${detalle.general.c_estado}','${detalle.general.c_observaciones}','${userLogedIn}','${userLogedIn}'??${detalle.movimientos.map(movimiento => `'${movimiento.d_fechamov}','${movimiento.c_tipomovimientocc}',${movimiento.c_usuariomovimiento ? "'"+movimiento.c_usuariomovimiento+"'" : null },'${movimiento.c_observaciones}','${movimiento.n_montoxdiamov}','${userLogedIn}','${userLogedIn}'`)
+        return [...nuevosDetalles].map(detalle => `'${detalle.general.d_fechamov}','${detalle.general.c_estado}','${detalle.general.c_observaciones}','${userLogedIn}','${userLogedIn}'??${detalle.movimientos.map(movimiento => `'${movimiento.d_fechamov}','${movimiento.c_tipomovimientocc}',${movimiento.c_usuariomovimiento ? "'"+movimiento.c_usuariomovimiento+"'" : null },'${movimiento.c_observaciones}','${movimiento.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${movimiento.c_flagxconfirmar}'`)
         .reduce((acc,cv)=>`${acc}//${cv}`)}`)
         .reduce((acc,cv)=>`${acc}||${cv}`);
     }
@@ -138,10 +147,10 @@ const FormCajaChicaUsuario = () => {
                 let movimientosDetail = detalle.movimientos;
                 const nuevosMovimientos = movimientosDetail.filter(movimiento => !movimiento.d_fecharegistro);
                 let newMovimientos = nuevosMovimientos.length > 0 ?
-                nuevosMovimientos.map(mov => `'${mov.d_fechamov}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}','${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
+                nuevosMovimientos.map(mov => `'${mov.d_fechamov}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${mov.c_flagxconfirmar}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
                 const actualizarMovimientos = movimientosDetail.filter(movimiento => movimiento.d_fecharegistro);
-                let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
+                let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${mov.c_flagxconfirmar}','${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
                 return `${detalleFormat}??${newMovimientos}??${updateMovimientos}`
             }
@@ -159,26 +168,32 @@ const FormCajaChicaUsuario = () => {
     const handleActualizarFlujo = async () => {
         if(validateGeneralData() && detalles && detalles.length > 0) {
             if(validateDetailDateRange()) {
-                const flujoCajaToSend = {
-                    c_compania: flujoCajaForm.general.c_compania,
-                    n_correlativo: nrocorrelativo,
-                    c_agencia: flujoCajaForm.general.c_agencia,
-                    c_tipofcu: flujoCajaForm.general.c_tipofcu,
-                    c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
-                    d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
-                    d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
-                    c_monedafcu: flujoCajaForm.general.c_monedafcu,
-                    c_estado: flujoCajaForm.general.c_estado,
-                    c_observaciones: flujoCajaForm.general.c_observaciones,
-                    c_ultimousuario: userLogedIn,
+                const isValidoSaldo = validateSaldo();
+                if(isValidoSaldo) {
+                    const flujoCajaToSend = {
+                        c_compania: flujoCajaForm.general.c_compania,
+                        n_correlativo: nrocorrelativo,
+                        c_agencia: flujoCajaForm.general.c_agencia,
+                        c_tipofcu: flujoCajaForm.general.c_tipofcu,
+                        c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
+                        d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
+                        d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
+                        c_monedafcu: flujoCajaForm.general.c_monedafcu,
+                        c_estado: flujoCajaForm.general.c_estado,
+                        c_observaciones: flujoCajaForm.general.c_observaciones,
+                        c_ultimousuario: userLogedIn,
+                        c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
+                    }
+                    const { newDetails, updateDetails } = getUpdateAndNewDetails();
+                    const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
+                    const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
+                    const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
+                    const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
+                    const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
+                    (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+                } else {
+                    prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
                 }
-                const { newDetails, updateDetails } = getUpdateAndNewDetails();
-                const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
-                const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
-                const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
-                const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
-                const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
-                (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
             } else {
                 prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
             }
@@ -187,24 +202,57 @@ const FormCajaChicaUsuario = () => {
         }
     }
 
+    const validateSaldo = () => {
+        let validSaldo = true;
+        if(flujoCajaForm.general.c_flagsaldoxdia === 'N') {
+            let saldo = 0.00;
+            detalles.forEach(det => {
+                det.movimientos.forEach(mov => {
+                    saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+                })
+            })
+            if(saldo < 0.00) {
+                validSaldo = false;
+            }
+
+        } else if (flujoCajaForm.general.c_flagsaldoxdia === 'S') {
+            detalles.forEach(det => {
+                let saldo = 0.00;
+                det.movimientos.forEach(mov => {
+                    saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+                })
+                if(saldo < 0.00) {
+                    validSaldo = false;
+                }
+            })
+        }
+        return validSaldo;
+    }
+
     const handleRegistrarFlujo = async () => {
         if(validateGeneralData() && detalles && detalles.length > 0) {
             if(validateDetailDateRange()) {
+                const isValidoSaldo = validateSaldo();
+                if(isValidoSaldo) {
                     const flujoCajaToSend = {
-                        c_compania: flujoCaja.general.c_compania,
-                        c_agencia: flujoCaja.general.c_agencia,
-                        c_tipofcu: flujoCaja.general.c_tipofcu,
-                        c_usuariofcu: flujoCaja.general.c_usuariofcu,
-                        d_fechaInicioMov: flujoCaja.general.d_fechaInicioMov,
-                        d_fechaFinMov: flujoCaja.general.d_fechaFinMov,
-                        c_monedafcu: flujoCaja.general.c_monedafcu,
-                        c_estado: flujoCaja.general.c_estado,
-                        c_observaciones: flujoCaja.general.c_observaciones,
+                        c_compania: flujoCajaForm.general.c_compania,
+                        c_agencia: flujoCajaForm.general.c_agencia,
+                        c_tipofcu: flujoCajaForm.general.c_tipofcu,
+                        c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
+                        d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
+                        d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
+                        c_monedafcu: flujoCajaForm.general.c_monedafcu,
+                        c_estado: flujoCajaForm.general.c_estado,
+                        c_observaciones: flujoCajaForm.general.c_observaciones,
                         c_usuarioregistro: userLogedIn,
+                        c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
                     }
                     const detailsToSend = prepareNewDetailsToSend(detalles);
                     const response = await registerFlujoCaja({flujoCaja:flujoCajaToSend, detalles: detailsToSend});
                     (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+                } else {
+                    prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
+                }
             } else {
                 prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
             }
@@ -249,12 +297,12 @@ const FormCajaChicaUsuario = () => {
             const detalleAux = detalles[Number(selectedRowKeys[0])-1];
             let validDelete = true;
             detalleAux.movimientos.forEach(item => {
-                if(item.c_prestamo) validDelete = false;
+                if(item.c_prestamo || item.c_flagconfirmado === 'S') validDelete = false;
             })
             if(validDelete) {
                 setOpenConfirmationModal(true);
             } else {
-                prepareNotificationDanger("Aviso", "No puedes eliminar un dia con un movimiento generado en el flujo de prestamos.");
+                prepareNotificationDanger("Aviso", "No puedes eliminar un dia con un movimiento generado en el flujo de prestamos o que este confirmado.");
             }
         } else {
             prepareNotificationDanger("Aviso", "Selecciona un item de la tabla.");
@@ -267,13 +315,13 @@ const FormCajaChicaUsuario = () => {
             const detalleAux = detalles[Number(selectedRowKeys[0])-1];
             let validDelete = true;
             detalleAux.movimientos.forEach(item => {
-                if(item.c_prestamo) validDelete = false;
+                if(item.c_prestamo || item.c_flagconfirmado === 'S') validDelete = false;
             })
             if(validDelete) {
                 setDetalleSeleccionado({...detalleAux, index: Number(selectedRowKeys[0])-1});
                 setOpenClonarModal(true);
             } else {
-                prepareNotificationDanger("Aviso", "No puedes clonar un dia con un movimiento generado en el flujo de prestamos.");
+                prepareNotificationDanger("Aviso", "No puedes clonar un dia con un movimiento generado en el flujo de prestamos o que este confirmado.");
             }
         } else {
             prepareNotificationDanger("Aviso", "Selecciona un item de la tabla.");
@@ -310,6 +358,13 @@ const FormCajaChicaUsuario = () => {
         if(response && response.status === 200) setUsuarios(response.body.data);
     }
 
+    const getTiposMovimientoCaja = async () => {
+        const response = await listTipoMovimientoCaja();
+        if(response && response.status === 200) {
+            setTiposMovimientos(response.body.data);
+        };
+    }
+
     const refreshList = () => {
         const tableData = JSON.parse(JSON.stringify(detalles)).map((item, index) => {
             let aux = item.general;
@@ -332,6 +387,7 @@ const FormCajaChicaUsuario = () => {
         setMoneda(flujoCaja.general.c_monedafcu);
         setEstado(flujoCaja.general.c_estado);
         setObservaciones(flujoCaja.general.c_observaciones);
+        setFlagSaldoxDia(flujoCaja.general.c_flagsaldoxdia);
         if(urlFragment === "actualizarCajaChicaUsuario") {
             setUsuarioRegistro(auditoria.c_usuarioregistro);
             setFechaRegistro(auditoria.d_fecharegistro);
@@ -364,6 +420,7 @@ const FormCajaChicaUsuario = () => {
             setFechaRegistro(moment(data.general.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss'));
             setUsuarioModiciacion(data.general.c_ultimousuario);
             setFechaModiciacion(moment(data.general.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss'));
+            setFlagSaldoxDia(data.general.c_flagsaldoxdia);
         } else {
             prepareNotificationDanger("Error", response.message);
         }
@@ -399,10 +456,11 @@ const FormCajaChicaUsuario = () => {
                 d_fechaInicioMov:fechaMovimiento.fechaInicio,
                 d_fechaFinMov:fechaMovimiento.fechaFin,
                 c_observaciones:observaciones,
-                n_correlativo:nrocorrelativo
+                n_correlativo:nrocorrelativo,
+                c_flagsaldoxdia:flagSaldoxDia
             }
         })
-    }, [companycode, companiaName, agencia, moneda, estado, tipoCajaUsuario, usuarioCajaChica, fechaMovimiento, observaciones])
+    }, [companycode, companiaName, agencia, moneda, estado, tipoCajaUsuario, usuarioCajaChica, fechaMovimiento, observaciones, flagSaldoxDia])
 
     useEffect(async () => {
         if(companias.length>0) await getData();
@@ -416,6 +474,7 @@ const FormCajaChicaUsuario = () => {
         await setIsLoading(true);
         await getCompanias();
         await getUsuarios();
+        await getTiposMovimientoCaja();
     }, [])
 
   return (
@@ -510,6 +569,7 @@ const FormCajaChicaUsuario = () => {
                                       valueField="c_codigousuario"
                                       classForm="col-12 col-lg-6"
                                       marginForm="ml-0"
+                                      disabledElement={urlFragment !== "nuevaCajaChicaUsuario" }
                                   />
                                   <DateRangeComponent
                                       inputId="fechaMovimientoId"
@@ -519,6 +579,19 @@ const FormCajaChicaUsuario = () => {
                                       enabled={false}
                                       classForm="col-12 col-lg-6"
                                       marginForm="ml-0"
+                                  />
+                                  <SelectComponent
+                                      labelText="Saldo Caja por:"
+                                      defaultValue="Seleccione"
+                                      items={[{value:"S", name:"DIA"},{value:"N", name:"CAJA"}]}
+                                      selectId="flagSaldoxDiaId"
+                                      valueField="value"
+                                      optionField="name"
+                                      valueSelected={flagSaldoxDia}
+                                      handleChange={setFlagSaldoxDia}
+                                      classForm="col-12 col-lg-6"
+                                      marginForm="ml-0"
+                                      disabledElement={!usuarioAccesoTotalCajaPermiso}
                                   />
                                   <TextareaComponent
                                       inputId="observacionCreacionId"

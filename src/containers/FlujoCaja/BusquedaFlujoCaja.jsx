@@ -251,10 +251,11 @@ const BusquedaFlujoCaja = () => {
     const { setFlujoCaja, setDetalles, setEliminarDetalles, setEliminarMovimientos } = useContext(CajaContext);
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === 'NUEVA CAJA CHICA USUARIO' || item === 'MODIFICAR CAJA CHICA USUARIO'
+        return item === 'NUEVA CAJA CHICA USUARIO' || item === 'MODIFICAR CAJA CHICA USUARIO' || item === 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR'
     });
     const registerPermission = userPermisssions.includes("NUEVA CAJA CHICA USUARIO");
     const updatePermission = userPermisssions.includes("MODIFICAR CAJA CHICA USUARIO");
+    const confirmationPermissions = userPermisssions.includes("MOVIMIENTOS CAJA USUARIO POR CONFIRMAR");
     //Estados del form
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -346,6 +347,9 @@ const BusquedaFlujoCaja = () => {
             prepareNotificationDanger("Aviso", "Selecciona un item de la tabla.");
         }
     }
+    const handleIrConfirmarMovimientos = () => {
+        history.push('movimientosCUxConfirmar');
+    }
     const handleMostrarDetalleCaja = (c_compania, n_correlativo) => {
         setOpenModalDetalleFlujoCaja(true);
         setItemFlujoCajaSelected({c_compania:c_compania, n_correlativo:n_correlativo});
@@ -383,7 +387,7 @@ const BusquedaFlujoCaja = () => {
         setFlujosCajaTabla(listAux);
     }
 
-    //Funciones cons ervicios de lista
+    //Funciones con servicios de lista
     const getCompanias =  async () => {
         const response = await listCompanias();
         if(response && response.status === 200) setCompanias(response.body.data);
@@ -517,6 +521,7 @@ const BusquedaFlujoCaja = () => {
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                                             { registerPermission && <Button onClick={handleSelectNuevo}>NUEVO</Button> }
                                             { updatePermission && <Button onClick={handleSelectActualizar}>MODIFICAR</Button> }
+                                            { confirmationPermissions && <Button onClick={handleIrConfirmarMovimientos}>CONFIRMAR MOVIMIENTOS</Button> }
                                         </Space>
                                     </div>
                                 </div>

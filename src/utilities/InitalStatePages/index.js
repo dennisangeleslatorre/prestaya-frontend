@@ -64,6 +64,7 @@ import ReportePrestamosVencidos from '../../containers/Reporte/ReportePrestamosV
 import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
 import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
 import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChicaUsuarioxDiaMov'
+import FormMovimientoCUxConfirmar from '../../containers/FlujoCaja/FormMovimientoCUxConfirmar'
 
 export default{
     initialPages: [
@@ -464,6 +465,11 @@ export default{
             path: '/actualizarCUxDiaMovimiento/:companycode',
             exact: true,
             name: 'MODIFICAR CAJA C. U. X DÍA MOVIMIENTOS'
+        },{
+            component: FormMovimientoCUxConfirmar,
+            path: '/movimientosCUxConfirmar',
+            exact: true,
+            name: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR'
         },{
             component: Reportes,
             path: '/reportes',

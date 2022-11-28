@@ -76,6 +76,9 @@ const TiposMovimientosCaja = () => {
         {name:'c_clasetipomov', label: 'Clase', sortVar:1 },
         {name:'c_flagusuario', label: 'Flag', sortVar:1 },
         {name:'c_estado', label: 'Estado', sortVar:1 },
+        {name:'c_flagsinmonto', label: 'Flag sin monto', sortVar:1 },
+        {name:'c_flagxconfirmar', label: 'Flag Confirmar', sortVar:1 },
+        {name:'c_tipomovimientoccinverso', label: 'Mov. Inverso', sortVar:1 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
@@ -88,7 +91,10 @@ const TiposMovimientosCaja = () => {
         {name:'c_descricpion'},
         {name:'c_clasetipomov'},
         {name:'c_flagusuario'},
-        {name:'c_estado'}
+        {name:'c_estado'},
+        {name:'c_flagsinmonto'},
+        {name:'c_flagxconfirmar'},
+        {name:'c_tipomovimientoccinverso'}
     ];
 
     //consumo de api
@@ -138,6 +144,9 @@ const TiposMovimientosCaja = () => {
             aux.c_clasetipomov = item.c_clasetipomov === "I" ? "INGRESO" : "SALIDA";
             aux.c_flagusuario = item.c_flagusuario === "S" ? "SI" : "NO";
             aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
+            aux.c_flagsinmonto = item.c_flagsinmonto === "N" ? "NO" : "SI";
+            aux.c_flagxconfirmar = item.c_flagxconfirmar === "N" ? "NO" : "SI";
+            aux.c_tipomovimientoccinverso = item.c_tipomovimientoccinverso ? item.c_tipomovimientoccinverso : "";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
