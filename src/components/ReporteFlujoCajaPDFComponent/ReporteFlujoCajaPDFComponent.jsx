@@ -266,7 +266,7 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
                                 <Text style={styles.table__text__body_price}>{mov.montocomisioncancelar ? separator(Number(mov.montocomisioncancelar).toFixed(2)) : ""}</Text>
                             </View>
                             <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
-                                <Text style={[styles.table__text__body_price, mov.clasemov === 'S' ? {color:'red'} : '']}>{separator(Number(mov.montomov).toFixed(2))}</Text>
+                                <Text style={[styles.table__text__body_price, mov.clasemov === 'S' ? {color:'red'} : '']}>{mov.clasemov === 'S' ? `( ${separator(Number(mov.montomov).toFixed(2))} )` : separator(Number(mov.montomov).toFixed(2))}</Text>
                             </View>
                             <View style={[styles.table__data, {width: '1.6cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{mov.fuente}</Text>
@@ -316,7 +316,7 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
             </View>
             <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
                 <Text style={[styles.table__text__body_price, Number(sumas.suma_montototalcancelar) < 0 && {color:'red'}]}>
-                    { Number(sumas.suma_montototalcancelar) > 0 ? separator(Number(sumas.suma_montototalcancelar).toFixed(2)) : separator(Number(sumas.suma_montototalcancelar * -1).toFixed(2)) }
+                    { Number(sumas.suma_montototalcancelar) > 0 ? separator(Number(sumas.suma_montototalcancelar).toFixed(2)) : `( ${separator(Number(sumas.suma_montototalcancelar * -1).toFixed(2))} )` }
                 </Text>
             </View>
             <View style={[styles.table__data, {width: '1.6cm'}]}>
@@ -366,7 +366,9 @@ const renderTotales = (totalesPxC, totalesFC) => (
         </View>
         <View style={[styles.table__data, {width: '1.8cm', border:'1px'}]}>
             <Text style={[styles.table__text__body_price,  Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar) < 0 && {color:'red'}]}>
-            {Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar) > 0 ? separator(Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar).toFixed(2)) : separator(Number((totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar)*-1).toFixed(2))}
+            {Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar) > 0 ?
+                separator(Number(totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar).toFixed(2)) :
+                `( ${separator(Number((totalesPxC.suma_montototalcancelar + totalesFC.suma_montototalcancelar)*-1).toFixed(2))} )` }
             </Text>
         </View>
         <View style={[styles.table__data, {width: '1.6cm'}]}>
