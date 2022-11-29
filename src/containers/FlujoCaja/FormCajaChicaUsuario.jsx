@@ -49,13 +49,16 @@ const FormCajaChicaUsuario = () => {
         return item === "USUARIO ACCESO TOTAL CAJA"
     });
     const usuarioAccesoTotalCajaPermiso = userPermisssions.includes("USUARIO ACCESO TOTAL CAJA");
+
+    const deshabilitarUsuario = !usuarioAccesoTotalCajaPermiso ? true : (urlFragment !== "nuevaCajaChicaUsuario" ? true : false);
+
     //Estados del form
     const [companiaName, setCompaniaName] = useState("");
     const [agencia, setAgencia] = useState("");
     const [moneda, setMoneda] = useState("L");
     const [estado, setEstado] = useState("A");
     const [tipoCajaUsuario, setTipoCajaUsuario] = useState("P");
-    const [usuarioCajaChica, setUsuarioCajaChica] = useState("");
+    const [usuarioCajaChica, setUsuarioCajaChica] = useState(userLogedIn);
     const [fechaMovimiento, setFechaMovimiento] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [observaciones, setObservaciones] = useState("");
     const [flagSaldoxDia, setFlagSaldoxDia] = useState("S");
@@ -166,39 +169,43 @@ const FormCajaChicaUsuario = () => {
     }
 
     const handleActualizarFlujo = async () => {
-        if(validateGeneralData() && detalles && detalles.length > 0) {
-            if(validateDetailDateRange()) {
-                const isValidoSaldo = validateSaldo();
-                if(isValidoSaldo) {
-                    const flujoCajaToSend = {
-                        c_compania: flujoCajaForm.general.c_compania,
-                        n_correlativo: nrocorrelativo,
-                        c_agencia: flujoCajaForm.general.c_agencia,
-                        c_tipofcu: flujoCajaForm.general.c_tipofcu,
-                        c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
-                        d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
-                        d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
-                        c_monedafcu: flujoCajaForm.general.c_monedafcu,
-                        c_estado: flujoCajaForm.general.c_estado,
-                        c_observaciones: flujoCajaForm.general.c_observaciones,
-                        c_ultimousuario: userLogedIn,
-                        c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
+        if(flujoCajaForm.general.c_usuariofcu === userLogedIn || usuarioAccesoTotalCajaPermiso) {
+            if(validateGeneralData() && detalles && detalles.length > 0) {
+                if(validateDetailDateRange()) {
+                    const isValidoSaldo = validateSaldo();
+                    if(isValidoSaldo) {
+                        const flujoCajaToSend = {
+                            c_compania: flujoCajaForm.general.c_compania,
+                            n_correlativo: nrocorrelativo,
+                            c_agencia: flujoCajaForm.general.c_agencia,
+                            c_tipofcu: flujoCajaForm.general.c_tipofcu,
+                            c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
+                            d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
+                            d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
+                            c_monedafcu: flujoCajaForm.general.c_monedafcu,
+                            c_estado: flujoCajaForm.general.c_estado,
+                            c_observaciones: flujoCajaForm.general.c_observaciones,
+                            c_ultimousuario: userLogedIn,
+                            c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
+                        }
+                        const { newDetails, updateDetails } = getUpdateAndNewDetails();
+                        const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
+                        const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
+                        const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
+                        const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
+                        const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
+                        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+                    } else {
+                        prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
                     }
-                    const { newDetails, updateDetails } = getUpdateAndNewDetails();
-                    const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
-                    const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
-                    const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
-                    const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
-                    const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
-                    (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
                 } else {
-                    prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
+                    prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
                 }
             } else {
-                prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
+                prepareNotificationDanger("Aviso", "Debes llenar los campos del formulario superior y tener almenos un detalle.");
             }
         } else {
-            prepareNotificationDanger("Aviso", "Debes llenar los campos del formulario superior y tener almenos un detalle.");
+            prepareNotificationDanger("Aviso", "El usuario no tiene permisos para modificar una caja de un usuario diferente.");
         }
     }
 
@@ -230,34 +237,38 @@ const FormCajaChicaUsuario = () => {
     }
 
     const handleRegistrarFlujo = async () => {
-        if(validateGeneralData() && detalles && detalles.length > 0) {
-            if(validateDetailDateRange()) {
-                const isValidoSaldo = validateSaldo();
-                if(isValidoSaldo) {
-                    const flujoCajaToSend = {
-                        c_compania: flujoCajaForm.general.c_compania,
-                        c_agencia: flujoCajaForm.general.c_agencia,
-                        c_tipofcu: flujoCajaForm.general.c_tipofcu,
-                        c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
-                        d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
-                        d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
-                        c_monedafcu: flujoCajaForm.general.c_monedafcu,
-                        c_estado: flujoCajaForm.general.c_estado,
-                        c_observaciones: flujoCajaForm.general.c_observaciones,
-                        c_usuarioregistro: userLogedIn,
-                        c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
+        if(flujoCajaForm.general.c_usuariofcu === userLogedIn || usuarioAccesoTotalCajaPermiso) {
+            if(validateGeneralData() && detalles && detalles.length > 0) {
+                if(validateDetailDateRange()) {
+                    const isValidoSaldo = validateSaldo();
+                    if(isValidoSaldo) {
+                        const flujoCajaToSend = {
+                            c_compania: flujoCajaForm.general.c_compania,
+                            c_agencia: flujoCajaForm.general.c_agencia,
+                            c_tipofcu: flujoCajaForm.general.c_tipofcu,
+                            c_usuariofcu: flujoCajaForm.general.c_usuariofcu,
+                            d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
+                            d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
+                            c_monedafcu: flujoCajaForm.general.c_monedafcu,
+                            c_estado: flujoCajaForm.general.c_estado,
+                            c_observaciones: flujoCajaForm.general.c_observaciones,
+                            c_usuarioregistro: userLogedIn,
+                            c_flagsaldoxdia:flujoCajaForm.general.c_flagsaldoxdia
+                        }
+                        const detailsToSend = prepareNewDetailsToSend(detalles);
+                        const response = await registerFlujoCaja({flujoCaja:flujoCajaToSend, detalles: detailsToSend});
+                        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+                    } else {
+                        prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
                     }
-                    const detailsToSend = prepareNewDetailsToSend(detalles);
-                    const response = await registerFlujoCaja({flujoCaja:flujoCajaToSend, detalles: detailsToSend});
-                    (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
                 } else {
-                    prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
+                    prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
                 }
             } else {
-                prepareNotificationDanger("Aviso", "Hay al menos una fecha de movimiento que no cumple con el rango de fecha inicio y fin.");
+                prepareNotificationDanger("Aviso", "Debes llenar los campos del formulario superior y tener almenos un detalle.");
             }
-        } else {
-            prepareNotificationDanger("Aviso", "Debes llenar los campos del formulario superior y tener almenos un detalle.");
+        }  else {
+            prepareNotificationDanger("Aviso", "El usuario no tiene permisos para crear una caja para un usuario diferente.");
         }
     }
 
@@ -569,7 +580,7 @@ const FormCajaChicaUsuario = () => {
                                       valueField="c_codigousuario"
                                       classForm="col-12 col-lg-6"
                                       marginForm="ml-0"
-                                      disabledElement={urlFragment !== "nuevaCajaChicaUsuario" }
+                                      disabledElement={deshabilitarUsuario}
                                   />
                                   <DateRangeComponent
                                       inputId="fechaMovimientoId"

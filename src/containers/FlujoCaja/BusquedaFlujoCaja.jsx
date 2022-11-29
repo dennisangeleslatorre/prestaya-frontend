@@ -271,7 +271,7 @@ const BusquedaFlujoCaja = () => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openModalDetalleFlujoCaja, setOpenModalDetalleFlujoCaja] = useState(false);
     const [openModalDetalleFlujoCajaMovimientos, setOpenModalDetalleFlujoCajaMovimientos] = useState(false);
-    const [elementSelected, setElementSelected] = useState(null);
+    const [elementSelected, setElementSelected] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [itemFlujoCajaSelected, setItemFlujoCajaSelected] = useState({c_compania:"", n_correlativo:""});
     const [itemFlujoCajaDetalleSelected, setItemFlujoCajaDetalleSelected] = useState({c_compania:"", n_correlativo:"", d_fechamov:""});
