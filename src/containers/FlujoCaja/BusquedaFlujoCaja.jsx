@@ -11,6 +11,7 @@ import FlujoCajaDetalleMovimientosModal from '../../components/FlujoCajaUsuarioM
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 import CajaContext from '../../context/CajaContext/CajaContext'
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //Funciones
 import { useHistory } from 'react-router'
 import { listCompanias, listAgencias, listUsers, getFlujoCajaDinamico } from '../../Api/Api'
@@ -248,6 +249,7 @@ const estadosCajaUsuario = [
 
 const BusquedaFlujoCaja = () => {
     let history = useHistory();
+    const { setParamsForFilterFlujoCaja, getParamsForFilterFlujoCaja } = useContext(FiltersContext);
     const { setFlujoCaja, setDetalles, setEliminarDetalles, setEliminarMovimientos } = useContext(CajaContext);
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -311,13 +313,21 @@ const BusquedaFlujoCaja = () => {
         }
         return body;
     }
-    //Funciones de los botones
+
     const onHandleClickBuscar = async () => {
         await setIsLoading(true);
-        let parametros = prepareBodyToSearch();
+        await onHandleBuscarFlujosCaja();
+        setIsLoading(false)
+    }
+
+    //Funciones de los botones
+    const onHandleBuscarFlujosCaja = async (parametrosIniciales) => {
+        await setIsLoading(true);
+        let parametros = parametrosIniciales ? parametrosIniciales : prepareBodyToSearch();
         const response = await getFlujoCajaDinamico(parametros);
         if(response && response.status === 200 ) {
             setDataFlujoCajaTable(response.body.data);
+            setParamsForFilterFlujoCaja(parametros);
         } else {
             setDataFlujoCajaTable([]);
         }
@@ -401,6 +411,26 @@ const BusquedaFlujoCaja = () => {
         if(response && response.status === 200) setUsuarios([{c_codigousuario: "T", c_nombres: "TODOS"}, ...response.body.data]);
     }
 
+    const getLastSearch = async () => {
+        const parametros = getParamsForFilterFlujoCaja();
+        if( parametros && Object.keys(parametros).length !== 0 ) {
+            await onHandleBuscarFlujosCaja(parametros);
+            if(parametros.c_compania) setCompania(parametros.c_compania);
+            if(parametros.c_agencia) setAgencia(parametros.c_agencia);
+            if(parametros.c_estado) setEstado(parametros.c_estado);
+            if(parametros.c_tipofcu) setTipoCajaUsuario(parametros.c_tipofcu);
+            if(parametros.c_usuariofcu) setUsuarioFlujoCaja(parametros.c_usuariofcu);
+            if(parametros.d_fecharegistroinicio && parametros.d_fecharegistrofin) {
+                setFechaRegistro({fechaInicio: parametros.d_fecharegistroinicio, fechaFin: parametros.d_fecharegistrofin, isValid:true});
+                setEnabledFechaRegistro(false);
+            }
+            if(parametros.d_fechaInicioMov && parametros.d_fechaFinMov) {
+                setFechaRegistro({fechaInicio: parametros.d_fechaInicioMov, fechaFin: parametros.d_fechaFinMov, isValid:true});
+                setEnabledFechaRegistro(false);
+            }
+        }
+    }
+
     useEffect(() => {
         if(companias.length !== 0) {
             handleSeleccionarCompania(companias[0].c_compania);
@@ -412,6 +442,7 @@ const BusquedaFlujoCaja = () => {
         await setIsLoading(true);
         await getCompanias();
         await getUsuarios();
+        await getLastSearch();
         setIsLoading(false);
     }, [])
 

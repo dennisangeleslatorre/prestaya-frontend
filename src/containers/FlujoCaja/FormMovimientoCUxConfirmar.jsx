@@ -5,6 +5,7 @@ import { listCompanias, listUsers, getMovimientosCajaUsuarioxConfirmar, confirma
 import moment from 'moment'
 import Loading from '../../components/Modal/LoadingModal'
 import { separator } from '../../utilities/Functions/FormatNumber';
+import { useHistory } from 'react-router'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 //Context
@@ -111,6 +112,7 @@ const columns = [
 ]
 
 const FormMovimientoCUxConfirmar = () => {
+    let history = useHistory();
     //Estados
     const [compania, setCompania] = useState("");
     const [usuarioFCMovimiento, setUsuarioFCMovimiento] = useState("T");
@@ -290,6 +292,7 @@ const FormMovimientoCUxConfirmar = () => {
                                     </div>
                                     <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                                         <button onClick={onHandleClickBuscar} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
+                                        <button onClick={()=>history.push(`/flujousuarios`)} className="btn btn-light btn-form ml-2">Regresar</button>
                                     </div>
                                 </div>
                                 <div className="row">

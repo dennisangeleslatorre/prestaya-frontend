@@ -1076,7 +1076,6 @@ const Prestamos = () => {
             }
 
         }
-        console.log("parametros", parametros);
     };
 
     //Efectos

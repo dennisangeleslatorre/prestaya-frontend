@@ -9,6 +9,10 @@ const useFilters = () => {
         window.localStorage.setItem('paramsCliente', JSON.stringify(value));
     }
 
+    const setParamsForFilterFlujoCaja = value => {
+        window.localStorage.setItem('paramsFlujoCaja', JSON.stringify(value));
+    }
+
     const getParamsForFilterPrestamo = () => {
         let filters = window.localStorage.getItem('paramsPrestamo');
         filters = JSON.parse(filters);
@@ -21,11 +25,19 @@ const useFilters = () => {
         return filters ;
     };
 
+    const getParamsForFilterFlujoCaja = () => {
+        let filters = window.localStorage.getItem('paramsFlujoCaja');
+        filters = JSON.parse(filters);
+        return filters ;
+    };
+
     return {
         setParamsForFilterPrestamo,
         setParamsForFilterCliente,
+        setParamsForFilterFlujoCaja,
         getParamsForFilterPrestamo,
-        getParamsForFilterCliente
+        getParamsForFilterCliente,
+        getParamsForFilterFlujoCaja
     }
 }
 
