@@ -771,11 +771,11 @@ const getTableCancelaciones = (cancelaciones) => {
                     </View>
                     {/*Body*/}
                     {cancelaciones.map((item, index) => {
-                        sumaIntDiario += item.n_montointeresesdiario && Number(item.n_montointeresesdiario);
-                        sumaIntCancelar += item.n_montointeresescancelar && Number(item.n_montointeresescancelar);
-                        sumaIntPrestamoCancelar += item.n_montoprestamocancelar && Number(item.n_montoprestamocancelar);
-                        sumaComision += item.n_montocomisioncancelar && Number(item.n_montocomisioncancelar);
-                        sumaMontoTotalCancelar += item.n_montototalcancelar && Number(item.n_montototalcancelar);
+                        sumaIntDiario += item.n_montointeresesdiario ? Number(item.n_montointeresesdiario) : 0;
+                        sumaIntCancelar += item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0;
+                        sumaIntPrestamoCancelar += item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar) : 0;
+                        sumaComision += item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar) : 0;
+                        sumaMontoTotalCancelar += item.n_montototalcancelar ? Number(item.n_montototalcancelar) : 0;
                         return (
                             <View style={styles.table__row__container} key={index}>
                                 <View style={[styles.table__body__linea, styles.table__border]}>
@@ -852,7 +852,7 @@ const getTableCancelaciones = (cancelaciones) => {
                             <Text style={styles.table__text__body__right}>{separator(sumaIntCancelar.toFixed(2))}</Text>
                         </View>
                         <View style={[styles.table__body__mntPrestamoCancelar, styles.table__border]}>
-                            <Text style={styles.table__text__body__right}>{separator(sumaIntPrestamoCancelar.toFixed(2))}</Text>
+                            <Text style={styles.table__text__body__right}>{separator(sumaIntPrestamoCancelar)}</Text>
                         </View>
                         <View style={[styles.table__body__mntComision, styles.table__border]}>
                             <Text style={styles.table__text__body__right}>{separator(sumaComision.toFixed(2))}</Text>
