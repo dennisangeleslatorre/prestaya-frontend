@@ -17,15 +17,15 @@ const columnsExportExcel = [
     },
     {
         label: 'FECHA',
-        value: row => (row.d_fechamov_format || '')
+        value: row => (moment(row.d_fechamov_format).format('DD/MM/yyyy') || '')
     },
     {
-        label: 'ObservaciOBSERVACIONESones',
-        value: row => (row.c_observaciones_dia || '')
+        label: 'OOBSERVACIONES',
+        value: row => (row.diaobservacion || '')
     },
     {
         label: 'ESTADO',
-        value: row => (row.c_estado_dia || '')
+        value: row => (row.diaestado || '')
     },
     {
         label: 'SEC.',
@@ -37,11 +37,11 @@ const columnsExportExcel = [
     },
     {
         label: 'USUARIO MOV.',
-        value: row => (row.c_usuariomovimiento || '')
+        value: row => (row.usuariomov || '')
     },
     {
         label: 'OBSERVACIONES',
-        value: row => (row.c_observaciones_mov || '')
+        value: row => (row.movobservacion || '')
     },
     {
         label: 'MNTO. INTERES A CANCELAR',
@@ -163,8 +163,10 @@ const ReporteFlujoCaja = () => {
         let parametros = prepareBodyToSearch();
         const response = await getDataReporteFlujoCaja(parametros);
         if(response && response.status === 200 ) {
-            setDataFlujoCajaMovimientosTable(response.body.data.movimientosCajaUsuario);
-            setDataPrestamoMovimientosTable(response.body.data.movimientosPxC);
+            const movCU = JSON.parse(JSON.stringify(response.body.data.movimientosCajaUsuario));
+            const movPxC = JSON.parse(JSON.stringify(response.body.data.movimientosPxC));
+            setDataFlujoCajaMovimientosTable(movCU);
+            setDataPrestamoMovimientosTable(movPxC);
             setElementPdf({
                 companianame: companias.find(c => c.c_compania === compania).c_descripcion,
                 fechaMovimientoInicio: fechaMovimiento.fechaInicio ? moment(fechaMovimiento.fechaInicio).format("DD/MM/yyyy") : "-",
@@ -172,6 +174,7 @@ const ReporteFlujoCaja = () => {
                 clase: clasesTipoMov.find(c => c.value === claseTipoMov).name,
                 usuarioFC: usuarios.find(u => u.c_codigousuario === usuarioFC).c_nombres
             });
+            setDataReportToTable([...movCU, ...movPxC]);
         } else {
             setDataFlujoCajaMovimientosTable([]);
             setDataPrestamoMovimientosTable([]);
@@ -456,12 +459,12 @@ const ReporteFlujoCaja = () => {
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                     <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
                 </div>
-                {/*<ButtonDownloadExcel
+                <ButtonDownloadExcel
                     fileName="reporteFlujoCaja"
                     sheet="reporte"
                     columns={columnsExportExcel}
                     content={dataReportToTable}
-                />*/}
+                />
                 <div className="col-12">
                     { elementPdf ? <PDFViewer
                         className="col-12"

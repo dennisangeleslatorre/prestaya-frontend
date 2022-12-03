@@ -231,7 +231,7 @@ const renderBodyTable = (fechas, indicefc, sumas) => (
             return (
                 <>
                     {fecha.movimientos.map((mov, indexm) => (
-                        <View key={`${indicefc}-${fecha.fecha}-${mov.secuencia}`} style={styles.table__row__container}>
+                        <View key={`${indexm}-${indicefc}-${fecha.fecha}-${mov.secuencia}`} style={styles.table__row__container}>
                             <View style={[styles.table__data, {width: '0.8cm', border:'1px'}]}>
                                 <Text style={styles.table__text__body}>{indexm > 0 ? "" : indexf+1}</Text>
                             </View>
@@ -384,7 +384,7 @@ const renderTable = (movimientosFC) => {
     return movimientosFC.map((fc, index) => (
         <>
             {renderDataGeneral(fc)}
-            <View key={fc.cod} style={styles.body__container}>
+            <View key={`${index}-${fc.cod}`} style={styles.body__container}>
                 <View style={styles.body__section}>
                     <View style={styles.table__container}>
                         {renderHeaderTable()}
