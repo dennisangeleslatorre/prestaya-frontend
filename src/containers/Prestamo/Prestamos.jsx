@@ -69,6 +69,18 @@ const columns = [
         ),
     },
     {
+        title: 'Estado',
+        dataIndex: 'estadoName',
+        sorter: {
+            compare: (a, b) => a.estadoName.localeCompare(b.estadoName),
+            multiple: 22,
+        },
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
+    },
+    {
         title: 'Tipo Doc',
         dataIndex: 'c_tipodocumento',
         sorter: {
@@ -356,18 +368,6 @@ const columns = [
         },
         width: 180,
         className: 'text-numbers-table'
-    },
-    {
-        title: 'Estado',
-        dataIndex: 'estadoName',
-        sorter: {
-            compare: (a, b) => a.estadoName.localeCompare(b.estadoName),
-            multiple: 22,
-        },
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 140
     },
     {
         title: 'F. Entrega',

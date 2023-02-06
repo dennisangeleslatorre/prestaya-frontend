@@ -8,6 +8,7 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import WarrantyProductsForm from '../../components/WarrantyPodctsForm/WarrantyProductsForm'
+import AuctionProductsForm from '../../components/AuctionProductsForm/AuctionProductsForm'
 import SearchModalCliente from '../../components/Modal/SearchModalCliente'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
@@ -578,7 +579,7 @@ const PrestamoForm = (props) => {
             setNumeroDocumento({value: clienteSeleccionado.c_numerodocumento});
             setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setTelefono({value: clienteSeleccionado.c_telefono1});
-            setTipoDocumento(clienteSeleccionado.c_tipodocumento);
+            //setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setPaisCodigo(clienteSeleccionado.c_paiscodigo);
             setDepartamentoCodigo(clienteSeleccionado.c_departamentocodigo);
             setProvinciaCodigo(clienteSeleccionado.c_provinciacodigo);
@@ -1020,17 +1021,29 @@ const PrestamoForm = (props) => {
                         classForm="col-12"
                         labelSpace={1}
                     />
+                    {
+                        urlFragment === "rematePrestamo" &&
+                        <AuctionProductsForm
+                            productos={productos}
+                            setProductos={setProductos}
+                            compania={compania}
+                            setIsLoading={setIsLoading}
+                        />
+                    }
+                    {/*Fin remate*/}
                     {/*GARANTIA*/}
-                    <WarrantyProductsForm
-                        productos={productos}
-                        setProductos={setProductos}
-                        userLogedIn={userLogedIn}
-                        warrantyProductUpdateList={warrantyProductUpdateList}
-                        setWarrantyProductUpdateList={setWarrantyProductUpdateList}
-                        warrantyProductRemovalList={warrantyProductRemovalList}
-                        setWarrantyProductRemovalList={setWarrantyProductRemovalList}
-                        readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
-                    />
+                    { urlFragment!=="rematePrestamo" &&
+                        <WarrantyProductsForm
+                            productos={productos}
+                            setProductos={setProductos}
+                            userLogedIn={userLogedIn}
+                            warrantyProductUpdateList={warrantyProductUpdateList}
+                            setWarrantyProductUpdateList={setWarrantyProductUpdateList}
+                            warrantyProductRemovalList={warrantyProductRemovalList}
+                            setWarrantyProductRemovalList={setWarrantyProductRemovalList}
+                            readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
+                        />
+                    }
                     <HeaderForm title="Datos de auditoria"/>
                     <AuditTableComponent
                         c_usuarioregistro={usuarioRegistro}
