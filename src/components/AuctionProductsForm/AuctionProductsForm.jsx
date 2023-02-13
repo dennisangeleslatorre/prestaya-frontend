@@ -4,7 +4,7 @@ import { Table,} from 'antd'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import AuctionProductsModal from '../AuctionProductsModal/AuctionProductsModal'
 //Servicios
-import { listAllTiposProducto, listAllUnidadesMedida, getClienteByCodigoCliente  } from '../../Api/Api'
+import { listAllTiposProducto, listAllUnidadesMedida, getClienteByCodigoCliente, obtenerSaldoPrestamo } from '../../Api/Api'
 import moment from 'moment'
 import SearchModalCliente from '../Modal/SearchModalCliente'
 import InputComponentView from '../InputComponent/InputComponentView'
@@ -210,7 +210,7 @@ const columns = [
 const tiposVentas =[{value: "C", option:"Tercero"}, {value: "A", option:"Tienda"}];
 
 const AuctionProductsForm = (props) => {
-    const { productos=[], setProductos, compania, setIsLoading } = props;
+    const { productos=[], setProductos, compania, setIsLoading, elementId } = props;
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [nIndex, setNIndex] = useState(0);
     const [productSelected, setProductSelected] = useState(null);
@@ -221,13 +221,14 @@ const AuctionProductsForm = (props) => {
     const [clienteSeleccionadoRemate, setClienteSeleccionadoRemate] = useState(null);
     const [tipoVenta, setTipoVenta] = useState("");
     const [openSearchModalRemate, setOpenSearchModalRemate] = useState(false);
+    const [responseData, setResponseData] = useState({title:"", message:""});
+    const [openResponseModal, setOpenResponseModal] = useState();
     //Listas
     const [allTiposProductos, setAllTiposProductos] = useState([]);
     const [allUnidadesMedidas, setAllUnidadesMedidas] = useState([]);
     const [openModal, setOpenModal] = useState(false);
 
     const getDataTable = () => {
-        let saldoCapitalProductos = 0;
         const listProducts = [...productos].map((item, index) => {
             console.log("item", item)
             let aux = {...item};
@@ -243,11 +244,11 @@ const AuctionProductsForm = (props) => {
             aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
             aux.handleMostrarDetalleProductoRow = () => handleShowDetalleProducto(index, item);
-            saldoCapitalProductos = Number(Number(saldoCapitalProductos) + Number(item.n_montovalortotal)).toFixed(2);
+            aux.c_tipoventa_option = item.c_tipoventa ? tiposVentas.find(t => t.value === item.c_tipoventa).option : "";
+            aux.c_tipoventa = item.c_tipoventa ?  item.c_tipoventa : "";
             return aux;
         });
         setTableDataProducts(listProducts);
-        setSaldoCapital(saldoCapitalProductos);
     }
 
     const handleShowDetalleProducto = (index, producto) => {
@@ -287,6 +288,9 @@ const AuctionProductsForm = (props) => {
                 return producto;
             }))
         }
+    }, [codigoClienteRemate])
+
+    useEffect(() => {
         if(tipoVenta) {
             setProductos(productos.map(producto => {
                 producto.c_tipoventa_option = tiposVentas.find(t => t.value === tipoVenta).option;
@@ -299,7 +303,7 @@ const AuctionProductsForm = (props) => {
                 return producto;
             }))
         }
-    }, [codigoClienteRemate, tipoVenta])
+    }, [tipoVenta])
 
     const handleOpenSearchModalForRemate = async () => {
         setOpenSearchModalRemate(true);
@@ -322,6 +326,17 @@ const AuctionProductsForm = (props) => {
         setIsLoading(false);
     }
 
+    const getSaldo = async () => {
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await obtenerSaldoPrestamo({
+            c_compania: c_compania,
+            c_prestamo: c_prestamo
+        });
+        if(response.body && response.body.data && response.body.data.n_montoprestamo) {
+            setSaldoCapital(Number(response.body.data.n_montoprestamo).toFixed(2));
+        }
+    }
+
     /*REMATE*/
     useEffect(() => {
         if(clienteSeleccionadoRemate) {
@@ -336,6 +351,7 @@ const AuctionProductsForm = (props) => {
     useEffect(async () => {
         await getAllListTiposProductos();
         await getAllListUnidadesMedidas();
+        await getSaldo();
     }, [])
 
     return (
@@ -399,6 +415,12 @@ const AuctionProductsForm = (props) => {
                 onClose={()=>setOpenSearchModalRemate(false)}
                 setClienteObtained={setClienteSeleccionadoRemate}
                 compania={compania}
+            />
+            <ResponseModal
+                isOpen={openResponseModal}
+                title={responseData.title}
+                onClose={()=>setOpenResponseModal(false)}
+                message={responseData.message}
             />
         </>
     );

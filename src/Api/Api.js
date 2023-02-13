@@ -646,6 +646,12 @@ export const getPrestamoDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const obtenerSaldoPrestamo = async (body) => {
+    console.log('---API--- : obtenerSaldoPrestamo');
+    const url = `${port}/prestamo/obtenerSaldoPrestamo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //ANULAR
 export const anularPrestamo = async (body) => {
     console.log('---API--- : anularPrestamo');

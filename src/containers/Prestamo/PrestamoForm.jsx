@@ -354,20 +354,61 @@ const PrestamoForm = (props) => {
         setIsLoading(false);
     }
 
+    const validateProductos = () => {
+        let isValid = true;
+        productos.forEach(producto => {
+            if( !producto.n_cliente || !producto.c_tipoventa || !producto.n_montocap || !producto.n_montoint
+                || !producto.n_montototal || !producto.c_observacionesventa) isValid = false;
+        })
+        return isValid;
+    }
+
+    const prepareProductsToRemate = () => {
+        /*const aux = productos.map((item)=>`'${item.c_descripcionproducto}','${item.c_tipoproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_cliente}','${item.c_observacionesventa},${item.n_linea},${item.c_tipoventa}'`)
+        .reduce((acc, cv) => `${acc}|${cv}`)*/
+        const aux = productos.map(item => {
+            let productoAux = {}
+            productoAux.n_linea = item.n_linea;
+            productoAux.c_observaciones = item.c_observaciones;
+            productoAux.n_pesobruto = item.n_pesobruto;
+            productoAux.n_pesoneto = item.n_pesoneto;
+            productoAux.c_descripcionproducto = item.c_descripcionproducto;
+            productoAux.c_tipoproducto = item.c_tipoproducto;
+            productoAux.c_unidadmedida = item.c_unidadmedida;
+            productoAux.n_cliente = item.n_cliente;
+            productoAux.c_tipoventa = item.c_tipoventa;
+            productoAux.n_montocap = Number(item.n_montocap);
+            productoAux.n_montoint = Number(item.n_montoint);
+            productoAux.n_montototal = Number(item.n_montototal);
+            productoAux.n_cantidad = Number(item.n_cantidad);
+            productoAux.n_precio = Number(item.n_montototal) / Number(item.n_cantidad);
+            return productoAux;
+        })
+        return aux;
+    }
+
     const handleRemate = async () => {
         setOpen(false);
         await setIsLoading(true);
         if(fechaRemate.value && observacionesRemate) {
-            const [c_compania, c_prestamo] = elementId.split('-');
-            const data = {
-                c_compania: c_compania,
-                c_prestamo: c_prestamo,
-                c_usuarioRemate: userLogedIn,
-                d_fechaRemate: fechaRemate.value,
-                c_observacionesremate: observacionesRemate
+            if(validateProductos()) {
+                const [c_compania, c_prestamo] = elementId.split('-');
+                const data = {
+                    c_compania: c_compania,
+                    c_prestamo: c_prestamo,
+                    c_usuarioRemate: userLogedIn,
+                    d_fechaRemate: fechaRemate.value,
+                    c_observacionesremate: observacionesRemate,
+                    c_moneda: moneda,
+                    productos: prepareProductsToRemate()
+                }
+                setIsAlert(false);
+                console.log("data", data);
+                const response = await cambiarEstadoRemate(data);
+                (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
+            } else {
+                prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
             }
-            const response = await cambiarEstadoRemate(data);
-            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
         } else {
             prepareNotificationDanger("Error", "Favor de llenar los campos activos");
         }
@@ -386,7 +427,6 @@ const PrestamoForm = (props) => {
                 if(urlFragment === "rematePrestamo") {
                     const [c_compania, c_prestamo] = elementId.split('-');
                     const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
-                    console.log("Resposne validate", response)
                     let message = '¿Seguro que desea cambiar el estado a remate?';
                     if(response.status !== 200) message = `${message} ${response.message ? response.message : ""}`
                     setModalAttributes({title:"Aviso de remate", message:message});
@@ -445,35 +485,20 @@ const PrestamoForm = (props) => {
             //Auditoria
             setUsuarioRegistro(data.c_usuarioregistro);
             setFechaRegistro(moment(data.d_fecharegistro).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_ultimousuario
-            //data.d_ultimafechamodificacion
             setUltimoUsuario(data.c_ultimousuario);
             setFechaModificacion(moment(data.d_ultimafechamodificacion).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_usuarioretornarpendiente
-            //data.d_fecharetornarpendiente
             setUsuarioRetornarPendiente(data.c_usuarioretornarpendiente);
             if(data.d_fecharetornarpendiente) setFechaRetornarPendiente(moment(data.d_fecharetornarpendiente).format('DD/MM/yyy HH:mm:ss'));
-            //data,c_usuariovigente
-            //data.d_fechavigente
             setUsuarioVigente(data.c_usuariovigente);
             if(data.d_fechavigente) setFechaVigente(moment(data.d_fechavigente).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_usuarioEntrega
-            //data.d_fechaEntregaUS
             setUsuarioEntrega(data.c_usuarioEntrega);
             if(data.d_fechaEntregaUS) setFechaEntregaUS(moment(data.d_fechaEntregaUS).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_usuarioRemate
-            //data.d_fechaRemateUS
             setUsuarioRemate(data.c_usuarioRemate);
             if(data.d_fechaRemateUS) setFechaRemateUS(moment(data.d_fechaRemateUS).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_usuarioanulacion
-            //data.d_fechaanulacion
             setUsuarioAnulacion(data.c_usuarioanulacion);
             if(data.d_fechaanulacion) setFechaAnulacion(moment(data.d_fechaanulacion).format('DD/MM/yyy HH:mm:ss'));
-            //data.c_usuariocancelacion
-            //data.d_fechacancelacion
             setUsuarioCancelacion(data.c_usuariocancelacion);
             if(data.d_fechacancelacion) setFechaCancelacion(moment(data.d_fechacancelacion).format('DD/MM/yyy HH:mm:ss'));
-            //usuario desembolso
             if(data.c_usuariodesembolso) setUsuarioDesembolso(data.c_usuariodesembolso);
 
             const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
@@ -1028,6 +1053,7 @@ const PrestamoForm = (props) => {
                             setProductos={setProductos}
                             compania={compania}
                             setIsLoading={setIsLoading}
+                            elementId={elementId}
                         />
                     }
                     {/*Fin remate*/}
@@ -1079,6 +1105,7 @@ const PrestamoForm = (props) => {
                 onClose={()=>setOpenResponseModal(false)}
                 message={responseData.message}
                 buttonLink={responseData.url}
+                buttonLinkView={`/visualizarPrestamo/${elementId}`}
             />
             <SearchModalCliente
                 isOpen={openSearchModal}

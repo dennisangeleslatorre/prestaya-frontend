@@ -25,6 +25,7 @@ const AuctionProductsModal = (props) => {
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [isAlert, setIsAlert] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
 
     const handleClose = () => {
         cleanProduct();
@@ -81,6 +82,74 @@ const AuctionProductsModal = (props) => {
         if(productSelected.c_observacionesventa) setObservacionesVenta(productSelected.c_observacionesventa);
     }
 
+    const validate = () => {
+        if( !codigoCliente || !tipoVenta || !montoCap.value || Number(montoCap.value) <= 0 || !montoInteres.value ||
+            Number(montoInteres.value) <= 0 || !observacionesVenta ) {
+                setNotification({...notification, message: 'LLenar los campos con valores validos'})
+                return false;
+        }
+        if( Number(percentCap.value) > 100 ) {
+            setNotification({...notification, message: 'El monto capital no puede ser mayor al saldo'})
+                return false;
+        }
+        if( Number(percentCap.value) < 100 && productos.length === 1 ) {
+            setNotification({...notification, message: 'El porcentaje de Capital debe ser 100 cuando hay un producto'})
+                return false;
+        }
+        return true;
+    }
+
+    const updateProductos = () => {
+        if(productos.length === 2) {
+            const productosAx = JSON.parse(JSON.stringify(productos)).map((producto, index) => {
+                if(index === nIndex) {
+                    producto.n_cliente = codigoCliente;
+                    producto.c_nombrescompleto = nombreCliente;
+                    producto.c_tipoventa = tipoVenta;
+                    producto.n_percentcap = percentCap.value;
+                    producto.n_montocap = montoCap.value;
+                    producto.n_montototal = montototal.value;
+                    producto.n_montoint = montoInteres.value;
+                    producto.c_observacionesventa = observacionesVenta;
+                    producto.t_cliente = `${codigoCliente}-${nombreCliente}`;
+                } else {
+                    producto.n_percentcap = Number(100 - Number(percentCap.value)).toFixed(2);
+                    producto.n_montocap = Number(saldoCapital - Number(montoCap.value)).toFixed(2);
+                    const interesP = producto.n_montoint ? Number(producto.n_montoint) : 0;
+                    producto.n_montototal = Number(producto.n_montocap) + interesP;
+                }
+                return producto;
+            });
+            setProductos(productosAx);
+        } else {
+            const productosAx = JSON.parse(JSON.stringify(productos)).map((producto, index) => {
+                if(index === nIndex) {
+                    producto.n_cliente = codigoCliente;
+                    producto.c_nombrescompleto = nombreCliente;
+                    producto.c_tipoventa = tipoVenta;
+                    producto.n_percentcap = percentCap.value;
+                    producto.n_montocap = montoCap.value;
+                    producto.n_montototal = montototal.value;
+                    producto.n_montoint = montoInteres.value;
+                    producto.c_observacionesventa = observacionesVenta;
+                    producto.t_cliente = `${codigoCliente}-${nombreCliente}`;
+                }
+                return producto;
+            });
+            setProductos(productosAx);
+        }
+    }
+
+    const handleSaveInformation = () => {
+        if(validate()) {
+            updateProductos();
+            setNIndex(null);
+            handleClose();
+        } else {
+            setIsAlert(true);
+        }
+    }
+
     useEffect(() => {
         if(productSelected) setDataFunction();
     }, [productSelected])
@@ -106,7 +175,11 @@ const AuctionProductsModal = (props) => {
         <>
             <Modal isOpen={isOpen} title="Datos de venta" classModal='ModalForm' onClose={handleClose} modal_class="Modal__container__form">
                 <div className="modal-body row">
-                { isLoading ? <Spinner/> :<>
+                { isLoading ?
+                    <div className='d-flex w-100 row justify-content-center'>
+                        <Spinner/>
+                    </div>
+                    :<>
                     <SearcherComponent
                         placeholder="Nombre del cliente"
                         label="Cliente"
@@ -182,6 +255,17 @@ const AuctionProductsModal = (props) => {
                     />
                 </>
                 }
+                </div>
+                {/*Alerta*/}
+                { isAlert === true && <Alert
+                    title={notification.title}
+                    type={notification.type}
+                    mainMessage={notification.message}
+                /> }
+                <div className="modal-footer justify-content-center">
+                    <button onClick={handleSaveInformation} className="btn btn-primary">
+                        Guardar
+                    </button>
                 </div>
             </Modal>
             <SearchModalCliente

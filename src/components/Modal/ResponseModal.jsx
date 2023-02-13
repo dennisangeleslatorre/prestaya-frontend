@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Modal from './ModalNotification';
 
-const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info", showCloseButton = true}) => {
+const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info", showCloseButton = true, buttonLinkView=null}) => {
     return (
         <Modal isOpen={isOpen} title={title} onClose={onClose} showCloseButton={showCloseButton}>
             {/*body*/}
@@ -17,6 +17,9 @@ const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonCl
                 {!buttonLink && <button onClick={onClose} className="btn btn-light">
                     Aceptar
                 </button>}
+                {buttonLinkView && <Link to={buttonLinkView} className={`btn btn-light mr-4`}>
+                    Visualizar Prestamo
+                </Link>}
             </div>
         </Modal>
     )

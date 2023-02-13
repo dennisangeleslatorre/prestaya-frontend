@@ -36,6 +36,24 @@ const columns = [
         title: 'Monto Valor Total',
         dataIndex: 'n_montovalortotal'
     },{
+        title: 'Cliente',
+        dataIndex: 'c_nombrescompleto'
+    },{
+        title: 'Tipo Venta',
+        dataIndex: 'c_tipoventa_desc'
+    },{
+        title: 'M. Capital',
+        dataIndex: 'n_montocap'
+    },{
+        title: 'Intereses',
+        dataIndex: 'n_montoint'
+    },{
+        title: 'M. Total Venta',
+        dataIndex: 'n_montototal'
+    },{
+        title: 'Observaciones Venta',
+        dataIndex: 'c_observacionesventa'
+    },{
         title: 'U. Registro',
         dataIndex: 'c_usuarioregistro'
     },{
@@ -146,6 +164,12 @@ const WarrantyProductsForm = (props) => {
             aux.c_usuarioregistro = item.c_usuarioregistro ? item.c_usuarioregistro : "";
             aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
+            aux.c_nombrescompleto = item.c_nombrescompleto;
+            aux.c_tipoventa_desc = item.c_tipoventa ? item.c_tipoventa === "C" ? "TERCERO" : "TIENDA" : "";
+            aux.n_montocap = Number(item.n_montocap).toFixed(2);
+            aux.n_montoint = Number(item.n_montoint).toFixed(2);
+            aux.n_montototal = Number(item.n_montototal).toFixed(2);
+            aux.c_observacionesventa = item.c_observacionesventa;
             return aux;
         });
         setTableDataProducts(listProducts);
