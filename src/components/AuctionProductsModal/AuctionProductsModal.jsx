@@ -42,9 +42,9 @@ const AuctionProductsModal = (props) => {
             if(response && response.status === 200 && response.body.data) {
                 setClienteSeleccionado(response.body.data);
             } else {
-                setResponseData({title:"Aviso", message:"No hay un cliente con ese código"});
+                //setResponseData({title:"Aviso", message:"No hay un cliente con ese código"});
                 setCodigoCliente("");
-                setOpenResponseModal(true);
+                //setOpenResponseModal(true);
             }
         }
         setIsLoading(false);

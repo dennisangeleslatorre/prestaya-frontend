@@ -139,6 +139,16 @@ const SearchComponentTable = ({flujosCajaDetalleTabla=[], rowSelection, selected
             },
             width: 130,
         },{
+            title: 'Saldo',
+            dataIndex: 'saldodia',
+            ellipsis: {
+                showTitle: false,
+            },
+            width: 130,
+            render: (saldo) => (
+                <span className='justify-content-end d-flex'>{Number(saldo).toFixed(2)}</span>
+            )
+        },{
             title:() => <label className='text-audit-table'>U. Registro</label>,
             dataIndex: 'c_usuarioregistro',
             ellipsis: {

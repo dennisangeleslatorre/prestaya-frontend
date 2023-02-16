@@ -43,13 +43,28 @@ const columns = [
         dataIndex: 'c_tipoventa_desc'
     },{
         title: 'M. Capital',
-        dataIndex: 'n_montocap'
+        dataIndex: 'n_montocap',
+        render: (field, item) => (
+            <div className='justify-content-end d-flex'>
+              {field}
+            </div>
+        ),
     },{
         title: 'Intereses',
-        dataIndex: 'n_montoint'
+        dataIndex: 'n_montoint',
+        render: (field, item) => (
+            <div className='justify-content-end d-flex'>
+              {field}
+            </div>
+        ),
     },{
         title: 'M. Total Venta',
-        dataIndex: 'n_montototal'
+        dataIndex: 'n_montototal',
+        render: (field, item) => (
+            <div className='justify-content-end d-flex'>
+              {field}
+            </div>
+        ),
     },{
         title: 'Observaciones Venta',
         dataIndex: 'c_observacionesventa'
@@ -166,9 +181,9 @@ const WarrantyProductsForm = (props) => {
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
             aux.c_nombrescompleto = item.c_nombrescompleto;
             aux.c_tipoventa_desc = item.c_tipoventa ? item.c_tipoventa === "C" ? "TERCERO" : "TIENDA" : "";
-            aux.n_montocap = Number(item.n_montocap).toFixed(2);
-            aux.n_montoint = Number(item.n_montoint).toFixed(2);
-            aux.n_montototal = Number(item.n_montototal).toFixed(2);
+            aux.n_montocap = item.n_montocap ? Number(item.n_montocap).toFixed(2) : "";
+            aux.n_montoint = item.n_montocap ? Number(item.n_montoint).toFixed(2) : "";
+            aux.n_montototal = item.n_montocap ? Number(item.n_montototal).toFixed(2) : "";
             aux.c_observacionesventa = item.c_observacionesventa;
             return aux;
         });

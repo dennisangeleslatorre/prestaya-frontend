@@ -363,6 +363,14 @@ const PrestamoForm = (props) => {
         return isValid;
     }
 
+    const validaTipoVenta = () => {
+        let isValid = true;
+        productos.forEach(producto => {
+            if( producto.c_tipoventa !== 'C') isValid = false;
+        })
+        return isValid;
+    }
+
     const prepareProductsToRemate = () => {
         /*const aux = productos.map((item)=>`'${item.c_descripcionproducto}','${item.c_tipoproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_cliente}','${item.c_observacionesventa},${item.n_linea},${item.c_tipoventa}'`)
         .reduce((acc, cv) => `${acc}|${cv}`)*/
@@ -382,6 +390,7 @@ const PrestamoForm = (props) => {
             productoAux.n_montototal = Number(item.n_montototal);
             productoAux.n_cantidad = Number(item.n_cantidad);
             productoAux.n_precio = Number(item.n_montototal) / Number(item.n_cantidad);
+            productoAux.c_nombrescompleto = item.c_nombrescompleto;
             return productoAux;
         })
         return aux;
@@ -392,20 +401,24 @@ const PrestamoForm = (props) => {
         await setIsLoading(true);
         if(fechaRemate.value && observacionesRemate) {
             if(validateProductos()) {
-                const [c_compania, c_prestamo] = elementId.split('-');
-                const data = {
-                    c_compania: c_compania,
-                    c_prestamo: c_prestamo,
-                    c_usuarioRemate: userLogedIn,
-                    d_fechaRemate: fechaRemate.value,
-                    c_observacionesremate: observacionesRemate,
-                    c_moneda: moneda,
-                    productos: prepareProductsToRemate()
+                if(validaTipoVenta()) {
+                    const [c_compania, c_prestamo] = elementId.split('-');
+                    const data = {
+                        c_compania: c_compania,
+                        c_prestamo: c_prestamo,
+                        c_usuarioRemate: userLogedIn,
+                        d_fechaRemate: fechaRemate.value,
+                        c_observacionesremate: observacionesRemate,
+                        c_moneda: moneda,
+                        productos: prepareProductsToRemate()
+                    }
+                    setIsAlert(false);
+                    console.log("data", data);
+                    const response = await cambiarEstadoRemate(data);
+                    (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
+                } else {
+                    prepareNotificationDanger("Aviso", "El sistema no esta preparado aun para venta a tienda.");
                 }
-                setIsAlert(false);
-                console.log("data", data);
-                const response = await cambiarEstadoRemate(data);
-                (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
             } else {
                 prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
             }
@@ -1105,7 +1118,7 @@ const PrestamoForm = (props) => {
                 onClose={()=>setOpenResponseModal(false)}
                 message={responseData.message}
                 buttonLink={responseData.url}
-                buttonLinkView={`/visualizarPrestamo/${elementId}`}
+                buttonLinkView={urlFragment === 'rematePrestamo' ? `/visualizarPrestamo/${elementId}` : ''}
             />
             <SearchModalCliente
                 isOpen={openSearchModal}

@@ -140,7 +140,7 @@ const columns = [
             showTitle: false,
         },
         render: (field, item) => (
-            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+            <div className='w-100 d-flex justify-content-end' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
               {field}
             </div>
         ),
@@ -152,7 +152,7 @@ const columns = [
             showTitle: false,
         },
         render: (field, item) => (
-            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+            <div className='w-100 d-flex justify-content-end' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
               {field}
             </div>
         ),
@@ -164,7 +164,7 @@ const columns = [
             showTitle: false,
         },
         render: (field, item) => (
-            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+            <div className='w-100 d-flex justify-content-end' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
               {field}
             </div>
         ),

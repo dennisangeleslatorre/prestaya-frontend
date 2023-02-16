@@ -11,15 +11,18 @@ const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonCl
             </div>
             {/*Footer*/}
             <div className="modal-footer justify-content-center">
-                {buttonLink && <Link to={buttonLink} className={`btn ${buttonClass} mr-4`}>
-                    Ir a lista
-                </Link>}
-                {!buttonLink && <button onClick={onClose} className="btn btn-light">
+                {buttonLinkView ? <Link to={buttonLinkView} className={`btn btn-light mr-4`}>
                     Aceptar
-                </button>}
-                {buttonLinkView && <Link to={buttonLinkView} className={`btn btn-light mr-4`}>
-                    Visualizar Prestamo
-                </Link>}
+                </Link> :
+                    <>
+                    {buttonLink && <Link to={buttonLink} className={`btn ${buttonClass} mr-4`}>
+                        Ir a lista
+                    </Link>}
+                    {!buttonLink && <button onClick={onClose} className="btn btn-light">
+                        Aceptar
+                    </button>}
+                    </>
+                }
             </div>
         </Modal>
     )

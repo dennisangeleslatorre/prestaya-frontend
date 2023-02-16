@@ -18,7 +18,7 @@ import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
-    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate } from '../../Api/Api'
+    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate, retornarRemate } from '../../Api/Api'
 import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
@@ -758,14 +758,32 @@ const Prestamos = () => {
     const handleSelectRetornarPendiente = async () => {
         setIsLoading(true);
         if(elementSelected) {
-            const [c_compania, c_prestamo] = elementSelected[0].split("-");
-            const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
-            if(responseValidate.status === 200) {
-                setOpen(true);
+            console.log("elementSelectedRows", elementSelectedRows);
+            if(elementSelectedRows[0].c_estado==="RE") {
+                const [c_compania, c_prestamo] = elementSelected[0].split("-");
+                const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
+                if(response && response.status === 200) {
+                    await onHandleSearch();
+                    setSelectedRowKeys([]);
+                    setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
+                    setOpenResponseModal(true);
+                }  else {
+                    const message = response ? response.message : "Error al regresar el remate.";
+                    setResponseData({title:"Aviso", message:message});
+                    setOpenResponseModal(true);
+                }
             } else {
-                const message = responseValidate ? responseValidate.message : "Error al validar el préstamo";
-                setResponseData({title:"Aviso", message:message});
-                setOpenResponseModal(true);
+                const [c_compania, c_prestamo] = elementSelected[0].split("-");
+                const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
+                if(responseValidate.status === 200) {
+                    setOpen(true);
+                } else {
+                    const message = responseValidate ? responseValidate.message : "Error al validar el préstamo";
+                    setResponseData({ title:"Aviso", message: message && message.includes("vigente")
+                        ? 'El estado del préstamo no es vigente o remate.'
+                        : message});
+                    setOpenResponseModal(true);
+                }
             }
         } else {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
@@ -1388,7 +1406,7 @@ const Prestamos = () => {
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
                                             { currentPermission && <Button onClick={handleSelectVigente}>VIGENTE</Button>}
-                                            { returnToPendingPermission && <Button onClick={handleSelectRetornarPendiente}>REGRESAR A PENDIENTE</Button>}
+                                            { returnToPendingPermission && <Button onClick={handleSelectRetornarPendiente}>REGRESAR A PENDIENTE/VIGENTE</Button>}
                                             { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
                                             { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
                                             { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}

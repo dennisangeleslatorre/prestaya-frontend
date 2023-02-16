@@ -377,16 +377,24 @@ const FormCajaChicaUsuario = () => {
     }
 
     const refreshList = () => {
-        const tableData = JSON.parse(JSON.stringify(detalles)).map((item, index) => {
-            let aux = item.general;
-            aux.key = index+1;
-            aux.d_fechamov_format = moment(item.general.d_fechamov).format("DD/MM/yyyy");
-            aux.c_estado_desc = item.general.c_estado === "A" ? "ABIERTO" : "CERRADO";
-            aux.d_fecharegistro = item.general.d_fecharegistro ? moment(item.general.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
-            aux.d_ultimafechamodificacion = item.general.d_ultimafechamodificacion ? moment(item.general.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
-            return aux;
-        });
-        setFlujosCajaDetalleTabla(tableData);
+        if(tiposMovimientos.length > 0) {
+            const tableData = JSON.parse(JSON.stringify(detalles)).map((item, index) => {
+                console.log("item mira", item);
+                let aux = item.general;
+                aux.key = index+1;
+                aux.d_fechamov_format = moment(item.general.d_fechamov).format("DD/MM/yyyy");
+                aux.c_estado_desc = item.general.c_estado === "A" ? "ABIERTO" : "CERRADO";
+                aux.d_fecharegistro = item.general.d_fecharegistro ? moment(item.general.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss") : "";
+                aux.d_ultimafechamodificacion = item.general.d_ultimafechamodificacion ? moment(item.general.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
+                aux.saldodia = 0;
+                item.movimientos.forEach(mov => {
+                    const tipoMov = tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc);
+                    aux.saldodia = aux.saldodia + Number(mov.n_montoxdiamov ?  ( Number(mov.n_montoxdiamov) * (tipoMov.c_clasetipomov === "I" ? 1 : -1) ) : 0);
+                })
+                return aux;
+            });
+            setFlujosCajaDetalleTabla(tableData);
+        }
     }
 
     //Obtener datos del contexto
@@ -474,8 +482,8 @@ const FormCajaChicaUsuario = () => {
     }, [companycode, companiaName, agencia, moneda, estado, tipoCajaUsuario, usuarioCajaChica, fechaMovimiento, observaciones, flagSaldoxDia])
 
     useEffect(async () => {
-        if(companias.length>0) await getData();
-    }, [companias])
+        if(companias.length>0 && tiposMovimientos.length > 0) await getData();
+    }, [companias, tiposMovimientos])
 
     useEffect(() => {
         refreshList();
@@ -483,9 +491,9 @@ const FormCajaChicaUsuario = () => {
 
     useEffect( async () => {
         await setIsLoading(true);
+        await getTiposMovimientoCaja();
         await getCompanias();
         await getUsuarios();
-        await getTiposMovimientoCaja();
     }, [])
 
   return (

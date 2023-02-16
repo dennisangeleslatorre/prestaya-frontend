@@ -191,6 +191,7 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [elementSelectedRows, setElementSelectedRows] = useState(null);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [saldoDia, setSaldoDia] = useState(0);
     const validDate = () => {
         let fechaInicio = moment(flujoCaja.general.d_fechaInicioMov);
         let fechaFin= moment(flujoCaja.general.d_fechaFinMov);
@@ -383,10 +384,12 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     }
 
     const refreshList = () => {
+        let saldoAux = 0;
         const tableData = JSON.parse(JSON.stringify(movimientos)).map((item, index) => {
             let aux = item;
             aux.key = index+1;
-            aux.tipoMovimiento = tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === item.c_tipomovimientocc).c_descricpion;
+            const tipoMov = tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === item.c_tipomovimientocc)
+            aux.tipoMovimiento = tipoMov.c_descricpion;
             aux.n_secuencia = item.n_secuencia;
             aux.n_montoxdiamov_format = item.n_montoxdiamov ? separator(Number(item.n_montoxdiamov).toFixed(2)) : "";
             aux.flagConfirmar = item.c_flagxconfirmar === "S" ? "SI" : "NO";
@@ -394,9 +397,11 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             aux.d_fechaconfirmado_format = item.d_fechaconfirmado ? moment(item.d_fechaconfirmado).format("DD/MM/yyyy") : "";
             aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
+            saldoAux = saldoAux + Number(item.n_montoxdiamov ?  ( Number(item.n_montoxdiamov) * (tipoMov.c_clasetipomov === "I" ? 1 : -1) ) : 0);
             return aux;
         });
         setMovimientosCajaTabla(tableData);
+        setSaldoDia(Number(saldoAux).toFixed());
     }
 
     const getData = () => {
@@ -490,6 +495,16 @@ const FormCajaChicaUsuarioxDiaMov = () => {
                                         readOnly={false}
                                         classForm="col-12"
                                         labelLine={true}
+                                    />
+                                    <InputComponentView
+                                        label="Saldo Dia"
+                                        state={saldoDia}
+                                        setState={setSaldoDia}
+                                        type="text"
+                                        placeholder="Saldo dia"
+                                        inputId="saldoDiaCorrelativ"
+                                        readOnly={true}
+                                        classForm="col-12 col-lg-6"
                                     />
                                 </div>
                                 <div className="col-12 mb-3 text-center">

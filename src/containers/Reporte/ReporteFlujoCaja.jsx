@@ -294,22 +294,23 @@ const ReporteFlujoCaja = () => {
                 tipomovimiento: item.c_tipomovimientocc_desc,
                 usuariomov: item.usuariomov,
                 observacion: item.movobservacion,
-                montointerescancelar: item.n_montointeresescancelar || "",
-                montoprestamocancelar: item.n_montoprestamocancelar  || "",
+                montointerescancelar: item.n_montointeresescancelar ? item.n_montointeresescancelar : (item.n_montoint ? item.n_montoint : ""),
+                montoprestamocancelar: item.n_montoprestamocancelar ? item.n_montoprestamocancelar : (item.n_montocap ? item.n_montocap : ""),
                 montocomisioncancelar: item.n_montocomisioncancelar || "",
                 montomov: item.n_montoxdiamov,
                 clasemov: item.c_clasetipomov,
                 fuente: item.c_fuente,
-                c_prestamo: item.c_prestamo
+                c_prestamo: item.c_prestamo,
+                percent_ganancia: item.n_montoint && item.n_montocap ? (Number(item.n_montoint) / Number(item.n_montocap) * 100) : ""
             })
 
-            nuevoArray[indexfc].sumas.suma_montointerescancelar = nuevoArray[indexfc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0);
-            nuevoArray[indexfc].sumas.suma_montoprestamocancelar = nuevoArray[indexfc].sumas.suma_montoprestamocancelar + (item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar) : 0);
+            nuevoArray[indexfc].sumas.suma_montointerescancelar = nuevoArray[indexfc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : (item.n_montoint ? Number(item.n_montoint) : 0));
+            nuevoArray[indexfc].sumas.suma_montoprestamocancelar = nuevoArray[indexfc].sumas.suma_montoprestamocancelar + (item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar) : (item.n_montocap ? Number(item.n_montocap) : 0));
             nuevoArray[indexfc].sumas.suma_montocomisioncancelar = nuevoArray[indexfc].sumas.suma_montocomisioncancelar + (item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar) : 0);
             nuevoArray[indexfc].sumas.suma_montototalcancelar = nuevoArray[indexfc].sumas.suma_montototalcancelar + (item.n_montoxdiamov ? (item.c_clasetipomov === "S" ? Number(item.n_montoxdiamov) * -1 : Number(item.n_montoxdiamov)) : 0);
 
-            sumastotales.suma_montointerescancelar = sumastotales.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0);
-            sumastotales.suma_montoprestamocancelar = sumastotales.suma_montoprestamocancelar + (item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar) : 0);
+            sumastotales.suma_montointerescancelar = sumastotales.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : (item.n_montoint ? Number(item.n_montoint) : 0));
+            sumastotales.suma_montoprestamocancelar = sumastotales.suma_montoprestamocancelar + (item.n_montoprestamocancelar ? Number(item.n_montoprestamocancelar) : (item.n_montocap ? Number(item.n_montocap) : 0));
             sumastotales.suma_montocomisioncancelar = sumastotales.suma_montocomisioncancelar + (item.n_montocomisioncancelar ? Number(item.n_montocomisioncancelar) : 0);
             sumastotales.suma_montototalcancelar = sumastotales.suma_montototalcancelar + (item.n_montoxdiamov ? (item.c_clasetipomov === "S" ? Number(item.n_montoxdiamov) * -1 : Number(item.n_montoxdiamov)) : 0);
 
