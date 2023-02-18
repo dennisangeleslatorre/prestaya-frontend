@@ -153,7 +153,7 @@ const FormCajaChicaUsuario = () => {
                 nuevosMovimientos.map(mov => `'${mov.d_fechamov}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${mov.c_flagxconfirmar}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
                 const actualizarMovimientos = movimientosDetail.filter(movimiento => movimiento.d_fecharegistro);
-                let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${mov.c_flagxconfirmar}','${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
+                let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}';;'${mov.c_tipomovimientocc}';;${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null };;'${mov.c_observaciones}';;'${mov.n_montoxdiamov}';;'${mov.c_flagxconfirmar}';;'${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
                 return `${detalleFormat}??${newMovimientos}??${updateMovimientos}`
             }
@@ -379,7 +379,6 @@ const FormCajaChicaUsuario = () => {
     const refreshList = () => {
         if(tiposMovimientos.length > 0) {
             const tableData = JSON.parse(JSON.stringify(detalles)).map((item, index) => {
-                console.log("item mira", item);
                 let aux = item.general;
                 aux.key = index+1;
                 aux.d_fechamov_format = moment(item.general.d_fechamov).format("DD/MM/yyyy");
