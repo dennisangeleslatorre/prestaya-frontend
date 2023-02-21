@@ -48,6 +48,10 @@ import ClienteForm from '../../containers/Cliente/ClienteForm'
 //PRESTAMOS
 import Prestamos from '../../containers/Prestamo/Prestamos'
 import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
+import TicketVentaTercero from '../../containers/Prestamo/TicketVentaTercero'
+//Transaccion
+import TransaccionesTienda from '../../containers/TransaccionTienda/TransaccionesTienda'
+import TransaccionForm from '../../containers/TransaccionTienda/TransaccionForm'
 //FORMATO PRÉSTAMO
 import Contrato from '../../containers/Contrato/Contrato'
 //CANCELACIONES
@@ -420,6 +424,26 @@ export default{
             path: '/rematePrestamo/:id',
             exact: true,
             name: 'REMATE'
+        },{
+            component: TicketVentaTercero,
+            path: '/ticketVentaTercero/:id/:nLineas',
+            exact: true,
+            name: 'TICKET VENTA TERCEROS'
+        },{
+            component: TransaccionesTienda,
+            path: '/transacionestienda',
+            exact: true,
+            name: 'TRANSACCIONES TIENDA'
+        },{
+            component: TransaccionForm,
+            path: '/nuevaTransaccion',
+            exact: true,
+            name: 'NUEVA TRANSACCIÓN'
+        },{
+            component: TransaccionForm,
+            path: '/actualizarTransaccion',
+            exact: true,
+            name: 'ACTUALIZAR TRANSACCIÓN'
         },{
             component: Contrato,
             path: '/formatoPrestamo/:id',

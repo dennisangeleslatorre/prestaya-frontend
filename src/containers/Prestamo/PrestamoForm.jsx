@@ -372,8 +372,6 @@ const PrestamoForm = (props) => {
     }
 
     const prepareProductsToRemate = () => {
-        /*const aux = productos.map((item)=>`'${item.c_descripcionproducto}','${item.c_tipoproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_cliente}','${item.c_observacionesventa},${item.n_linea},${item.c_tipoventa}'`)
-        .reduce((acc, cv) => `${acc}|${cv}`)*/
         const aux = productos.map(item => {
             let productoAux = {}
             productoAux.n_linea = item.n_linea;
@@ -1081,6 +1079,8 @@ const PrestamoForm = (props) => {
                             warrantyProductRemovalList={warrantyProductRemovalList}
                             setWarrantyProductRemovalList={setWarrantyProductRemovalList}
                             readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
+                            estado={estado}
+                            elementId={elementId}
                         />
                     }
                     <HeaderForm title="Datos de auditoria"/>

@@ -719,6 +719,12 @@ export const retornarRemate = async (body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const obtenerDatosTicketVentaTercero = async (body) => {
+    console.log('---API--- : obtenerDatosTicketVentaTercero');
+    const url = `${port}/prestamo/obtenerDatosTicketVentaTercero`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //CANCELAR
 export const getCancelacionesByCodigoPrestamo = async (body) => {
     console.log('---API--- : getCancelacionesByCodigoPrestamo');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import WarrantyProductsModal from '../WarrantyProductsModal/WarrantyProductsModal'
+import { useHistory } from 'react-router'
 import ResponseModal from '../../components/Modal/ResponseModal'
 //Servicios
 import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida } from '../../Api/Api'
@@ -84,7 +85,10 @@ const columns = [
 ]
 
 const WarrantyProductsForm = (props) => {
-    const { productos=[], setProductos, readOnly=false, userLogedIn, warrantyProductUpdateList, setWarrantyProductUpdateList, warrantyProductRemovalList, setWarrantyProductRemovalList } = props;
+    const { productos=[], setProductos, readOnly=false, userLogedIn, warrantyProductUpdateList, setWarrantyProductUpdateList,
+         warrantyProductRemovalList, setWarrantyProductRemovalList, estado, elementId } = props;
+    //Navegacion
+    let history = useHistory();
     //Estados
     const [editProduct, setEditProduct] = useState(null);
     const [elementSelected, setElementSelected] = useState();
@@ -95,6 +99,9 @@ const WarrantyProductsForm = (props) => {
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [newNLine, setNewNLine] = useState({value:1});
     const [showModal, setShowModal] = useState(false);
+    const [typeSelector, setTypeSelector] = useState("radio");
+    const [selectedNLineas, setSelectedNLineas] = useState([]);
+    const [selectedRows, setSelectedRows] = useState([]);
     //Response
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [responseData, setResponseData] = useState({});
@@ -161,9 +168,42 @@ const WarrantyProductsForm = (props) => {
     //Atributos de la tabla
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-          setElementSelected(selectedRowKeys);
+          if(estado === "RE") {
+            setSelectedNLineas(selectedRows.map(item => item.n_linea_product));
+            setSelectedRows(selectedRows);
+          } else {
+            setElementSelected(selectedRowKeys);
+          }
         }
     };
+
+    useEffect(() => {
+        if(estado==="RE") {
+            setTypeSelector("checkbox");
+        }
+    }, [estado])
+
+    const validaTipoVenta = () => {
+        let isValid = true;
+        selectedRows.forEach(element => {
+            if(element.c_tipoventa !== "C") isValid = false;
+        });
+        return isValid;
+    }
+
+    const handleClickGoToPrintTicket = () => {
+        if( selectedNLineas && selectedNLineas.length > 0 ) {
+            if(validaTipoVenta()) {
+                history.push(`/ticketVentaTercero/${elementId}/${selectedNLineas}`);
+            } else {
+                setResponseData({title:"Aviso", message:"No se puede acceder a esta funcion si no es venta a terceros"});
+                setOpenResponseModal(true);
+            }
+        } else {
+            setResponseData({title:"Aviso", message:"Debe seleccionar al menos una cancelación"});
+            setOpenResponseModal(true);
+        }
+    }
 
     const getDataTable = () => {
         const listProducts = [...productos].map((item, index) => {
@@ -185,6 +225,7 @@ const WarrantyProductsForm = (props) => {
             aux.n_montoint = item.n_montocap ? Number(item.n_montoint).toFixed(2) : "";
             aux.n_montototal = item.n_montocap ? Number(item.n_montototal).toFixed(2) : "";
             aux.c_observacionesventa = item.c_observacionesventa;
+            aux.n_linea_product = item.n_linea;
             return aux;
         });
         setTableDataProducts(listProducts);
@@ -206,10 +247,17 @@ const WarrantyProductsForm = (props) => {
                     </Space>
                 </div>
             </div>}
+            {estado==="RE" && <div className="row col-12">
+                <div className="col">
+                    <Space style={{ marginBottom: 16 }}>
+                        <Button onClick={handleClickGoToPrintTicket}>Imprimir Venta Terceris</Button>
+                    </Space>
+                </div>
+            </div>}
             <div className="row mx-2 mb-2" style={{ overflow: 'scroll' }}>
                 <Table
                     rowSelection={{
-                        type: "radio",
+                        type: typeSelector,
                         ...rowSelection,
                     }}
                     columns={columns}

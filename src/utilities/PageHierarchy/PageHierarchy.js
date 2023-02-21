@@ -63,6 +63,10 @@ const pagesArray = [
                         value: 'ANULAR PRÉSTAMO',
                         key: 'ANULAR PRÉSTAMO'
                     },{
+                        title: 'TICKET VENTA TERCEROS',
+                        value: 'TICKET VENTA TERCEROS',
+                        key: 'TICKET VENTA TERCEROS'
+                    },{
                         title: 'VIGENTE PRÉSTAMO',
                         value: 'VIGENTE PRÉSTAMO',
                         key: 'VIGENTE PRÉSTAMO'
@@ -119,6 +123,30 @@ const pagesArray = [
                                 title: 'FORMATO CANCELACIONES',
                                 value: 'FORMATO CANCELACIONES',
                                 key: 'FORMATO CANCELACIONES'
+                            }
+                        ]
+                    },{
+                        title: 'TRANSACCIÓN',
+                        value: 'TRANSACCIÓN',
+                        key: 'TRANSACCIÓN',
+                        children: [
+                            {
+                                title: 'TRANSACCIONES TIENDA',
+                                value: 'TRANSACCIONES TIENDA',
+                                key: 'TRANSACCIONES TIENDA'
+                            },
+                            {
+                                title: 'NUEVA TRANSACCIÓN',
+                                value: 'NUEVA TRANSACCIÓN',
+                                key: 'NUEVA TRANSACCIÓN'
+                            },{
+                                title: 'ACTUALIZAR TRANSACCIÓN',
+                                value: 'ACTUALIZAR TRANSACCIÓN',
+                                key: 'ACTUALIZAR TRANSACCIÓN'
+                            },{
+                                title: 'ANULAR TRANSACCIÓN',
+                                value: 'ANULAR TRANSACCIÓN',
+                                key: 'ANULAR TRANSACCIÓN'
                             }
                         ]
                     }
