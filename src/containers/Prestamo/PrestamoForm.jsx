@@ -399,24 +399,21 @@ const PrestamoForm = (props) => {
         await setIsLoading(true);
         if(fechaRemate.value && observacionesRemate) {
             if(validateProductos()) {
-                if(validaTipoVenta()) {
-                    const [c_compania, c_prestamo] = elementId.split('-');
-                    const data = {
-                        c_compania: c_compania,
-                        c_prestamo: c_prestamo,
-                        c_usuarioRemate: userLogedIn,
-                        d_fechaRemate: fechaRemate.value,
-                        c_observacionesremate: observacionesRemate,
-                        c_moneda: moneda,
-                        productos: prepareProductsToRemate()
-                    }
-                    setIsAlert(false);
-                    console.log("data", data);
-                    const response = await cambiarEstadoRemate(data);
-                    (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate") : prepareNotificationDanger("Error al actualizar", response.message);
-                } else {
-                    prepareNotificationDanger("Aviso", "El sistema no esta preparado aun para venta a tienda.");
+                const [c_compania, c_prestamo] = elementId.split('-');
+                const data = {
+                    c_compania: c_compania,
+                    c_prestamo: c_prestamo,
+                    c_usuarioRemate: userLogedIn,
+                    d_fechaRemate: fechaRemate.value,
+                    c_observacionesremate: observacionesRemate,
+                    c_moneda: moneda,
+                    productos: prepareProductsToRemate()
                 }
+                setIsAlert(false);
+                const response = await cambiarEstadoRemate(data);
+                (response && response.status === 200) ?
+                    prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate")
+                    : prepareNotificationDanger("Error al actualizar", response.message);
             } else {
                 prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
             }

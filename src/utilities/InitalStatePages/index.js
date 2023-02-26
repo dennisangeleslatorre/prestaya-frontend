@@ -426,7 +426,7 @@ export default{
             name: 'REMATE'
         },{
             component: TicketVentaTercero,
-            path: '/ticketVentaTercero/:id/:nLineas',
+            path: '/ticketVentaTercero/:id/:clientes',
             exact: true,
             name: 'TICKET VENTA TERCEROS'
         },{

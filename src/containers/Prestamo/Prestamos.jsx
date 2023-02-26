@@ -654,6 +654,7 @@ const Prestamos = () => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [openAuctionConfirmationModal, setOpenAuctionConfirmationModal] = useState(false);
     //Contexto
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
@@ -755,23 +756,12 @@ const Prestamos = () => {
         }
     }
 
-    const handleSelectRetornarPendiente = async () => {
+    const handleSelectRetornar = async () => {
         setIsLoading(true);
         if(elementSelected) {
             console.log("elementSelectedRows", elementSelectedRows);
             if(elementSelectedRows[0].c_estado==="RE") {
-                const [c_compania, c_prestamo] = elementSelected[0].split("-");
-                const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
-                if(response && response.status === 200) {
-                    await onHandleSearch();
-                    setSelectedRowKeys([]);
-                    setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
-                    setOpenResponseModal(true);
-                }  else {
-                    const message = response ? response.message : "Error al regresar el remate.";
-                    setResponseData({title:"Aviso", message:message});
-                    setOpenResponseModal(true);
-                }
+                setOpenAuctionConfirmationModal(true);
             } else {
                 const [c_compania, c_prestamo] = elementSelected[0].split("-");
                 const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
@@ -789,6 +779,23 @@ const Prestamos = () => {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
+        setIsLoading(false);
+    }
+
+    const handleRetornarRemate = async () => {
+        await setOpenAuctionConfirmationModal(false);
+        await setIsLoading(true);
+        const [c_compania, c_prestamo] = elementSelected[0].split("-");
+        const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200) {
+            await onHandleSearch();
+            setSelectedRowKeys([]);
+            setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
+        }  else {
+            const message = response ? response.message : "Error al regresar el remate.";
+            setResponseData({title:"Aviso", message:message});
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -1406,7 +1413,7 @@ const Prestamos = () => {
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
                                             { currentPermission && <Button onClick={handleSelectVigente}>VIGENTE</Button>}
-                                            { returnToPendingPermission && <Button onClick={handleSelectRetornarPendiente}>REGRESAR A PENDIENTE/VIGENTE</Button>}
+                                            { returnToPendingPermission && <Button onClick={handleSelectRetornar}>REGRESAR A PENDIENTE/VIGENTE</Button>}
                                             { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
                                             { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
                                             { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}
@@ -1441,6 +1448,14 @@ const Prestamos = () => {
                 title={"Aviso de retorno"}
                 message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
                 onHandleFunction={()=>handleRetornarPendiente()}
+                buttonClass="btn-success"
+            />
+             <ConfirmationModal
+                isOpen={openAuctionConfirmationModal}
+                onClose={()=>setOpenAuctionConfirmationModal(false)}
+                title={"Aviso de retorno"}
+                message={"¿Seguro que desea regresar el estado del prestamo a vigente?."}
+                onHandleFunction={()=>handleRetornarRemate()}
                 buttonClass="btn-success"
             />
             <ResponseModal
