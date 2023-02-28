@@ -149,6 +149,21 @@ const pagesArray = [
                                 key: 'ANULAR TRANSACCIÓN'
                             }
                         ]
+                    },{
+                        title: 'PRODUCTO',
+                        value: 'PRODUCTO',
+                        key: 'PRODUCTO',
+                        children: [
+                            {
+                                title: 'PRODUCTOS',
+                                value: 'PRODUCTOS',
+                                key: 'PRODUCTOS'
+                            },{
+                                title: 'STOCK',
+                                value: 'STOCK',
+                                key: 'STOCK'
+                            }
+                        ]
                     }
                 ]
             },{

@@ -52,6 +52,8 @@ import TicketVentaTercero from '../../containers/Prestamo/TicketVentaTercero'
 //Transaccion
 import TransaccionesTienda from '../../containers/TransaccionTienda/TransaccionesTienda'
 import TransaccionForm from '../../containers/TransaccionTienda/TransaccionForm'
+//PRODUCTOS
+import Productos from '../../containers/Productos/Productos'
 //FORMATO PRÉSTAMO
 import Contrato from '../../containers/Contrato/Contrato'
 //CANCELACIONES
@@ -444,6 +446,11 @@ export default{
             path: '/actualizarTransaccion',
             exact: true,
             name: 'ACTUALIZAR TRANSACCIÓN'
+        },{
+            component: Productos,
+            path: '/productos',
+            exact: true,
+            name: 'PRODUCTOS'
         },{
             component: Contrato,
             path: '/formatoPrestamo/:id',

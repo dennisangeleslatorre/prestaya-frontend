@@ -855,3 +855,10 @@ export const confirmarMovimiento = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//PRODUCTOS
+export const getProductoDinamico = async (body) => {
+    console.log('---API--- : getProductoDinamico');
+    const url = `${port}/producto/getProductoDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

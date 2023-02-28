@@ -8,13 +8,13 @@ import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent';
 import SelectComponent from '../../components/SelectComponent/SelectComponent';
 import LoadingModal from '../../components/Modal/LoadingModal';
+import ConfirmationModal from '../../components/Modal/ConfirmationModal';
+import ResponseModal from '../../components/Modal/ResponseModal';
+import SearchModalCliente from '../../components/Modal/SearchModalCliente';
 //Servicios
 import { listAllCompanias, listAgencias, getClienteByCodigoCliente } from '../../Api/Api';
 //Librerias
 import moment from 'moment';
-import ConfirmationModal from '../../components/Modal/ConfirmationModal';
-import ResponseModal from '../../components/Modal/ResponseModal';
-import SearchModalCliente from '../../components/Modal/SearchModalCliente';
 
 
 const estados = [
@@ -31,9 +31,9 @@ const TransaccionesTienda = () => {
     const [agencia, setAgencia] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
+    const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [fecha, setFecha] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [disabledFilterFecha, setDisabledFilterFecha] = useState(true);
-    const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [tipo, setTipo] = useState("TO");
     const [numeroDocumento, setNumeroDocumento] = useState({value: "", isValid:null});
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
