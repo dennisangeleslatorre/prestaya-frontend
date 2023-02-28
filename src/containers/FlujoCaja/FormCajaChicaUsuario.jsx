@@ -215,10 +215,10 @@ const FormCajaChicaUsuario = () => {
             let saldo = 0.00;
             detalles.forEach(det => {
                 det.movimientos.forEach(mov => {
-                    saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+                    saldo = (Number(saldo) + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) )).toFixed(2);
                 })
             })
-            if(saldo < 0.00) {
+            if(Number(saldo) < 0.00) {
                 validSaldo = false;
             }
 
@@ -226,9 +226,9 @@ const FormCajaChicaUsuario = () => {
             detalles.forEach(det => {
                 let saldo = 0.00;
                 det.movimientos.forEach(mov => {
-                    saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+                    saldo = (Number(saldo) + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) )).toFixed(2);
                 })
-                if(saldo < 0.00) {
+                if(Number(saldo) < 0.00) {
                     validSaldo = false;
                 }
             })
