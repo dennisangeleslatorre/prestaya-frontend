@@ -238,10 +238,11 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         if(flujoCaja.general.c_flagsaldoxdia === 'S') {
             let saldo = 0.00;
             JSON.parse(JSON.stringify(movimientos)).forEach(mov => {
-                saldo = saldo + ( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) );
+                const value = Number(( ( tiposMovimientos.find(tipo => tipo.c_tipomovimientocc === mov.c_tipomovimientocc).c_clasetipomov === "S" ? -1 : 1 ) * Number(mov.n_montoxdiamov) ));
+                saldo = (Number(saldo) + value).toFixed(2);
             });
 
-            if( saldo >= 0 ) {
+            if( Number(saldo) >= 0 ) {
                 return true;
             }
                 return false;
@@ -401,7 +402,7 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             return aux;
         });
         setMovimientosCajaTabla(tableData);
-        setSaldoDia(Number(saldoAux).toFixed());
+        setSaldoDia(Number(saldoAux).toFixed(2));
     }
 
     const getData = () => {
