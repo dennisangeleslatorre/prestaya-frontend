@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 //Componentes
 import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent';
 import InputComponent from '../../components/InputComponent/InputComponent';
@@ -10,11 +10,17 @@ import SelectComponent from '../../components/SelectComponent/SelectComponent';
 import LoadingModal from '../../components/Modal/LoadingModal';
 import ConfirmationModal from '../../components/Modal/ConfirmationModal';
 import ResponseModal from '../../components/Modal/ResponseModal';
+import SearchModalProducto from '../../components/Modal/SearchModalProducto';
 import SearchModalCliente from '../../components/Modal/SearchModalCliente';
+//Context
+import PagesContext from '../../context/PagesContext/PagesContext'
+import UserContext from '../../context/UserContext/UserContext'
 //Servicios
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente } from '../../Api/Api';
+import { useHistory } from 'react-router'
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getTransaccionDinamico } from '../../Api/Api';
 //Librerias
 import moment from 'moment';
+import { Button, Space, Table, Tooltip } from 'antd';
 
 
 const estados = [
@@ -25,7 +31,159 @@ const estados = [
 
 const tipos = [{value:"NI", option:"Nota de ingreso"}, {value:"NS", option:"Nota de salido"}, {value:"TO", option:"Todos"}]
 
+const columns = [
+    {
+        title: 'Agencia',
+        dataIndex: 'c_agencia_desc',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        render: (c_agencia_desc, objeto) => (
+            <div>
+                <Tooltip placement="topLeft" title={c_agencia_desc}>
+                    {c_agencia_desc}
+                </Tooltip>
+            </div>
+        ),
+    },{
+        title: 'Tipo',
+        dataIndex: 'c_tipodocumento_desc',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 120,
+    },{
+        title: 'Numero Doc.',
+        dataIndex: 'c_numerodocumento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 120,
+    },{
+        title: 'Fecha Doc',
+        dataIndex: 'd_fechadocumento_formato',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
+    },{
+        title: 'Periodo',
+        dataIndex: 'c_periodo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140
+    },{
+        title: 'Producto',
+        dataIndex: 'c_descripcionproducto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 140,
+        render: (c_descripcionproducto, objeto) => (
+            <div>
+                <Tooltip placement="topLeft" title={c_descripcionproducto}>
+                    {c_descripcionproducto}
+                </Tooltip>
+            </div>
+        ),
+    },{
+        title: '# Prestamo',
+        dataIndex: 'c_prestamo',
+        width: 140,
+         ellipsis: {
+            showTitle: false,
+        }
+    },{
+        title: 'Moneda',
+        dataIndex: 'c_moneda_desc',
+        width: 140,
+         ellipsis: {
+            showTitle: false,
+        }
+    },{
+        title: 'Monto Total',
+        dataIndex: 'n_montototal',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160,
+        className: 'text-numbers-table'
+    },{
+        title: 'Observacioens',
+        dataIndex: 'c_observaciones',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        render: (c_observaciones, objeto) => (
+            <div>
+                <Tooltip placement="topLeft" title={c_observaciones}>
+                    {c_observaciones}
+                </Tooltip>
+            </div>
+        ),
+    },{
+        title:() => <label className='text-audit-table'>Estado</label>,
+        dataIndex: 'c_estado_desc',
+        width: 140,
+         ellipsis: {
+            showTitle: false,
+        },
+        className: 'table-audit-column text-audit-table',
+    },{
+        title: 'Producto',
+        dataIndex: 'c_descripcionproducto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 200,
+        render: (c_descripcionproducto, objeto) => (
+            <div>
+                <Tooltip placement="topLeft" title={c_descripcionproducto}>
+                    {c_descripcionproducto}
+                </Tooltip>
+            </div>
+        ),
+    },{
+        title:() => <label className='text-audit-table'>U. Registro</label>,
+        dataIndex: 'c_usuarioregistro',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>F. Registro</label>,
+        dataIndex: 'd_fecharegistro',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>U. Modificación</label>,
+        dataIndex: 'c_ultimousuario',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 155,
+        className: 'table-audit-column text-audit-table',
+    },{
+        title:() => <label className='text-audit-table'>F. Modificación</label>,
+        dataIndex: 'd_ultimafechamodificacion',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 180,
+        className: 'table-audit-column text-audit-table',
+    }
+]
+
 const TransaccionesTienda = () => {
+    //Navegacion
+    let history = useHistory();
     //Estados
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -37,8 +195,14 @@ const TransaccionesTienda = () => {
     const [tipo, setTipo] = useState("TO");
     const [numeroDocumento, setNumeroDocumento] = useState({value: "", isValid:null});
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
+    const [disabledPeriodo, setDisabledPeriodo] = useState(true);
     const [estado, setEstado] = useState("TO");
-    const [nPrestamo, setNPrestamo] = useState({value:""})
+    const [nPrestamo, setNPrestamo] = useState({value:""});
+    const [dataTableTransacciones, setDataTableTransacciones] = useState([]);
+    //Producto
+    const [codigoProducto, setCodigoProducto] = useState("");
+    const [nombreProducto, setNombreProducto] = useState("");
+    const [productoSeleccionado, setProductoSeleccionado] = useState(null);
     //Listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -48,6 +212,18 @@ const TransaccionesTienda = () => {
     const [openResponseModal , setOpenResponseModal] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [elementSelected, setElementSelected] = useState([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    //Contexto
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "NUEVA TRANSACCIÓN" || item === "ANULAR TRANSACCIÓN" || item === "RECIBO VENTA TIENDA"
+    })
+    const registerPermission = userPermisssions.includes("NUEVA TRANSACCIÓN");
+    const cancelPermission = userPermisssions.includes("ANULAR TRANSACCIÓN");
+    const ticetPermission = userPermisssions.includes("RECIBO VENTA TIENDA");
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -73,14 +249,53 @@ const TransaccionesTienda = () => {
         getAgenciasByCompany(value);
     }
 
+    const prepareBodyToSearch = () => {
+        let body = {};
+        if(compania) body.c_compania = compania;
+        if(agencia) body.c_agencia = agencia;
+        if(fecha.isValid && !disabledFilterFecha) {
+            body.d_fechadocumentoInicio = fecha.fechaInicio;
+            body.d_fechadocumentoFin = fecha.fechaFin;
+        }
+        if(codigoCliente) body.n_cliente = codigoCliente;
+        if(tipo && tipo !== "TO" ) body.c_tipodocumento = tipo;
+        if(numeroDocumento.value) body.c_numerodocumento = numeroDocumento.value;
+        if(periodo.isValid && !disabledPeriodo) {
+            body.periodo_inicio = periodo.periodoInicio.replace("-", "");
+            body.periodo_fin = periodo.periodoFin.replace("-", "");
+        }
+        if(codigoProducto) body.c_item = codigoProducto;
+        if(estado && estado !== "TO") body.c_estado = estado;
+        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
+        return body;
+    }
+
     const onHandleSearch = async () => {
-        /*let parametros =  prepareBodyToSearch();
-        const response = await getDataReporteVencidosyNoVencidos(parametros);
+        let parametros =  prepareBodyToSearch();
+        const response = await getTransaccionDinamico(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
             getDataForTable(data);
         }
-        else getDataForTable([]);*/
+        else {
+            getDataForTable([])
+            setResponseData({title:"Aviso", message:"No se encontraron transacciones"});
+        };
+    }
+
+    const getDataForTable = (transacciones) => {
+        const listAux = transacciones.map((item) => {
+            item.key = `${item.c_compania}-${item.c_agencia}-${item.c_tipodocumento}-${item.c_numerodocumento}`;
+            item.c_estado_desc = estados.find(estado => estado.value === item.c_estado)?.name;
+            item.c_tipodocumento_desc = item.c_tipodocumento === 'NI' ? 'Nota de ingreso' : 'Nota de salida';
+            item.d_fechadocumento_formato = moment(item.d_fechadocumento).format("DD/MM/yyyy");
+            item.d_fecharegistro = moment(item.d_fecharegistro).format("DD/MM/yyyy HH:MM:ss");
+            item.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
+            item.c_moneda_desc = item.c_moneda === "L" ? "LOCAL" : "EXTRANJERO";
+            item.n_montototal = Number(item.n_montototal).toFixed(2);
+            return item;
+        });
+        setDataTableTransacciones(listAux);
     }
 
     const onHandleClickSearch = async () => {
@@ -94,6 +309,31 @@ const TransaccionesTienda = () => {
         setPeriodo({periodoInicio:periodoAux, periodoFin:periodoAux, isValid:true})
     };
 
+    const findProductoByCode = async () => {
+        setIsLoading(true);
+        if(codigoProducto) {
+            const response = await getProductoDinamico({ c_compania:compania, c_agencia:agencia, c_item:codigoProducto });
+            if(response && response.status === 200 && response.body.data) {
+                setNombreProducto(response.body.data[0].c_descripcionproducto);
+            } else {
+                setResponseData({title:"Aviso", message:"No hay un producto con ese código"});
+                setCodigoProducto("");
+                setNombreProducto("");
+                setProductoSeleccionado({});
+                setOpenResponseModal(true);
+            }
+        } else
+        setNombreProducto("");
+        setIsLoading(false);
+    }
+
+    const rowSelection = {
+        onChange: (selectedKeys, selectedRows) => {
+            setElementSelected(selectedRows);
+            setSelectedRowKeys(selectedKeys);
+        }
+    };
+
     //Listas
     const getCompanias =  async () => {
         const response = await listAllCompanias();
@@ -101,8 +341,15 @@ const TransaccionesTienda = () => {
     }
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
+        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
     }
+
+    useEffect(() => {
+        if(productoSeleccionado) {
+            setCodigoProducto(productoSeleccionado.c_item);
+            setNombreProducto(productoSeleccionado.c_descripcionproducto);
+        }
+    }, [productoSeleccionado])
 
     useEffect(() => {
         if(clienteSeleccionado) {
@@ -117,6 +364,12 @@ const TransaccionesTienda = () => {
             setAgencia("T");
         };
     }, [companias])
+
+    useEffect(() => {
+        if(agencias.length !== 0) {
+            setAgencia(agencias[0].c_agencia);
+        };
+    }, [agencias])
 
     useEffect(async() => {
         await setIsLoading(true);
@@ -207,6 +460,23 @@ const TransaccionesTienda = () => {
                     setState={setPeriodo}
                     classForm="col-12 col-md-6"
                     marginForm="ml-0"
+                    disabledPeriodo={disabledPeriodo}
+                    setDisabledPeriodo={setDisabledPeriodo}
+                />
+                <SearcherComponent
+                    placeholder="Nombre del producto"
+                    label="Producto"
+                    inputCodeId="productoCodigoId"
+                    stateCode={codigoProducto}
+                    setStateCode={setCodigoProducto}
+                    inputId="productoNombreId"
+                    stateName={nombreProducto}
+                    setStateName={setNombreProducto}
+                    onHandleClick={()=>setOpenSearchModal(true)}
+                    onHandleBlur={findProductoByCode}
+                    readOnly={true}
+                    classForm="col-12 col-md-6"
+                    marginForm="ml-0"
                 />
                 <SelectComponent
                     labelText="Estado"
@@ -231,6 +501,29 @@ const TransaccionesTienda = () => {
                     marginForm="ml-0"
                 />
             </div>
+            <div className="col-12 col-md-12 mt-3 mb-3 text-center">
+                <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
+            </div>
+            <div className="col-12">
+                <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
+                    { registerPermission && <Button onClick={()=>history.push(`/nuevaTransaccion/${compania}/${agencia}`)}>NUEVO</Button> }
+                    { cancelPermission && <Button>ANULAR</Button> }
+                    { ticetPermission && <Button>RECIBO VENTA TIENDA</Button> }
+                </Space>
+            </div>
+            <div className="col-12" style={{ overflow: 'scroll' }}>
+                <Table
+                    classForm
+                    rowSelection={{
+                        type: "radio",
+                        ...rowSelection,
+                        selectedRowKeys,
+                    }}
+                    columns={columns}
+                    dataSource={dataTableTransacciones}
+                    pagination={{ pageSize: 50 }}
+                />
+            </div>
         </ReportContainer>
         {isLoading === true && <LoadingModal/>}
         <ConfirmationModal
@@ -252,6 +545,13 @@ const TransaccionesTienda = () => {
             onClose={()=>setOpenSearchModal(false)}
             setClienteObtained={setClienteSeleccionado}
             compania={compania}
+        />
+        <SearchModalProducto
+            isOpen={openSearchModal}
+            onClose={()=>setOpenSearchModal(false)}
+            setProductoObtained={setProductoSeleccionado}
+            compania={compania}
+            agencia={agencia}
         />
     </>
   )

@@ -862,3 +862,16 @@ export const getProductoDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getProductoStockDinamico = async (body) => {
+    console.log('---API--- : getProductoStockDinamico');
+    const url = `${port}/producto/getProductoStockDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//PRODUCTOS
+export const getTransaccionDinamico = async (body) => {
+    console.log('---API--- : getTransaccionDinamico');
+    const url = `${port}/transaccion/getTransaccionDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

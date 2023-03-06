@@ -438,14 +438,9 @@ export default{
             name: 'TRANSACCIONES TIENDA'
         },{
             component: TransaccionForm,
-            path: '/nuevaTransaccion',
+            path: '/nuevaTransaccion/:compania/:agencia',
             exact: true,
             name: 'NUEVA TRANSACCIÓN'
-        },{
-            component: TransaccionForm,
-            path: '/actualizarTransaccion',
-            exact: true,
-            name: 'ACTUALIZAR TRANSACCIÓN'
         },{
             component: Productos,
             path: '/productos',

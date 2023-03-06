@@ -140,13 +140,13 @@ const pagesArray = [
                                 value: 'NUEVA TRANSACCIÓN',
                                 key: 'NUEVA TRANSACCIÓN'
                             },{
-                                title: 'ACTUALIZAR TRANSACCIÓN',
-                                value: 'ACTUALIZAR TRANSACCIÓN',
-                                key: 'ACTUALIZAR TRANSACCIÓN'
-                            },{
                                 title: 'ANULAR TRANSACCIÓN',
                                 value: 'ANULAR TRANSACCIÓN',
                                 key: 'ANULAR TRANSACCIÓN'
+                            },{
+                                title: 'RECIBO VENTA TIENDA',
+                                value: 'RECIBO VENTA TIENDA',
+                                key: 'RECIBO VENTA TIENDA'
                             }
                         ]
                     },{
