@@ -480,6 +480,12 @@ export const getAgenciaByCodigoAgencia = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getAgenciaAndCompaniaByCodigo = async (body) => {
+    console.log('---API--- : getAgenciaAndCompaniaByCodigo');
+    const url = `${port}/agencia/getAgenciaAndCompaniaByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const deleteAgencia = async (body) => {
     console.log('---API--- : deleteAgencia');
     const url = `${port}/agencia/delete`;

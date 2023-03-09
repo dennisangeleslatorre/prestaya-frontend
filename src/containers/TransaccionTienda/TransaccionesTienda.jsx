@@ -211,6 +211,7 @@ const TransaccionesTienda = () => {
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
+    const [openSearchModalProducto, setOpenSearchModalProducto] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [elementSelected, setElementSelected] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -472,7 +473,7 @@ const TransaccionesTienda = () => {
                     inputId="productoNombreId"
                     stateName={nombreProducto}
                     setStateName={setNombreProducto}
-                    onHandleClick={()=>setOpenSearchModal(true)}
+                    onHandleClick={()=>setOpenSearchModalProducto(true)}
                     onHandleBlur={findProductoByCode}
                     readOnly={true}
                     classForm="col-12 col-md-6"
@@ -547,8 +548,8 @@ const TransaccionesTienda = () => {
             compania={compania}
         />
         <SearchModalProducto
-            isOpen={openSearchModal}
-            onClose={()=>setOpenSearchModal(false)}
+            isOpen={openSearchModalProducto}
+            onClose={()=>setOpenSearchModalProducto(false)}
             setProductoObtained={setProductoSeleccionado}
             compania={compania}
             agencia={agencia}
