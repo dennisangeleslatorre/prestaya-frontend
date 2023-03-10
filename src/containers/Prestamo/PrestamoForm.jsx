@@ -22,7 +22,7 @@ import UserContext from '../../context/UserContext/UserContext'
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers } from '../../Api/Api'
+        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers, getAgenciaByCodigoAgencia } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 
@@ -535,7 +535,7 @@ const PrestamoForm = (props) => {
     }
 
     const getParameters = async () => {
-        const response = await listParametrosByCompania(elementId);
+        const response = await listParametrosByCompania(elementId.split('-')[0]);
         if(response && response.status === 200) {
             const data = response.body.data;
             const tasaInteres = data.find((item) => item.c_parametrocodigo === "PACO000001");
@@ -546,7 +546,7 @@ const PrestamoForm = (props) => {
     }
 
     const getAgencias = async () => {
-        const companyCode = urlFragment === "nuevoPrestamo" ? elementId : elementId.split('-')[0];
+        const companyCode = elementId.split('-')[0];
         const response = await listAgencias({c_compania: companyCode});
         if(response && response.status === 200) setAgencias(response.body.data);
     }
@@ -587,9 +587,20 @@ const PrestamoForm = (props) => {
         setUsuarioDesembolso(userLogedIn);
     }
 
+    const validateAgenciaAndCompania = async () => {
+        const response = await getAgenciaByCodigoAgencia({c_compania:elementId.split('-')[0], c_agencia:elementId.split('-')[1]});
+        if(!response || response.status !== 200 || response.body.message === "No se encontró agencias") {
+            setResponseData({message: "No se encontró la agencia o la compañía", title: "Error", url:"/prestamos"});
+            setOpenResponseModal(true);
+        }
+    }
+
     useEffect(async () => {
         await setIsLoading(true);
-        if(urlFragment === "nuevoPrestamo") await getParameters();
+        if(urlFragment === "nuevoPrestamo") {
+            await validateAgenciaAndCompania();
+            await getParameters()
+        };
         await getCompanias();
         await getAgencias();
         await getTiposDocumento();
@@ -605,8 +616,12 @@ const PrestamoForm = (props) => {
     }, [])
 
     useEffect(() => {
-        if(urlFragment === "nuevoPrestamo" && companias.length !== 0) setCompania(elementId);
+        if(urlFragment === "nuevoPrestamo" && companias.length !== 0) setCompania(elementId.split('-')[0]);
     }, [companias])
+
+    useEffect(() => {
+        if(urlFragment === "nuevoPrestamo" && agencias.length !== 0) setAgencia(elementId.split('-')[1]);
+    }, [agencias])
 
     useEffect(() => {
         if(clienteSeleccionado) {
@@ -688,7 +703,7 @@ const PrestamoForm = (props) => {
                         handleElementSelected={setAgencia}
                         optionField="c_descripcion"
                         valueField="c_agencia"
-                        disabledElement={readOnlyView}
+                        disabledElement={true}
                         classForm="col-12 col-lg-6"
                     />
                     <SelectComponent

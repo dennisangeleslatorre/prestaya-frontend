@@ -18,7 +18,7 @@ import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
-    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate, retornarRemate } from '../../Api/Api'
+    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate, retornarRemate, listAgencias } from '../../Api/Api'
 import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
@@ -607,6 +607,7 @@ const Prestamos = () => {
     //Estados
     //Filtros
     const [compania, setCompania] = useState("");
+    const [agencia, setAgencia] = useState("");
     const [nPrestamo, setNPrestamo] = useState({value:""})
     const [estado, setEstado] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
@@ -644,6 +645,7 @@ const Prestamos = () => {
     const [provinciasFiltradas, setProvinciasFiltradas] = useState([]);
     const [distritosFiltrados, setDistritosFiltrados] = useState([]);
     const [companias, setCompanias] = useState([]);
+    const [agencias, setAgencias] = useState([]);
     const [tiposDocumentos, setTiposDocumentos] = useState([]);
     const [elementSelected, setElementSelected] = useState(null);
     const [elementSelectedRows, setElementSelectedRows] = useState(null);
@@ -922,6 +924,7 @@ const Prestamos = () => {
             body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
+        if(agencia) body.c_agencia = agencia;
         return body;
     }
 
@@ -1096,6 +1099,11 @@ const Prestamos = () => {
         }
     };
 
+    const getAgenciasByCompany = async (companyCode) => {
+        const response = await listAgencias({c_compania: companyCode});
+        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+    }
+
     //Efectos
     //Listas enlazadas
     useEffect(() => {
@@ -1130,8 +1138,16 @@ const Prestamos = () => {
     useEffect(() => {
         if(companias.length !== 0) setCompania(companias[0].c_compania);
     }, [companias])
+    useEffect(() => {
+        if(compania) {
+            getAgenciasByCompany(compania);
+        }
+    }, [compania])
+    //Valor por defeto de la agencia
+    useEffect(() => {
+        if(agencias.length !== 0) setAgencia(agencias[0].c_agencia);
+    }, [agencias])
     //Valor al seleccionar un cliente
-
     useEffect(() => {
         if(clienteSeleccionado) {
             setCodigoCliente(clienteSeleccionado.n_cliente);
@@ -1170,6 +1186,19 @@ const Prestamos = () => {
                                             handleElementSelected={handleChangeCompania}
                                             optionField="c_descripcion"
                                             valueField="c_compania"
+                                            classForm="col-12 col-md-6"
+                                            marginForm="ml-0"
+                                            labelSpace={3}
+                                        />
+                                        <ReactSelect
+                                            inputId="agenciaCodeId"
+                                            labelText="Agencia"
+                                            placeholder="Seleccione una agencia"
+                                            valueSelected={agencia}
+                                            data={agencias}
+                                            handleElementSelected={setAgencia}
+                                            optionField="c_descripcion"
+                                            valueField="c_agencia"
                                             classForm="col-12 col-md-6"
                                             marginForm="ml-0"
                                             labelSpace={3}
@@ -1401,7 +1430,7 @@ const Prestamos = () => {
                                 <div className="row">
                                     <div className="col">
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
-                                            { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}`)}>NUEVO</Button>}
+                                            { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}-${agencia}`)}>NUEVO</Button>}
                                             { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
