@@ -539,6 +539,7 @@ const FormCajaChicaUsuario = () => {
                                       valueField="c_agencia"
                                       classForm="col-12 col-lg-6"
                                       marginForm="ml-0"
+                                      disabledElement={urlFragment !== "nuevaCajaChicaUsuario" }
                                   />
                                   <SelectComponent
                                       labelText="Moneda"

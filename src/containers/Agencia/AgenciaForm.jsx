@@ -21,6 +21,8 @@ const AgenciaForm = (props) => {
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
     const [flagCU, setFlagCU] = useState("N");
+    const [sufijoPrestamo, setSufijoPrestamo] = useState({value: ""});
+    const [sufijoProducto, setSufijoProducto] = useState({value: ""});
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -123,6 +125,8 @@ const AgenciaForm = (props) => {
             setDescripcion({value:data.c_descripcion, isValid: true});
             setEstado(data.c_estado);
             setFlagCU(data.c_flagvalidacju);
+            setSufijoPrestamo({value:data.c_sufijoprestamo});
+            setSufijoProducto({value:data.c_sufijoproducto});
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -204,6 +208,24 @@ const AgenciaForm = (props) => {
                     valueSelected={flagCU}
                     handleChange={setFlagCU}
                     disabledElement={readOnlyView}
+                />
+                <InputComponent
+                    label="Sufijo Préstamo"
+                    state={sufijoPrestamo}
+                    setState={setSufijoPrestamo}
+                    type="text"
+                    placeholder="Sufijo Préstamo"
+                    inputId="sufijoPrestamoId"
+                    readOnly={true}
+                />
+                <InputComponent
+                    label="Sufijo Producto"
+                    state={sufijoProducto}
+                    setState={setSufijoProducto}
+                    type="text"
+                    placeholder="Sufijo Producto"
+                    inputId="sufijoProductoId"
+                    readOnly={true}
                 />
             </FormContainer>
             {isLoading === true && <Loading/>}
