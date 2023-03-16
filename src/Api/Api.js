@@ -874,10 +874,28 @@ export const getProductoStockDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-//PRODUCTOS
+//TRANSACCION
 export const getTransaccionDinamico = async (body) => {
     console.log('---API--- : getTransaccionDinamico');
     const url = `${port}/transaccion/getTransaccionDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getTransaccionDetalle = async (body) => {
+    console.log('---API--- : getTransaccionDetalle');
+    const url = `${port}/transaccion/getTransaccionDetalle`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getTransaccionCabecera = async (body) => {
+    console.log('---API--- : getTransaccionCabecera');
+    const url = `${port}/transaccion/getTransaccionCabecera`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const registerTransaccion = async (body) => {
+    console.log('---API--- : registerTransaccion');
+    const url = `${port}/transaccion/registerTransaccion`;
     const response = await consumer(url, 'post', body);
     return response;
 };

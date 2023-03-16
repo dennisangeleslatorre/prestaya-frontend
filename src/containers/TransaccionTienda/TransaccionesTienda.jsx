@@ -40,7 +40,7 @@ const columns = [
         },
         width: 180,
         render: (c_agencia_desc, objeto) => (
-            <div>
+            <div onClick={objeto.hendleFunction}>
                 <Tooltip placement="topLeft" title={c_agencia_desc}>
                     {c_agencia_desc}
                 </Tooltip>
@@ -53,6 +53,11 @@ const columns = [
             showTitle: false,
         },
         width: 120,
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Numero Doc.',
         dataIndex: 'c_numerodocumento',
@@ -60,20 +65,35 @@ const columns = [
             showTitle: false,
         },
         width: 120,
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Fecha Doc',
         dataIndex: 'd_fechadocumento_formato',
         ellipsis: {
             showTitle: false,
         },
-        width: 140
+        width: 140,
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Periodo',
         dataIndex: 'c_periodo',
         ellipsis: {
             showTitle: false,
         },
-        width: 140
+        width: 140,
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Producto',
         dataIndex: 'c_descripcionproducto',
@@ -82,7 +102,7 @@ const columns = [
         },
         width: 140,
         render: (c_descripcionproducto, objeto) => (
-            <div>
+            <div onClick={objeto.hendleFunction}>
                 <Tooltip placement="topLeft" title={c_descripcionproducto}>
                     {c_descripcionproducto}
                 </Tooltip>
@@ -94,14 +114,24 @@ const columns = [
         width: 140,
          ellipsis: {
             showTitle: false,
-        }
+        },
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Moneda',
         dataIndex: 'c_moneda_desc',
         width: 140,
          ellipsis: {
             showTitle: false,
-        }
+        },
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Monto Total',
         dataIndex: 'n_montototal',
@@ -109,7 +139,12 @@ const columns = [
             showTitle: false,
         },
         width: 160,
-        className: 'text-numbers-table'
+        className: 'text-numbers-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Observacioens',
         dataIndex: 'c_observaciones',
@@ -118,7 +153,7 @@ const columns = [
         },
         width: 180,
         render: (c_observaciones, objeto) => (
-            <div>
+            <div onClick={objeto.hendleFunction}>
                 <Tooltip placement="topLeft" title={c_observaciones}>
                     {c_observaciones}
                 </Tooltip>
@@ -132,6 +167,11 @@ const columns = [
             showTitle: false,
         },
         className: 'table-audit-column text-audit-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title: 'Producto',
         dataIndex: 'c_descripcionproducto',
@@ -140,7 +180,7 @@ const columns = [
         },
         width: 200,
         render: (c_descripcionproducto, objeto) => (
-            <div>
+            <div onClick={objeto.hendleFunction}>
                 <Tooltip placement="topLeft" title={c_descripcionproducto}>
                     {c_descripcionproducto}
                 </Tooltip>
@@ -154,6 +194,11 @@ const columns = [
         },
         width: 155,
         className: 'table-audit-column text-audit-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title:() => <label className='text-audit-table'>F. Registro</label>,
         dataIndex: 'd_fecharegistro',
@@ -162,6 +207,11 @@ const columns = [
         },
         width: 180,
         className: 'table-audit-column text-audit-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title:() => <label className='text-audit-table'>U. Modificación</label>,
         dataIndex: 'c_ultimousuario',
@@ -170,6 +220,11 @@ const columns = [
         },
         width: 155,
         className: 'table-audit-column text-audit-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     },{
         title:() => <label className='text-audit-table'>F. Modificación</label>,
         dataIndex: 'd_ultimafechamodificacion',
@@ -178,6 +233,11 @@ const columns = [
         },
         width: 180,
         className: 'table-audit-column text-audit-table',
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                {field}
+            </div>
+        ),
     }
 ]
 
@@ -220,11 +280,12 @@ const TransaccionesTienda = () => {
     const userLogedIn = getUserData().c_codigousuario;
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "NUEVA TRANSACCIÓN" || item === "ANULAR TRANSACCIÓN" || item === "RECIBO VENTA TIENDA"
+        return item === "NUEVA TRANSACCIÓN" || item === "ANULAR TRANSACCIÓN" || item === "RECIBO VENTA TIENDA" || item === 'VISUALIZAR TRANSACCIÓN'
     })
     const registerPermission = userPermisssions.includes("NUEVA TRANSACCIÓN");
     const cancelPermission = userPermisssions.includes("ANULAR TRANSACCIÓN");
     const ticetPermission = userPermisssions.includes("RECIBO VENTA TIENDA");
+    const viewPermission = userPermisssions.includes('VISUALIZAR TRANSACCIÓN');
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -284,6 +345,10 @@ const TransaccionesTienda = () => {
         };
     }
 
+    const gotoView = (c_tipodocumento,c_numerodocumento) => {
+        history.push(`/visualizarTransaccion/${compania}/${agencia}/${c_tipodocumento}/${c_numerodocumento}`);
+    }
+
     const getDataForTable = (transacciones) => {
         const listAux = transacciones.map((item) => {
             item.key = `${item.c_compania}-${item.c_agencia}-${item.c_tipodocumento}-${item.c_numerodocumento}`;
@@ -294,6 +359,7 @@ const TransaccionesTienda = () => {
             item.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
             item.c_moneda_desc = item.c_moneda === "L" ? "LOCAL" : "EXTRANJERO";
             item.n_montototal = Number(item.n_montototal).toFixed(2);
+            item.hendleFunction = viewPermission ? ()=>gotoView(item.c_tipodocumento,item.c_numerodocumento) : ()=>{};
             return item;
         });
         setDataTableTransacciones(listAux);
@@ -326,6 +392,31 @@ const TransaccionesTienda = () => {
         } else
         setNombreProducto("");
         setIsLoading(false);
+    }
+
+    const clickAnularTransaccion = () => {
+        if(elementSelected.length > 0) {
+            setOpen(true);
+        } else {
+            setResponseData({title:"Aviso", message:"Favor de seleccionar un item de la tabla"});
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleClickGoToPrintTicket = () => {
+        if(elementSelected.length > 0) {
+            history.push(`/ticketVentaTienda/${elementSelected[0].c_compania}-${elementSelected[0].c_agencia}-${elementSelected[0].c_tipodocumento}-${elementSelected[0].c_numerodocumento}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Favor de seleccionar un item de la tabla"});
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleAnular = () => {
+        console.log(elementSelected[0].c_compania);
+        console.log(elementSelected[0].c_agencia);
+        console.log(elementSelected[0].c_tipodocumento);
+        console.log(elementSelected[0].c_numerodocumento);
     }
 
     const rowSelection = {
@@ -508,8 +599,8 @@ const TransaccionesTienda = () => {
             <div className="col-12">
                 <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                     { registerPermission && <Button onClick={()=>history.push(`/nuevaTransaccion/${compania}/${agencia}`)}>NUEVO</Button> }
-                    { cancelPermission && <Button>ANULAR</Button> }
-                    { ticetPermission && <Button>RECIBO VENTA TIENDA</Button> }
+                    { cancelPermission && <Button onClick={clickAnularTransaccion}>ANULAR</Button> }
+                    { ticetPermission && <Button onClick={handleClickGoToPrintTicket}>RECIBO VENTA TIENDA</Button> }
                 </Space>
             </div>
             <div className="col-12" style={{ overflow: 'scroll' }}>
@@ -531,8 +622,8 @@ const TransaccionesTienda = () => {
             isOpen={open}
             onClose={()=>setOpen(false)}
             title={"Aviso de retorno"}
-            message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
-            onHandleFunction={()=>handleRetornarPendiente()}
+            message={"¿Seguro que desea anular la transacción."}
+            onHandleFunction={()=>handleAnular()}
             buttonClass="btn-success"
         />
         <ResponseModal

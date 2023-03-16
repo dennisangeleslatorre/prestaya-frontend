@@ -134,11 +134,14 @@ const pagesArray = [
                                 title: 'TRANSACCIONES TIENDA',
                                 value: 'TRANSACCIONES TIENDA',
                                 key: 'TRANSACCIONES TIENDA'
-                            },
-                            {
+                            },{
                                 title: 'NUEVA TRANSACCIÓN',
                                 value: 'NUEVA TRANSACCIÓN',
                                 key: 'NUEVA TRANSACCIÓN'
+                            },{
+                                title: 'VISUALIZAR TRANSACCIÓN',
+                                value: 'VISUALIZAR TRANSACCIÓN',
+                                key: 'VISUALIZAR TRANSACCIÓN'
                             },{
                                 title: 'ANULAR TRANSACCIÓN',
                                 value: 'ANULAR TRANSACCIÓN',

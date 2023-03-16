@@ -13,136 +13,16 @@ import SearcherComponent from '../../components/SearcherComponent/SearcherCompon
 //Context
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
-import { useLocation, useHistory, useParams } from 'react-router'
-import { getClienteByCodigoCliente, getProductoDinamico, getTransaccionDinamico, getAgenciaAndCompaniaByCodigo } from '../../Api/Api';
-import { Button, Space, Table, Tooltip } from 'antd'
+import { useHistory, useParams } from 'react-router'
+import { getClienteByCodigoCliente, getAgenciaAndCompaniaByCodigo, registerTransaccion } from '../../Api/Api';
+import { Button, Space, Table } from 'antd'
 import TransactionDetailModal from '../../components/TransactionDetailModal/TransactionDetailModal'
 import moment from 'moment'
-
-const monedas = [
-    { name: 'LOCAL', value: 'L' },
-    { name: 'EXTERIOR', value: 'E' }
-];
-
-const columns = [
-    {
-        title: 'Linea',
-        dataIndex: 'n_linea',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 120,
-    },{
-        title: 'Producto  ',
-        dataIndex: 'c_item',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 140,
-    },{
-        title: 'Descripción',
-        dataIndex: 'c_descripcionproducto',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 160,
-        render: (c_descripcionproducto, objeto) => (
-            <div>
-                <Tooltip placement="topLeft" title={c_descripcionproducto}>
-                    {c_descripcionproducto}
-                </Tooltip>
-            </div>
-        ),
-    },{
-        title: 'Unidad M.',
-        dataIndex: 'c_unidadmedida',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 140
-    },{
-        title: 'Cantidad',
-        dataIndex: 'n_cantidad',
-        width: 140,
-         ellipsis: {
-            showTitle: false,
-        }
-    },{
-        title: 'Precio',
-        dataIndex: 'n_precio',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 160,
-        className: 'text-numbers-table'
-    },{
-        title: 'Monto Total',
-        dataIndex: 'n_montototal',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 160,
-        className: 'text-numbers-table'
-    },{
-        title: 'Observacioens',
-        dataIndex: 'c_observaciones',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 180,
-        render: (c_observaciones, objeto) => (
-            <div>
-                <Tooltip placement="topLeft" title={c_observaciones}>
-                    {c_observaciones}
-                </Tooltip>
-            </div>
-        ),
-    },{
-        title:() => <label className='text-audit-table'>Estado</label>,
-        dataIndex: 'c_estado_desc',
-        width: 140,
-         ellipsis: {
-            showTitle: false,
-        },
-        className: 'table-audit-column text-audit-table',
-    },{
-        title:() => <label className='text-audit-table'>U. Registro</label>,
-        dataIndex: 'c_usuarioregistro',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 155,
-        className: 'table-audit-column text-audit-table',
-    },{
-        title:() => <label className='text-audit-table'>F. Registro</label>,
-        dataIndex: 'd_fecharegistro',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 180,
-        className: 'table-audit-column text-audit-table',
-    },{
-        title:() => <label className='text-audit-table'>U. Modificación</label>,
-        dataIndex: 'c_ultimousuario',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 155,
-        className: 'table-audit-column text-audit-table',
-    },{
-        title:() => <label className='text-audit-table'>F. Modificación</label>,
-        dataIndex: 'd_ultimafechamodificacion',
-        ellipsis: {
-            showTitle: false,
-        },
-        width: 180,
-        className: 'table-audit-column text-audit-table',
-    }
-]
+import { columns, monedas } from './tableColumns';
+import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 
 const TransaccionForm = () => {
     //Estados del formulario
-    const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [openModalForm, setOpenModalForm] = useState(false);
@@ -163,6 +43,7 @@ const TransaccionForm = () => {
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [moneda, setMoneda] = useState("L");
+    const [observaciones, setObservaciones] = useState("");
     const [montoTotal, setMontoTotal] = useState("0.00");
     const [elementSelected, setElementSelected] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -173,16 +54,6 @@ const TransaccionForm = () => {
     const userLogedIn = getUserData().c_codigousuario;
     const { compania, agencia } = useParams();
     let history = useHistory();
-    const location = useLocation();
-    const urlFragment = location.pathname.split('/')[1];
-    const buttonTypes = {
-        nuevaTransaccion: {label:"Guardar", class:"btn btn-primary btn-form"},
-        visualizarTransaccion: {label:"Ir a lista", class:"btn btn-info btn-form"}
-    }
-    const readOnlyView = urlFragment === "visualizarTransaccion" ? true : false;
-    const formFunctions = {
-      nuevaTransaccion: ()=> handleRegister()
-    }
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -213,51 +84,83 @@ const TransaccionForm = () => {
         setNotification({title:title, type:"alert-danger", message:message})
     }
 
-    /*const validate = () => {
-        if(!perfil.isValid || !codigo.isValid || paginas.length === 0) return false;
+    const validate = () => {
+        if(!fechaDocumento.value || !codigoCliente || detalles.length === 0 || !observaciones) return false;
         return true;
-    }*/
+    }
 
-    /*const prepareData = () => {
+    const getProductos = (detalles) => {
+        const groupedArr = detalles.reduce((acc, cur) => {
+            const { c_item, n_cantidad } = cur;
+            if (!acc[c_item]) {
+                acc[c_item] = {
+                    ...cur,
+                    n_cantidad: parseFloat(n_cantidad)
+                };
+            } else {
+                acc[c_item].n_cantidad += parseFloat(n_cantidad);
+            }
+            return acc;
+        }, {});
+
+        const result = Object.values(groupedArr);
+        return {productosDatos: result};
+    }
+
+    const getDetalles = (detalles) => {
+        return {
+            d_fechadocumento: moment(fechaDocumento.value).format("yyyy-MM-DD"),
+            c_periodo: periodo,
+            n_cliente: codigoCliente,
+            c_moneda: moneda,
+            c_observaciones: observaciones,
+            n_montototal: montoTotal,
+            c_estado: "RE",
+            c_prestamo: null,
+            detalle: detalles.map((item, index) => {
+                let aux = {};
+                aux.n_linea = index + 1;
+                aux.c_item = item.c_item;
+                aux.n_cantidad = item.n_cantidad;
+                aux.n_precio = item.n_precio;
+                aux.c_observacionesdet = item.c_observaciones;
+                return aux;
+            })
+        }
+    }
+
+    const prepareData = () => {
+        const detallesAux = JSON.parse(JSON.stringify(detalles));
         const data = {
-            n_perfil: perfil.value,
-            c_codigoperfil: codigo.value.toUpperCase(),
-            c_paginas: paginas.reduce((value, cvv)=>cvv=`${value},${cvv}`),
-            c_estado: estado
+            c_agencia: agencia,
+            c_compania: compania,
+            c_usuarioregistro: userLogedIn,
+            productos: getProductos(detallesAux),
+            detalles: getDetalles(detallesAux)
         }
         return data;
-    }*/
+    }
 
     const handleRegister = async () => {
         setOpen(false);
         await setIsLoading(true);
         const data = prepareData();
-        data.c_usuarioregistro = userLogedIn;
-        //const response = await registerPerfil(data);
-        /*if (response && response.status === 200) {
+        const response = await registerTransaccion(data);
+        if (response && response.status === 200  && response.body && response.body.message === "OK") {
             prepareNotificationSuccess("Se registró con éxito la transaccion");
-            assignReportesToProfile();
         } else
-            prepareNotificationDanger("Error al registrar", response.message)*/
+            prepareNotificationDanger("Error al registrar", response.body?.message);
         setIsLoading(false);
     }
 
     const handleClick = () => {
-        if(urlFragment !== "visualizarTransaccion") {
-            if(validate()) {
-                setOpen(true);
-                if(urlFragment === "nuevaTransaccion") setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
-            } else {
-                prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
-            }
+        if(validate()) {
+            setOpen(true);
+            setModalAttributes({title:"Aviso de creación", message:"¿Seguro que desea crear este elemento?"});
         } else {
-            history.push("/transacionestienda")
+            prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
         }
-    }
 
-    const getData = async () => {
-        /*await getPaginasByPerfilFunction();
-        await getReportesByPerfilFunction();*/
     }
 
     const rowSelection = {
@@ -268,33 +171,41 @@ const TransaccionForm = () => {
     };
 
     const deleteDetalleTransaccion = () => {
-        if(elementSelected) {
+        if(elementSelected.length > 0) {
             let listDetalles = JSON.parse(JSON.stringify(detalles));
             listDetalles.splice(selectedRowKeys, 1);
             setDetalles(listDetalles);
+            setElementSelected([]);
+            setSelectedRowKeys([]);
         } else {
-            prepareNotificationDanger("Aviso", "Favor de seleccionar un item de la tabla")
+            setResponseData({message: "Favor de seleccionar un item de la tabla", title: "Aviso"});
+            setOpenResponseModal(true);
         }
     }
 
     const getAgenciaInfo = async () => {
         const response = await getAgenciaAndCompaniaByCodigo({c_compania:compania, c_agencia:agencia});
-        if(response.status === 200) {
+        if(response.status === 200 && response.body && response.body.data) {
             const data = response.body.data;
             setAgenciaNombre(data.agencia_desc);
             setCompaniaNombre(data.compania_desc);
         }else {
-            prepareNotificationDanger("Error obteniendo datos", response.message);
+            prepareNotificationDanger("Error", response.body.message);
+            setResponseData({message: "No se encontró la agencia", title: "Error", url:"/transacionestienda"});
+            setOpenResponseModal(true);
         }
     }
 
     const getDataTable = (detalles) => {
+        let montoTotal = 0.00;
         const detallesAux = detalles.map( (item, index) => {
             let aux = item;
             aux.key = index;
+            montoTotal = Number(parseFloat(montoTotal) + parseFloat(item.n_cantidad) * parseFloat(item.n_precio)).toFixed(2);
             return aux;
         })
         setDataTableDetalles(detallesAux);
+        setMontoTotal(montoTotal);
     }
 
     useEffect(() => {
@@ -316,18 +227,13 @@ const TransaccionForm = () => {
 
     useEffect(async () => {
         await setIsLoading(true);
-        setButtonAttributes(buttonTypes[urlFragment]);
         await getAgenciaInfo();
-        /*
-        await getReportesFunction()
-        if(urlFragment !== "nuevoPerfil") await getData();
-        */
         setIsLoading(false);
     }, [])
 
   return (
     <>
-      <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification} showButton={urlFragment !== 'visualizarPrestamo'}
+      <FormContainer buttonAttributes={{label:"Guardar", class:"btn btn-primary btn-form"}} handleClick={handleClick} isAlert={isAlert} notification={notification} showButton={true}
             goList={()=>history.push(`/transacionestienda`)} view={false}>
         <div className="col-12 row">
             <InputComponentView
@@ -390,7 +296,7 @@ const TransaccionForm = () => {
                 placeholder="Fecha Doc"
                 inputId="fechaDocumentoId"
                 classForm="col-12 col-lg-6"
-                readOnly={readOnlyView}
+                readOnly={false}
             />
             <PeriodoInputComponent
                 label="Período"
@@ -426,8 +332,20 @@ const TransaccionForm = () => {
                 optionField="name"
                 valueSelected={moneda}
                 handleChange={setMoneda}
-                disabledElement={readOnlyView}
+                disabledElement={false}
                 classForm="col-12 col-lg-6"
+            />
+            <TextareaComponent
+                inputId="observacionesId"
+                label="Observaciones"
+                placeholder="Observaciones"
+                value={observaciones}
+                setState={setObservaciones}
+                max={500}
+                classForm="col-12"
+                labelSpace={0}
+                labelLine={true}
+                marginForm={""}
             />
         </div>
         <div className="col-12 d-flex justify-content-end">
@@ -469,7 +387,7 @@ const TransaccionForm = () => {
             onClose={()=>setOpen(false)}
             title={modalAttributes.title}
             message={modalAttributes.message}
-            onHandleFunction={formFunctions[urlFragment]}
+            onHandleFunction={()=>handleRegister()}
         />
         <ResponseModal
             isOpen={openResponseModal}

@@ -71,6 +71,8 @@ import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
 import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
 import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChicaUsuarioxDiaMov'
 import FormMovimientoCUxConfirmar from '../../containers/FlujoCaja/FormMovimientoCUxConfirmar'
+import TransaccionFormView from '../../containers/TransaccionTienda/TransaccionFormView'
+import TicketVentaTienda from '../../containers/TransaccionTienda/TicketVentaTienda'
 
 export default{
     initialPages: [
@@ -441,6 +443,16 @@ export default{
             path: '/nuevaTransaccion/:compania/:agencia',
             exact: true,
             name: 'NUEVA TRANSACCIÓN'
+        },{
+            component: TransaccionFormView,
+            path: '/visualizarTransaccion/:compania/:agencia/:tipodocumento/:numerodocumento',
+            exact: true,
+            name: 'VISUALIZAR TRANSACCIÓN'
+        },{
+            component: TicketVentaTienda,
+            path: '/ticketVentaTienda/:id',
+            exact: true,
+            name: 'RECIBO VENTA TIENDA'
         },{
             component: Productos,
             path: '/productos',
