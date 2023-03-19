@@ -123,6 +123,10 @@ const pagesArray = [
                                 title: 'FORMATO CANCELACIONES',
                                 value: 'FORMATO CANCELACIONES',
                                 key: 'FORMATO CANCELACIONES'
+                            },{
+                                title: 'FORMATO ACTA ENTREGA',
+                                value: 'FORMATO ACTA ENTREGA',
+                                key: 'FORMATO ACTA ENTREGA'
                             }
                         ]
                     },{

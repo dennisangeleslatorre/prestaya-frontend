@@ -109,23 +109,25 @@ const TransaccionForm = () => {
 
     const getDetalles = (detalles) => {
         return {
-            d_fechadocumento: moment(fechaDocumento.value).format("yyyy-MM-DD"),
-            c_periodo: periodo,
-            n_cliente: codigoCliente,
-            c_moneda: moneda,
-            c_observaciones: observaciones,
-            n_montototal: montoTotal,
-            c_estado: "RE",
-            c_prestamo: null,
-            detalle: detalles.map((item, index) => {
-                let aux = {};
-                aux.n_linea = index + 1;
-                aux.c_item = item.c_item;
-                aux.n_cantidad = item.n_cantidad;
-                aux.n_precio = item.n_precio;
-                aux.c_observacionesdet = item.c_observaciones;
-                return aux;
-            })
+            detalles: {
+                d_fechadocumento: moment(fechaDocumento.value).format("yyyy-MM-DD"),
+                c_periodo: periodo.replace("-", ""),
+                n_cliente: codigoCliente,
+                c_moneda: moneda,
+                c_observaciones: observaciones,
+                n_montototal: montoTotal,
+                c_estado: "RE",
+                productosDetalle: detalles.map((item, index) => {
+                    let aux = {};
+                    aux.n_linea = index + 1;
+                    aux.c_item = item.c_item;
+                    aux.n_cantidad = item.n_cantidad;
+                    aux.n_precio = item.n_precio;
+                    aux.n_montototal = Number(item.n_cantidad) * Number(item.n_precio)
+                    aux.c_observacionesdet = item.c_observaciones;
+                    return aux;
+                })
+            }
         }
     }
 

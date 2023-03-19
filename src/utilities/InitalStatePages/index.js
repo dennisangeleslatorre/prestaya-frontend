@@ -60,6 +60,7 @@ import Contrato from '../../containers/Contrato/Contrato'
 import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 import FormatoRecibos from '../../containers/Cancelar/FormatoRecibos'
 import FormatoCancelaciones from '../../containers/Cancelar/FormatoCancelaciones'
+import FormatoActaEntrega from '../../containers/Cancelar/FormatoActaEntrega'
 //REPORTE
 import Reportes from '../../containers/Reporte/Reportes'
 import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
@@ -478,6 +479,11 @@ export default{
             path: '/formatoCancelaciones/:id',
             exact: true,
             name: 'FORMATO CANCELACIONES'
+        },{
+            component: FormatoActaEntrega,
+            path: '/formatoActaEntrega/:id',
+            exact: true,
+            name: 'FORMATO ACTA ENTREGA'
         },{
             component: BusquedaFlujoCaja,
             path: '/flujousuarios',

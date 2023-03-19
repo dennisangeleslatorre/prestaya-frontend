@@ -17,7 +17,7 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 import UserContext from '../../context/UserContext/UserContext'
 //Servicios
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getTransaccionDinamico } from '../../Api/Api';
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getTransaccionDinamico, updateTransaccionAnular } from '../../Api/Api';
 //Librerias
 import moment from 'moment';
 import { Button, Space, Table, Tooltip } from 'antd';
@@ -396,7 +396,12 @@ const TransaccionesTienda = () => {
 
     const clickAnularTransaccion = () => {
         if(elementSelected.length > 0) {
-            setOpen(true);
+            if(elementSelected[0].c_tipodocumento === "NS")
+                setOpen(true);
+            else {
+                setResponseData({title:"Aviso", message:"Tienes que seleccionar una nota de salida"});
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Favor de seleccionar un item de la tabla"});
             setOpenResponseModal(true);
@@ -405,18 +410,32 @@ const TransaccionesTienda = () => {
 
     const handleClickGoToPrintTicket = () => {
         if(elementSelected.length > 0) {
-            history.push(`/ticketVentaTienda/${elementSelected[0].c_compania}-${elementSelected[0].c_agencia}-${elementSelected[0].c_tipodocumento}-${elementSelected[0].c_numerodocumento}`);
+            if(elementSelected[0].c_tipodocumento === "NS")
+                history.push(`/ticketVentaTienda/${elementSelected[0].c_compania}-${elementSelected[0].c_agencia}-${elementSelected[0].c_tipodocumento}-${elementSelected[0].c_numerodocumento}`);
+            else {
+                setResponseData({title:"Aviso", message:"Tienes que seleccionar una nota de salida"});
+                setOpenResponseModal(true);
+            }
         } else {
             setResponseData({title:"Aviso", message:"Favor de seleccionar un item de la tabla"});
             setOpenResponseModal(true);
         }
     }
 
-    const handleAnular = () => {
-        console.log(elementSelected[0].c_compania);
-        console.log(elementSelected[0].c_agencia);
-        console.log(elementSelected[0].c_tipodocumento);
-        console.log(elementSelected[0].c_numerodocumento);
+    const handleAnular = async () => {
+        if(elementSelected.length > 0) {
+            const response = await updateTransaccionAnular({c_compania: elementSelected[0].c_compania, c_agencia: elementSelected[0].c_agencia,
+                c_tipodocumento: elementSelected[0].c_tipodocumento, c_numerodocumento: elementSelected[0].c_numerodocumento, c_ultimousuario: userLogedIn});
+            if(response.status === 200 && response.body.message === "OK") {
+                onHandleSearch();
+                setResponseData({title:"Aviso", message:"Se anuló la transacción con éxito"});
+            } else
+                setResponseData({title:"Aviso", message:response.message ? response.message : "Ocurrió un error en el servicio"});
+        } else {
+            setResponseData({title:"Aviso", message:"Favor de seleccionar un item de la tabla"});
+        }
+        setOpen(false);
+        setOpenResponseModal(true);
     }
 
     const rowSelection = {

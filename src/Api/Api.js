@@ -756,6 +756,12 @@ export const anularCancelacion = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const obtenerDatosActaEntrega = async (body) => {
+    console.log('---API--- : obtenerDatosActaEntrega');
+    const url = `${port}/prestamo/obtenerDatosActaEntrega`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');
@@ -897,5 +903,11 @@ export const registerTransaccion = async (body) => {
     console.log('---API--- : registerTransaccion');
     const url = `${port}/transaccion/registerTransaccion`;
     const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateTransaccionAnular = async (body) => {
+    console.log('---API--- : updateTransaccionAnular');
+    const url = `${port}/transaccion/updateTransaccionAnular`;
+    const response = await consumer(url, 'put', body);
     return response;
 };

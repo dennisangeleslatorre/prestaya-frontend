@@ -31,6 +31,7 @@ const StockProductModal = (props) => {
     const getStocksToTable = (stocks) => {
         const listStocksTable = stocks.map((item) => {
             let aux = item;
+            aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format('DD/MM/yyyy HH:mm:ss') : '';
             aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss') : '';
             return aux;

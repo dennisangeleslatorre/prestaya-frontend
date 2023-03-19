@@ -107,14 +107,6 @@ const columns = [
         }
     },
     {
-        title: 'P. Bruto',
-        dataIndex: 'n_pesobruto',
-        width: 140,
-         ellipsis: {
-            showTitle: false,
-        }
-    },
-    {
         title: '# Prestamo',
         dataIndex: 'c_prestamo',
         width: 140,
