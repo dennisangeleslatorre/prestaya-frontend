@@ -67,6 +67,7 @@ import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
 import ReporteResumido from '../../containers/Reporte/ReporteResumido'
 import ReporteFlujoCaja from '../../containers/Reporte/ReporteFlujoCaja'
 import ReportePrestamosVencidos from '../../containers/Reporte/ReportePrestamosVencidos'
+import ReporteTransaccionesTienda from '../../containers/Reporte/ReporteTransaccionesTienda'
 //FLUJO CAJA
 import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
 import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
@@ -539,6 +540,11 @@ export default{
             path: '/reportePrestamosVencidosyNovencidos',
             exact: true,
             name: 'REPORTE PRESTAMOS VENCIDOS Y NO VENCIDOS'
+        },{
+            component: ReporteTransaccionesTienda,
+            path: '/reporteTransaccionesTienda',
+            exact: true,
+            name: 'REPORTE TRANSACCIONES TIENDA'
         }
     ]
 }

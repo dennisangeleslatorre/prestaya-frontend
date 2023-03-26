@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 //Servicios
@@ -10,6 +10,8 @@ import SearchModalProducto from '../../components/Modal/SearchModalProducto';
 import { Button, Space, Table, Tooltip } from 'antd';
 import moment from 'moment';
 import StockProductModal from '../../components/StockProductModal/StockProductModal';
+//Context
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 
 const estados = [{ name: 'TODOS', value: 'T' },{ name: 'ACTIVO', value: 'A' },{ name: 'INACTIVO', value: 'I' }];
 
@@ -160,7 +162,7 @@ const Productos = () => {
 
     //Estados
     const [compania, setCompania] = useState("");
-    const [agencia, setAgencia] = useState("");
+    const [agencia, setAgencia] = useState("T");
     const [tipo, setTipo] = useState("T");
     const [estado, setEstado] = useState("T");
     const [codigoProducto, setCodigoProducto] = useState("");
@@ -179,6 +181,8 @@ const Productos = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [elementSelected, setElementSelected] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    //Contexto
+    const { setParamsForFilterProducto, getParamsForFilterProducto } = useContext(FiltersContext);
 
     const handleSeleccionarCompania = (value) => {
         setCompania(value);
@@ -187,17 +191,18 @@ const Productos = () => {
     }
 
     const prepareBodyToSearch = () => {
-        return {
-            c_compania:compania,
-            c_agencia:agencia,
-            c_item:codigoProducto ? codigoProducto : null,
-            c_tipoproducto: tipo === "T" ? null : tipo,
-            c_estado: estado === "T" ? null : estado,
-        }
+        let body = {};
+        if(compania) body.c_compania = compania;
+        if(agencia && agencia !== "T") body.c_agencia = agencia;
+        if(codigoProducto) body.c_item = codigoProducto;
+        if(tipo && tipo !== "T") body.c_tipoproducto = tipo;
+        if(estado && estado !== "T") body.c_estado = estado;
+        return body;
     }
 
-    const onHandleSearch = async () => {
-        let parametros =  prepareBodyToSearch();
+    const onHandleSearch = async (parametrosIniciales) => {
+        let parametros =  parametrosIniciales ? parametrosIniciales : prepareBodyToSearch();
+        setParamsForFilterProducto(parametros);
         const response = await getProductoDinamico(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
@@ -249,7 +254,7 @@ const Productos = () => {
     }
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
     const getTiposProducto = async () => {
         const response = await listTiposProducto();
@@ -264,21 +269,29 @@ const Productos = () => {
     }, [productoSeleccionado])
 
     useEffect(() => {
-        if(companias.length !== 0) {
+        if(companias.length !== 0 && !compania) {
             handleSeleccionarCompania(companias[0].c_compania);
         };
     }, [companias])
 
-    useEffect(() => {
-        if(agencias.length !== 0) {
-            setAgencia(agencias[0].c_agencia);
-        };
-    }, [agencias])
+    const getLastSearch = async () => {
+        const parametros = getParamsForFilterProducto();
+        if( parametros && Object.keys(parametros).length !== 0 ) {
+            await onHandleSearch(parametros);
+            if(parametros.c_compania) setCompania(parametros.c_compania);
+            if(parametros.c_agencia) setAgencia(parametros.c_agencia);
+            if(parametros.c_tipoproducto) setTipo(parametros.c_tipoproducto);
+            if(parametros.c_item) setCodigoProducto(parametros.c_item);
+            if(parametros.c_estado) setEstado(parametros.c_estado);
+        }
+    };
+
 
     useEffect(async() => {
         await setIsLoading(true);
         await getCompanias();
         await getTiposProducto();
+        await getLastSearch();
         setIsLoading(false);
     }, [])
 
@@ -358,6 +371,7 @@ const Productos = () => {
                                             readOnly={true}
                                             classForm="col-12 col-md-6"
                                             marginForm="ml-0"
+                                            searchWidth={4}
                                         />
                                         <SelectComponent
                                             labelText="Estado"

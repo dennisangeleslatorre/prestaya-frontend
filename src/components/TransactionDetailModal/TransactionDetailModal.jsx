@@ -27,18 +27,27 @@ const TransactionDetailModal = (props) => {
         return false;
     }
 
+    const validateRepeatedProduct = () => {
+        return detalles.find(producto => producto.c_item === codigoProducto);
+    }
+
     const handleAdDetalle = () => {
         if(validateForm()) {
-            setDetalles([...detalles, {
-                c_item: codigoProducto,
-                c_descripcionproducto: nombreProducto,
-                c_unidadmedida: unidadMedida,
-                n_cantidad: Number(cantidad.value).toFixed(2),
-                n_precio: Number(precio.value).toFixed(2),
-                n_montototal: Number(montoTotal.value).toFixed(2),
-                c_observaciones: observaciones
-            }]);
-            handleClose()
+            if(!validateRepeatedProduct()) {
+                setDetalles([...detalles, {
+                    c_item: codigoProducto,
+                    c_descripcionproducto: nombreProducto,
+                    c_unidadmedida: unidadMedida,
+                    n_cantidad: Number(cantidad.value).toFixed(2),
+                    n_precio: Number(precio.value).toFixed(2),
+                    n_montototal: Number(montoTotal.value).toFixed(2),
+                    c_observaciones: observaciones
+                }]);
+                handleClose();
+            } else {
+                setNotification({title:"Hubo un problema", type:"alert-danger", message:"El producto ya esta agregado en otro detalle"});
+                setIsAlert(true);
+            }
         } else {
             setNotification({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
             setIsAlert(true);
@@ -84,8 +93,11 @@ const TransactionDetailModal = (props) => {
     }
 
     useEffect(() => {
-      if(cantidad.value > 0 && precio.value > 0) {
+      if( Number(cantidad.value) > 0 && Number(precio.value) > 0) {
         setMontoTotal({value: (Number(cantidad.value) * Number(precio.value)).toFixed(2).toString()});
+        setIsAlert(false);
+      } else if ( Number(cantidad.value) === 0 || Number(precio.value) === 0) {
+        setMontoTotal({value: "0.00"});
         setIsAlert(false);
       } else {
         setMontoTotal({value: 0})
@@ -107,16 +119,6 @@ const TransactionDetailModal = (props) => {
         <>
             <Modal isOpen={isOpen} title="Detalle" onClose={handleClose} modal_class="Modal__container__form">
                 <div className="modal-body row">
-                    {/*<InputComponent
-                        label="Línea"
-                        state={ detalles.length + 1 }
-                        setState={()=>{}}
-                        type="text"
-                        placeholder="Línea"
-                        inputId="lineaId"
-                        readOnly={true}
-                        classForm="col-12 col-lg-6"
-                    />*/}
                     <SearcherComponent
                         placeholder="Nombre del producto"
                         label="Producto"
@@ -131,6 +133,7 @@ const TransactionDetailModal = (props) => {
                         readOnly={true}
                         classForm="col-12 col-md-6"
                         marginForm=""
+                        searchWidth={4}
                     />
                     <InputComponent
                         label="Cantidad"

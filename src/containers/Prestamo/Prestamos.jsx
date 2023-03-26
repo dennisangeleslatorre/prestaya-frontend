@@ -607,7 +607,7 @@ const Prestamos = () => {
     //Estados
     //Filtros
     const [compania, setCompania] = useState("");
-    const [agencia, setAgencia] = useState("");
+    const [agencia, setAgencia] = useState("T");
     const [nPrestamo, setNPrestamo] = useState({value:""})
     const [estado, setEstado] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
@@ -710,6 +710,15 @@ const Prestamos = () => {
     }
 
     //funciones
+    const handleNuevoPrestamo = () => {
+        if(agencia !== "T") {
+            history.push(`/nuevoPrestamo/${compania}-${agencia}`)
+        } else {
+            setResponseData({title:"Aviso", message:"Debes seleccionar una agencia"});
+            setOpenResponseModal(true);
+        }
+    }
+
     const handleSelectUpdate = () => {
         if(elementSelected) {
             if(elementSelectedRows[0].c_estado === "PE") history.push(`/editarPrestamo/${elementSelected[0]}`);
@@ -889,6 +898,7 @@ const Prestamos = () => {
     const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
+        if(agencia !== "T") body.c_agencia = agencia;
         if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
         if(codigoCliente) body.n_cliente = codigoCliente;
         if(estado && estado !== "T") body.c_estado = estado;
@@ -931,7 +941,6 @@ const Prestamos = () => {
             body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
-        if(agencia) body.c_agencia = agencia;
         return body;
     }
 
@@ -1108,7 +1117,7 @@ const Prestamos = () => {
 
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 
     //Efectos
@@ -1150,10 +1159,6 @@ const Prestamos = () => {
             getAgenciasByCompany(compania);
         }
     }, [compania])
-    //Valor por defeto de la agencia
-    useEffect(() => {
-        if(agencias.length !== 0) setAgencia(agencias[0].c_agencia);
-    }, [agencias])
     //Valor al seleccionar un cliente
     useEffect(() => {
         if(clienteSeleccionado) {
@@ -1437,7 +1442,7 @@ const Prestamos = () => {
                                 <div className="row">
                                     <div className="col">
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
-                                            { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}-${agencia}`)}>NUEVO</Button>}
+                                            { registerPermission && <Button onClick={handleNuevoPrestamo}>NUEVO</Button>}
                                             { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}

@@ -1,4 +1,23 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
+import ReportContainer from '../../components/ReportContainer/ReportContainer'
+import ReactSelect from '../../components/ReactSelect/ReactSelect'
+import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent'
+import SearcherComponent from '../../components/SearcherComponent/SearcherComponent'
+import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
+import { Space } from 'antd'
+import ResponseModal from '../../components/Modal/ResponseModal'
+import SearchModalCliente from '../../components/Modal/SearchModalCliente'
+import SearchModalProducto from '../../components/Modal/SearchModalProducto'
+import SelectComponent from '../../components/SelectComponent/SelectComponent'
+import InputComponent from '../../components/InputComponent/InputComponent'
+import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
+import LoadingModal from '../../components/Modal/LoadingModal';
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getReporteTransaccion } from '../../Api/Api';
+import moment from 'moment';
+import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
+//PDF
+import { PDFViewer  } from "@react-pdf/renderer"
+import ReporteTransaccionesPdfComponent from '../../components/ReporteTransaccionesPdfComponent/ReporteTransaccionesPdfComponent'
 
 const estados = [
     { name: 'TODOS', value: 'TO' },
@@ -10,56 +29,68 @@ const tipos = [{value:"NI", option:"Nota de ingreso"}, {value:"NS", option:"Nota
 
 const columnsExportExcel = [
     {
-        label: 'NRO',
-        value: row => (row.n_correlativo || '')
+        label: 'Agencia',
+        value: row => (row.c_agencia_desc || '')
     },
     {
-        label: 'FECHA',
-        value: row => (moment(row.d_fechamov_format).format('DD/MM/yyyy') || '')
+        label: 'Tipo',
+        value: row => (row.c_tipodocumento || '')
     },
     {
-        label: 'OOBSERVACIONES',
-        value: row => (row.diaobservacion || '')
+        label: 'Numero Doc.',
+        value: row => (row.c_numerodocumento || '')
     },
     {
-        label: 'ESTADO',
-        value: row => (row.diaestado || '')
+        label: 'Fecha Doc',
+        value: row => (moment(row.d_fechadocumento).format('DD/MM/yyyy') || '')
     },
     {
-        label: 'SEC.',
-        value: row => (row.n_secuencia || '')
+        label: 'Periodo',
+        value: row => (formatPeriodo(row.c_periodo) || '')
     },
     {
-        label: 'TIPO MOVIMIENTO',
-        value: row => (row.c_tipomovimientocc_desc || '')
+        label: 'Cliente',
+        value: row => (row.c_nombrescompleto || '')
     },
     {
-        label: 'USUARIO MOV.',
-        value: row => (row.usuariomov || '')
+        label: 'Moneda',
+        value: row => (row.c_moneda ? (row.c_moneda === 'L' ? 'LOCAL' : 'EXTRANJERO') : '')
     },
     {
-        label: 'OBSERVACIONES',
-        value: row => (row.movobservacion || '')
+        label: 'Observaciones Cab.',
+        value: row => (row.c_obsv_cabecera || '')
     },
     {
-        label: 'MNTO. INTERES A CANCELAR',
-        value: row => (row.n_montointeresescancelar || '')
+        label: 'Linea',
+        value: row => (row.n_linea || '')
     },
     {
-        label: 'MNTO. PRESTAMO A CANCELAR',
-        value: row => (row.n_montoprestamocancelar || '')
+        label: 'Producto',
+        value: row => (row.c_descripcionproducto || '')
     },
     {
-        label: 'MNTO. COMISION',
-        value: row => (row.n_montocomisioncancelar || '')
+        label: 'Descripcion Producto',
+        value: row => (row.c_item || '')
     },
     {
-        label: 'MNT TOTAL',
-        value: row => (row.n_montototalcancelar || '')
+        label: 'Unidad M.',
+        value: row => (row.c_unidadmedida || '')
     },
     {
-        label: 'FUENTE',
-        value: row => (row.c_fuente || '')
+        label: 'Cantidad',
+        value: row => (row.n_cantidad || '')
+    },
+    {
+        label: 'Precio',
+        value: row => (row.n_precio || '')
+    },
+    {
+        label: 'Monto total',
+        value: row => (row.n_montototal || '')
+    },
+    {
+        label: 'Observaciones Det.',
+        value: row => (row.c_observacionesdet || '')
     }
 ]
 
@@ -75,11 +106,12 @@ const ReporteTransaccionesTienda = () => {
     const [tipo, setTipo] = useState("TO");
     const [numeroDocumento, setNumeroDocumento] = useState({value: "", isValid:null});
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
-    const [disabledPeriodo, setDisabledPeriodo] = useState(true);
-    const [estado, setEstado] = useState("TO");
+    const [disabledPeriodo, setDisabledPeriodo] = useState(false);
+    const [estado, setEstado] = useState("RE");
     const [nPrestamo, setNPrestamo] = useState({value:""});
     //Listas obtenidas
     const [dataReportToTable, setDataReportToTable] = useState([]);
+    const [elementPdf, setElementPdf] = useState(null);
     //Producto
     const [codigoProducto, setCodigoProducto] = useState("");
     const [nombreProducto, setNombreProducto] = useState("");
@@ -92,6 +124,7 @@ const ReporteTransaccionesTienda = () => {
     const [openResponseModal , setOpenResponseModal] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [openSearchModalProducto, setOpenSearchModalProducto] = useState(false);
+    const [isLoading , setIsLoading ] = useState(false);
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -120,7 +153,7 @@ const ReporteTransaccionesTienda = () => {
     const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
-        if(agencia) body.c_agencia = agencia;
+        if(agencia && agencia !== "T") body.c_agencia = agencia;
         if(fecha.isValid && !disabledFilterFecha) {
             body.d_fechadocumentoInicio = fecha.fechaInicio;
             body.d_fechadocumentoFin = fecha.fechaFin;
@@ -138,15 +171,61 @@ const ReporteTransaccionesTienda = () => {
         return body;
     }
 
+    const prepareHeadPdf = () => {
+        let head = {};
+        head.company_name = companias.find(item => item.c_compania === compania)?.c_descripcion;
+        if(fecha.isValid && !disabledFilterFecha) head.fecha_descripcion = `Fecha: del ${moment(fecha.fechaInicio).format('DD/MM/YYYY')} al ${moment(fecha.fechaFin).format('DD/MM/YYYY')}`;
+        if(periodo.isValid && !disabledPeriodo) head.periodo_descripcion = `Periodo: del ${periodo.periodoInicio} al ${periodo.periodoInicio}`;
+        head.tipo_descripcion = tipos.find(item => item.value === tipo)?.option;
+        return head;
+    }
+
+    const prepareDataToPdf = (data=[], dataHeadPdf) => {
+        const arregloAgrupado = data.reduce((acumulador, elemento) => {
+            const grupo = `${elemento.c_compania}-${elemento.c_agencia}-${elemento.c_item}`;
+            if (!acumulador[grupo]) {
+                acumulador[grupo] = {};
+                acumulador[grupo].key = grupo;
+                acumulador[grupo].data = [];
+                acumulador[grupo].sumaLocal = 0;
+                acumulador[grupo].sumaExterior = 0;
+                acumulador[grupo].cantidad = 0;
+            }
+            acumulador[grupo].data.push(elemento);
+            if (elemento.c_moneda === "L") {
+                if (elemento.c_tipodocumento === "NI") {
+                    acumulador[grupo].sumaLocal = Number(Number(acumulador[grupo].sumaLocal) + Number(elemento.n_montototal)).toFixed(2);
+                    acumulador[grupo].cantidad = Number(Number(acumulador[grupo].cantidad) + Number(elemento.n_cantidad)).toFixed(0);
+                  } else if (elemento.c_tipodocumento === "NS") {
+                    acumulador[grupo].sumaLocal = Number(Number(acumulador[grupo].sumaLocal) - Number(elemento.n_montototal)).toFixed(2);
+                    acumulador[grupo].cantidad = Number(Number(acumulador[grupo].cantidad) - Number(elemento.n_cantidad)).toFixed(0);
+                  }
+            } else {
+                if (elemento.c_tipodocumento === "NI") {
+                    acumulador[grupo].sumaExterior = Number(Number(acumulador[grupo].sumaExterior) + Number(elemento.n_montototal)).toFixed(2);
+                    acumulador[grupo].cantidad = Number(Number(acumulador[grupo].cantidad) + Number(elemento.n_cantidad)).toFixed(0);
+                  } else if (elemento.c_tipodocumento === "NS") {
+                    acumulador[grupo].sumaExterior = Number(Number(acumulador[grupo].sumaExterior) - Number(elemento.n_montototal)).toFixed(2);
+                    acumulador[grupo].cantidad = Number(Number(acumulador[grupo].cantidad) - Number(elemento.n_cantidad)).toFixed(0);
+                  }
+            }
+            return acumulador;
+          }, {});
+          setElementPdf({data: arregloAgrupado, dataHeadPdf: dataHeadPdf});
+    }
+
     const onHandleSearch = async () => {
         let parametros =  prepareBodyToSearch();
-        const response = await getTransaccionDinamico(parametros);
+        const response = await getReporteTransaccion(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
-            //getDataForTable(data);
+            const dataHeadPdf = prepareHeadPdf();
+            setDataReportToTable(data)
+            prepareDataToPdf(data, dataHeadPdf);
         }
         else {
-            //getDataForTable([])
+            setElementPdf(null);
+            setDataReportToTable([]);
             setResponseData({title:"Aviso", message:"No se encontraron transacciones"});
         };
     }
@@ -187,7 +266,7 @@ const ReporteTransaccionesTienda = () => {
     }
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 
     useEffect(() => {
@@ -210,12 +289,6 @@ const ReporteTransaccionesTienda = () => {
             setAgencia("T");
         };
     }, [companias])
-
-    useEffect(() => {
-        if(agencias.length !== 0) {
-            setAgencia(agencias[0].c_agencia);
-        };
-    }, [agencias])
 
     useEffect(async() => {
         await setIsLoading(true);
@@ -335,6 +408,7 @@ const ReporteTransaccionesTienda = () => {
                         handleChange={setEstado}
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
+                        disabledElement={true}
                     />
                     <InputComponent
                         state={nPrestamo}
@@ -360,16 +434,15 @@ const ReporteTransaccionesTienda = () => {
                     />
                     </Space>
                 </div>
-                {/*<div className="col-12">
+                {<div className="col-12">
                     { elementPdf ? <PDFViewer
                         className="col-12"
                         style={{height: "800px"}}
-                        children={<ReporteFlujoCajaPDFComponent general={elementPdf} movsFlujoCaja={movsFlujoCaja} movsPxC={movsPxC}
-                                    totalesPxC={totalesPxC} totalesFC={totalesFC}/>}
+                        children={<ReporteTransaccionesPdfComponent data={elementPdf.data} dataHeadPdf={elementPdf.dataHeadPdf}/>}
                     /> : <div className="text-center">
                         <h2>No se a realizado una búsqueda</h2>
                     </div> }
-                </div>*/}
+                </div>}
             </ReportContainer>
             {isLoading === true && <LoadingModal/>}
             <ResponseModal

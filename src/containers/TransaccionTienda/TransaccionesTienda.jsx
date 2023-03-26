@@ -21,7 +21,9 @@ import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoD
 //Librerias
 import moment from 'moment';
 import { Button, Space, Table, Tooltip } from 'antd';
-
+import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
+//Context
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 
 const estados = [
     { name: 'TODOS', value: 'TO' },
@@ -92,6 +94,20 @@ const columns = [
         render: (field, objeto) => (
             <div onClick={objeto.hendleFunction}>
                 {field}
+            </div>
+        ),
+    },{
+        title: 'Cliente',
+        dataIndex: 'c_nombrescompleto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 240,
+        render: (field, objeto) => (
+            <div onClick={objeto.hendleFunction}>
+                <Tooltip placement="topLeft" title={field}>
+                    {field}
+                </Tooltip>
             </div>
         ),
     },{
@@ -255,7 +271,7 @@ const TransaccionesTienda = () => {
     const [tipo, setTipo] = useState("TO");
     const [numeroDocumento, setNumeroDocumento] = useState({value: "", isValid:null});
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
-    const [disabledPeriodo, setDisabledPeriodo] = useState(true);
+    const [disabledPeriodo, setDisabledPeriodo] = useState(false);
     const [estado, setEstado] = useState("TO");
     const [nPrestamo, setNPrestamo] = useState({value:""});
     const [dataTableTransacciones, setDataTableTransacciones] = useState([]);
@@ -286,6 +302,8 @@ const TransaccionesTienda = () => {
     const cancelPermission = userPermisssions.includes("ANULAR TRANSACCIÓN");
     const ticetPermission = userPermisssions.includes("RECIBO VENTA TIENDA");
     const viewPermission = userPermisssions.includes('VISUALIZAR TRANSACCIÓN');
+    //Contexto
+    const { setParamsForFilterTransaccion, getParamsForFilterTransaccion } = useContext(FiltersContext);
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -314,7 +332,7 @@ const TransaccionesTienda = () => {
     const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
-        if(agencia) body.c_agencia = agencia;
+        if(agencia && agencia !== "T") body.c_agencia = agencia;
         if(fecha.isValid && !disabledFilterFecha) {
             body.d_fechadocumentoInicio = fecha.fechaInicio;
             body.d_fechadocumentoFin = fecha.fechaFin;
@@ -332,8 +350,9 @@ const TransaccionesTienda = () => {
         return body;
     }
 
-    const onHandleSearch = async () => {
-        let parametros =  prepareBodyToSearch();
+    const onHandleSearch = async (parametrosIniciales) => {
+        let parametros =  parametrosIniciales ? parametrosIniciales : prepareBodyToSearch();
+        setParamsForFilterTransaccion(parametros);
         const response = await getTransaccionDinamico(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
@@ -345,8 +364,8 @@ const TransaccionesTienda = () => {
         };
     }
 
-    const gotoView = (c_tipodocumento,c_numerodocumento) => {
-        history.push(`/visualizarTransaccion/${compania}/${agencia}/${c_tipodocumento}/${c_numerodocumento}`);
+    const gotoView = (c_compania,c_agencia,c_tipodocumento,c_numerodocumento) => {
+        history.push(`/visualizarTransaccion/${c_compania}/${c_agencia}/${c_tipodocumento}/${c_numerodocumento}`);
     }
 
     const getDataForTable = (transacciones) => {
@@ -359,7 +378,8 @@ const TransaccionesTienda = () => {
             item.d_ultimafechamodificacion = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:MM:ss") : "";
             item.c_moneda_desc = item.c_moneda === "L" ? "LOCAL" : "EXTRANJERO";
             item.n_montototal = Number(item.n_montototal).toFixed(2);
-            item.hendleFunction = viewPermission ? ()=>gotoView(item.c_tipodocumento,item.c_numerodocumento) : ()=>{};
+            item.hendleFunction = viewPermission ? ()=>gotoView(item.c_compania,item.c_agencia,item.c_tipodocumento,item.c_numerodocumento) : ()=>{};
+            item.c_periodo = formatPeriodo(item.c_periodo);
             return item;
         });
         setDataTableTransacciones(listAux);
@@ -372,8 +392,10 @@ const TransaccionesTienda = () => {
     }
 
     const getPeriodoDefualt = () => {
-        const periodoAux = moment().format('yyyy-MM');
-        setPeriodo({periodoInicio:periodoAux, periodoFin:periodoAux, isValid:true})
+        if(!periodo.periodoInicio && !periodo.periodoFin) {
+            const periodoAux = moment().format('yyyy-MM');
+            setPeriodo({periodoInicio:periodoAux, periodoFin:periodoAux, isValid:true})
+        }
     };
 
     const findProductoByCode = async () => {
@@ -392,6 +414,15 @@ const TransaccionesTienda = () => {
         } else
         setNombreProducto("");
         setIsLoading(false);
+    }
+
+    const clickAgregarNuevo = () => {
+        if(agencia !== "T") {
+            history.push(`/nuevaTransaccion/${compania}/${agencia}`);
+        } else {
+            setResponseData({title:"Aviso", message:"Debes seleccionar una agencia"});
+            setOpenResponseModal(true);
+        }
     }
 
     const clickAnularTransaccion = () => {
@@ -452,7 +483,7 @@ const TransaccionesTienda = () => {
     }
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 
     useEffect(() => {
@@ -470,22 +501,41 @@ const TransaccionesTienda = () => {
     }, [clienteSeleccionado])
 
     useEffect(() => {
-        if(companias.length !== 0) {
+        if(companias.length !== 0 && !compania) {
             handleSeleccionarCompania(companias[0].c_compania);
             setAgencia("T");
         };
     }, [companias])
 
-    useEffect(() => {
-        if(agencias.length !== 0) {
-            setAgencia(agencias[0].c_agencia);
-        };
-    }, [agencias])
+    const getLastSearch = async () => {
+        const parametros = getParamsForFilterTransaccion();
+        if( parametros && Object.keys(parametros).length !== 0 ) {
+            await onHandleSearch(parametros);
+            if(parametros.c_compania) setCompania(parametros.c_compania);
+            if(parametros.c_agencia) setAgencia(parametros.c_agencia);
+            if(parametros.d_fechadocumentoInicio && parametros.d_fechadocumentoFin) {
+                setFecha({fechaInicio: parametros.d_fechadocumentoInicio, fechaFin: parametros.d_fechadocumentoFin, isValid:true});
+                setDisabledFilterFecha(false);
+            }
+            if(parametros.n_cliente) setCodigoCliente(parametros.n_cliente);
+            if(parametros.c_tipoproducto) setTipo(parametros.c_tipoproducto);
+            if(parametros.c_numerodocumento) setNumeroDocumento(parametros.c_numerodocumento);
+
+            if(parametros.periodo_inicio && parametros.periodo_fin) {
+                setPeriodo({periodoInicio: parametros.periodo_inicio, periodoFin: parametros.periodo_fin, isValid:true});
+                setDisabledPeriodo(false);
+            }
+            if(parametros.c_item) setCodigoProducto(parametros.c_item);
+            if(parametros.c_estado) setEstado(parametros.c_estado);
+            if(parametros.c_prestamo) setNPrestamo({value: parametros.c_prestamo});
+        }
+    };
 
     useEffect(async() => {
         await setIsLoading(true);
         await getCompanias();
         getPeriodoDefualt();
+        await getLastSearch();
         setIsLoading(false);
     }, [])
 
@@ -588,6 +638,7 @@ const TransaccionesTienda = () => {
                     readOnly={true}
                     classForm="col-12 col-md-6"
                     marginForm="ml-0"
+                    searchWidth={4}
                 />
                 <SelectComponent
                     labelText="Estado"
@@ -617,7 +668,7 @@ const TransaccionesTienda = () => {
             </div>
             <div className="col-12">
                 <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
-                    { registerPermission && <Button onClick={()=>history.push(`/nuevaTransaccion/${compania}/${agencia}`)}>NUEVO</Button> }
+                    { registerPermission && <Button onClick={clickAgregarNuevo}>NUEVO</Button> }
                     { cancelPermission && <Button onClick={clickAnularTransaccion}>ANULAR</Button> }
                     { ticetPermission && <Button onClick={handleClickGoToPrintTicket}>RECIBO VENTA TIENDA</Button> }
                 </Space>

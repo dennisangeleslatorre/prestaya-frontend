@@ -762,6 +762,12 @@ export const obtenerDatosActaEntrega = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getValidaSufijoProducto = async (body) => {
+    console.log('---API--- : getValidaSufijoProducto');
+    const url = `${port}/prestamo/getValidaSufijoProducto`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');
@@ -909,5 +915,11 @@ export const updateTransaccionAnular = async (body) => {
     console.log('---API--- : updateTransaccionAnular');
     const url = `${port}/transaccion/updateTransaccionAnular`;
     const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getReporteTransaccion = async (body) => {
+    console.log('---API--- : getReporteTransaccion');
+    const url = `${port}/transaccion/getReporteTransaccion`;
+    const response = await consumer(url, 'post', body);
     return response;
 };

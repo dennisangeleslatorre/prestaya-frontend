@@ -22,7 +22,8 @@ import UserContext from '../../context/UserContext/UserContext'
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers, getAgenciaByCodigoAgencia } from '../../Api/Api'
+        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers,
+        getAgenciaByCodigoAgencia, getValidaSufijoProducto } from '../../Api/Api'
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 
@@ -124,6 +125,8 @@ const PrestamoForm = (props) => {
     const [isAlert, setIsAlert] = useState(false);
     const [notification, setNotification] = useState({title:"", type:"", message:""})
     const [openSearchModal, setOpenSearchModal] = useState(false);
+    const [openEjecutaRemate, setOpenEjecutaRemate] = useState(false);
+    const [attributesEjecutaRemate, setAttributesEjecutaRemate] = useState({title:"", message:""})
     //Contextos
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
@@ -152,7 +155,7 @@ const PrestamoForm = (props) => {
         anularPrestamo: ()=> handleAnular(),
         vigentePrestamo: ()=> handleVigente(),
         entregarPrestamo: ()=> handleEntregar(),
-        rematePrestamo: ()=> handleRemate()
+        rematePrestamo: ()=> validaRemate()
     }
 
     const prepareNotificationSuccess = (message) => {
@@ -364,11 +367,11 @@ const PrestamoForm = (props) => {
     }
 
     const validaTipoVenta = () => {
-        let isValid = true;
+        let isTipoTienda = false;
         productos.forEach(producto => {
-            if( producto.c_tipoventa !== 'C') isValid = false;
+            if( producto.c_tipoventa !== 'C') isTipoTienda = true;
         })
-        return isValid;
+        return isTipoTienda;
     }
 
     const prepareProductsToRemate = () => {
@@ -395,27 +398,36 @@ const PrestamoForm = (props) => {
     }
 
     const handleRemate = async () => {
-        setOpen(false);
+        setOpenEjecutaRemate(false);
         await setIsLoading(true);
         if(fechaRemate.value && observacionesRemate) {
-            if(validateProductos()) {
-                const [c_compania, c_prestamo] = elementId.split('-');
-                const data = {
-                    c_compania: c_compania,
-                    c_prestamo: c_prestamo,
-                    c_usuarioRemate: userLogedIn,
-                    d_fechaRemate: fechaRemate.value,
-                    c_observacionesremate: observacionesRemate,
-                    c_moneda: moneda,
-                    productos: prepareProductsToRemate()
+            const [c_compania, c_prestamo] = elementId.split('-');
+            let validaSufijo = true;
+            if(validaTipoVenta()) {
+                const responseSufijo = await getValidaSufijoProducto({c_compania: c_compania, c_agencia: agencia});
+                if(responseSufijo.status !== 200 || responseSufijo.body.message === "ERROR") validaSufijo = false;
+            }
+            if(validaSufijo) {
+                if(validateProductos()) {
+                    const data = {
+                        c_compania: c_compania,
+                        c_prestamo: c_prestamo,
+                        c_usuarioRemate: userLogedIn,
+                        d_fechaRemate: fechaRemate.value,
+                        c_observacionesremate: observacionesRemate,
+                        c_moneda: moneda,
+                        productos: prepareProductsToRemate()
+                    }
+                    setIsAlert(false);
+                    const response = await cambiarEstadoRemate(data);
+                    (response && response.status === 200) ?
+                        prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate")
+                        : prepareNotificationDanger("Error al actualizar", response.message);
+                } else {
+                    prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
                 }
-                setIsAlert(false);
-                const response = await cambiarEstadoRemate(data);
-                (response && response.status === 200) ?
-                    prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate")
-                    : prepareNotificationDanger("Error al actualizar", response.message);
             } else {
-                prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
+                prepareNotificationDanger("Error", "La agencia no tiene un sufijo para productos.");
             }
         } else {
             prepareNotificationDanger("Error", "Favor de llenar los campos activos");
@@ -433,16 +445,27 @@ const PrestamoForm = (props) => {
                 if(urlFragment === "vigentePrestamo") setModalAttributes({title:"Aviso de vigente", message:"¿Seguro que desea cambiar el estado a vigente?"});
                 if(urlFragment === "entregarPrestamo") setModalAttributes({title:"Aviso de entrega", message:"¿Seguro que desea cambiar el estado a entregado?"});
                 if(urlFragment === "rematePrestamo") {
-                    const [c_compania, c_prestamo] = elementId.split('-');
-                    const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
                     let message = '¿Seguro que desea cambiar el estado a remate?';
-                    if(response.status !== 200) message = `${message} ${response.message ? response.message : ""}`
                     setModalAttributes({title:"Aviso de remate", message:message});
                 }
             } else {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
         }
+    }
+
+    const validaRemate = async () => {
+        let message = 'Ocurrio algo';
+        const [c_compania, c_prestamo] = elementId.split('-');
+        const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
+        if(response.status !== 200) {
+            message = response.message ? response.message : message;
+            setOpenEjecutaRemate(true);
+            setAttributesEjecutaRemate({title:"Aviso", message:message});
+        } else {
+            handleRemate();
+        }
+        setOpen(false);
     }
 
     const getData = async () => {
@@ -1123,6 +1146,13 @@ const PrestamoForm = (props) => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={formFunctions[urlFragment]}
+            />
+            <ConfirmationModal
+                isOpen={openEjecutaRemate}
+                onClose={()=>setOpenEjecutaRemate(false)}
+                title={attributesEjecutaRemate.title}
+                message={attributesEjecutaRemate.message}
+                onHandleFunction={()=>handleRemate()}
             />
             <ResponseModal
                 isOpen={openResponseModal}
