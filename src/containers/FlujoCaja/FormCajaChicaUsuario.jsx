@@ -194,7 +194,7 @@ const FormCajaChicaUsuario = () => {
                         const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
                         const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
                         const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
-                        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+                        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el flujo de caja") : prepareNotificationDanger("Error al actualizar", response.message);
                     } else {
                         prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
                     }

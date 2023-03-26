@@ -1,5 +1,6 @@
 import React from 'react'
 import InputMask from "react-input-mask"
+import { Checkbox } from 'antd';
 
 const MessageComponent = ({message, classComponent}) => (
     <div className={classComponent}>
@@ -8,7 +9,8 @@ const MessageComponent = ({message, classComponent}) => (
 )
 
 const PeriodoRange = (props) => {
-    const { classForm="", marginForm="ml-3 mr-3", labelSpace=2, labelText=null, inputId="inputId", state, setState } = props;
+    const { classForm="", marginForm="ml-3 mr-3", labelSpace=2, labelText=null, inputId="inputId", state, setState,
+            disabledPeriodo=true, setDisabledPeriodo } = props;
 
     const isValidFunction = (periodoInicio, periodoFin) => {
         if(!periodoFin || !periodoInicio || Number(periodoFin.replace("-", "")) < Number(periodoInicio.replace("-", ""))) return false
@@ -38,10 +40,14 @@ const PeriodoRange = (props) => {
         }
     }
 
+    const onChange = (e) => {
+        setDisabledPeriodo(e.target.checked);
+    }
+
     return (
         <div className={`form-group ${marginForm} ${classForm} row`}>
             { labelText && <label htmlFor={inputId} className={`col-md-${labelSpace} col-form-label label-input`}>
-                { labelText }
+                { labelText } { setDisabledPeriodo && <Checkbox id={inputId+'check'} checked={disabledPeriodo} onChange={onChange} />}
             </label> }
             <div className={ labelText ? `col-12 col-md-${12-labelSpace}` : `col-md-${14-labelSpace}`}>
                 <div className="input-group">
@@ -53,6 +59,7 @@ const PeriodoRange = (props) => {
                         id="periodoInicioId"
                         className={`form-control col-md-12 col-xs-12`}
                         onBlur={validarPeriodo}
+                        readOnly={disabledPeriodo}
                     />
                     <InputMask
                         mask="9999-99"
@@ -62,6 +69,7 @@ const PeriodoRange = (props) => {
                         id="periodoFinId"
                         className={`form-control col-md-12 col-xs-12`}
                         onBlur={validarPeriodo}
+                        readOnly={disabledPeriodo}
                     />
                 </div>
                 {showMessage()}

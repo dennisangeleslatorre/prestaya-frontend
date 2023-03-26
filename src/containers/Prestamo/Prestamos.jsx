@@ -607,7 +607,7 @@ const Prestamos = () => {
     //Estados
     //Filtros
     const [compania, setCompania] = useState("");
-    const [agencia, setAgencia] = useState("");
+    const [agencia, setAgencia] = useState("T");
     const [nPrestamo, setNPrestamo] = useState({value:""})
     const [estado, setEstado] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
@@ -656,6 +656,7 @@ const Prestamos = () => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [openAuctionConfirmationModal, setOpenAuctionConfirmationModal] = useState(false);
     //Contexto
     const { getUserData } = useContext(UserContext);
     const userLogedIn = getUserData().c_codigousuario;
@@ -709,6 +710,15 @@ const Prestamos = () => {
     }
 
     //funciones
+    const handleNuevoPrestamo = () => {
+        if(agencia !== "T") {
+            history.push(`/nuevoPrestamo/${compania}-${agencia}`)
+        } else {
+            setResponseData({title:"Aviso", message:"Debes seleccionar una agencia"});
+            setOpenResponseModal(true);
+        }
+    }
+
     const handleSelectUpdate = () => {
         if(elementSelected) {
             if(elementSelectedRows[0].c_estado === "PE") history.push(`/editarPrestamo/${elementSelected[0]}`);
@@ -757,23 +767,12 @@ const Prestamos = () => {
         }
     }
 
-    const handleSelectRetornarPendiente = async () => {
+    const handleSelectRetornar = async () => {
         setIsLoading(true);
         if(elementSelected) {
             console.log("elementSelectedRows", elementSelectedRows);
             if(elementSelectedRows[0].c_estado==="RE") {
-                const [c_compania, c_prestamo] = elementSelected[0].split("-");
-                const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
-                if(response && response.status === 200) {
-                    await onHandleSearch();
-                    setSelectedRowKeys([]);
-                    setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
-                    setOpenResponseModal(true);
-                }  else {
-                    const message = response ? response.message : "Error al regresar el remate.";
-                    setResponseData({title:"Aviso", message:message});
-                    setOpenResponseModal(true);
-                }
+                setOpenAuctionConfirmationModal(true);
             } else {
                 const [c_compania, c_prestamo] = elementSelected[0].split("-");
                 const responseValidate = await validarRetornarPendiente({c_compania:c_compania, c_prestamo:c_prestamo});
@@ -791,6 +790,23 @@ const Prestamos = () => {
             setResponseData({title:"Aviso", message:"Selecciona un item de la tabla"})
             setOpenResponseModal(true);
         }
+        setIsLoading(false);
+    }
+
+    const handleRetornarRemate = async () => {
+        await setOpenAuctionConfirmationModal(false);
+        await setIsLoading(true);
+        const [c_compania, c_prestamo] = elementSelected[0].split("-");
+        const response = await retornarRemate({c_compania:c_compania, c_prestamo:c_prestamo});
+        if(response && response.status === 200) {
+            await onHandleSearch();
+            setSelectedRowKeys([]);
+            setResponseData({title:"Operación exitosa", message:"Se regresó el remate."});
+        }  else {
+            const message = response ? response.message : "Error al regresar el remate.";
+            setResponseData({title:"Aviso", message:message});
+        }
+        setOpenResponseModal(true);
         setIsLoading(false);
     }
 
@@ -882,6 +898,7 @@ const Prestamos = () => {
     const prepareBodyToSearch = () => {
         let body = {};
         if(compania) body.c_compania = compania;
+        if(agencia !== "T") body.c_agencia = agencia;
         if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
         if(codigoCliente) body.n_cliente = codigoCliente;
         if(estado && estado !== "T") body.c_estado = estado;
@@ -924,7 +941,6 @@ const Prestamos = () => {
             body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
-        if(agencia) body.c_agencia = agencia;
         return body;
     }
 
@@ -1101,7 +1117,7 @@ const Prestamos = () => {
 
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias(response.body.data);
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 
     //Efectos
@@ -1143,10 +1159,6 @@ const Prestamos = () => {
             getAgenciasByCompany(compania);
         }
     }, [compania])
-    //Valor por defeto de la agencia
-    useEffect(() => {
-        if(agencias.length !== 0) setAgencia(agencias[0].c_agencia);
-    }, [agencias])
     //Valor al seleccionar un cliente
     useEffect(() => {
         if(clienteSeleccionado) {
@@ -1430,12 +1442,12 @@ const Prestamos = () => {
                                 <div className="row">
                                     <div className="col">
                                         <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
-                                            { registerPermission && <Button onClick={()=>history.push(`/nuevoPrestamo/${compania}-${agencia}`)}>NUEVO</Button>}
+                                            { registerPermission && <Button onClick={handleNuevoPrestamo}>NUEVO</Button>}
                                             { updatePermission && <Button onClick={handleSelectUpdate}>MODIFICAR</Button>}
                                             { viewPermission && <Button onClick={handleSelectView}>VISUALIZAR</Button>}
                                             { cancelPermission && <Button onClick={handleSelectAnular}>ANULAR</Button>}
                                             { currentPermission && <Button onClick={handleSelectVigente}>VIGENTE</Button>}
-                                            { returnToPendingPermission && <Button onClick={handleSelectRetornarPendiente}>REGRESAR A PENDIENTE/VIGENTE</Button>}
+                                            { returnToPendingPermission && <Button onClick={handleSelectRetornar}>REGRESAR A PENDIENTE/VIGENTE</Button>}
                                             { cancellationsPermission && <Button onClick={handleSelectCancelar}>CANCELAR</Button>}
                                             { entregarPermission && <Button onClick={handleSelectEntregar}>ENTREGAR</Button>}
                                             { rematePermission && <Button onClick={handleSelectRemate}>REMATE</Button>}
@@ -1470,6 +1482,14 @@ const Prestamos = () => {
                 title={"Aviso de retorno"}
                 message={"¿Seguro que desea regresar el estado del prestamo a pendiente?."}
                 onHandleFunction={()=>handleRetornarPendiente()}
+                buttonClass="btn-success"
+            />
+             <ConfirmationModal
+                isOpen={openAuctionConfirmationModal}
+                onClose={()=>setOpenAuctionConfirmationModal(false)}
+                title={"Aviso de retorno"}
+                message={"¿Seguro que desea regresar el estado del prestamo a vigente?."}
+                onHandleFunction={()=>handleRetornarRemate()}
                 buttonClass="btn-success"
             />
             <ResponseModal

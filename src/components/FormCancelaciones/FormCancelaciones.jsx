@@ -110,7 +110,7 @@ const FormCancelaciones = (props) => {
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
-        || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES"
+        || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES" || item == "FORMATO ACTA ENTREGA"
     })
     const cancelarPermission = userPermisssions.includes("CANCELAR");
     const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
@@ -118,6 +118,7 @@ const FormCancelaciones = (props) => {
     const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
     const formatoRecibosCancelaciones = userPermisssions.includes("FORMATO RECIBOS CANCELACIONES");
     const formatoCancelaciones = userPermisssions.includes("FORMATO CANCELACIONES");
+    const formatoActaEntrega = userPermisssions.includes("FORMATO ACTA ENTREGA");
 
     const getParameters = async () => {
         const [c_compania, c_prestamo] = elementId.split('-');
@@ -241,6 +242,10 @@ const FormCancelaciones = (props) => {
         history.push(`/formatoCancelaciones/${elementId}`);
     }
 
+    const handleIrFormatoActaEntrega = () => {
+        history.push(`/formatoActaEntrega/${elementId}`);
+    }
+
     //Atributos de la tabla
     const rowSelection = {
         onChange: (selectedKeys, selectedRows) => {
@@ -273,9 +278,10 @@ const FormCancelaciones = (props) => {
                         { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button> }
                         { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button> }
                         { (regresarEntregaPermission && estadoPrestamo === "EN") && <Button onClick={()=>setOpenRegresarEntrega(true)}>REGRESAR DE ENTREGA</Button>}
-                        { (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button>}
+                        {/* (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button> */}
                         { (formatoRecibosCancelaciones) && <Button onClick={handleIrFormatoRecibos}>FORMATO RECIBOS</Button> }
                         { (formatoCancelaciones) && <Button onClick={handleIrFormatoCancelaciones}>FORMATO CANCELACIONES</Button> }
+                        { (formatoActaEntrega && estadoPrestamo === "EN") && <Button onClick={handleIrFormatoActaEntrega}>FORMATO ACTA ENTREGA</Button> }
                     </Space>
                 </div>
             </div>

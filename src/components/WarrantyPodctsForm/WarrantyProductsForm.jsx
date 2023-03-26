@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import WarrantyProductsModal from '../WarrantyProductsModal/WarrantyProductsModal'
 import { useHistory } from 'react-router'
 import ResponseModal from '../../components/Modal/ResponseModal'
+//Contexto
+import PagesContext from '../../context/PagesContext/PagesContext'
 //Servicios
 import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida } from '../../Api/Api'
 import moment from 'moment'
@@ -105,6 +107,12 @@ const WarrantyProductsForm = (props) => {
     //Response
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [responseData, setResponseData] = useState({});
+    //Permisos
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "TICKET VENTA TERCEROS"
+    })
+    const PrintTicketPermission = userPermisssions.includes("TICKET VENTA TERCEROS");
 
     const handleDeleteProduct = () => {
         if(elementSelected) {
@@ -169,7 +177,7 @@ const WarrantyProductsForm = (props) => {
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
           if(estado === "RE") {
-            setSelectedNLineas(selectedRows.map(item => item.n_linea_product));
+            setSelectedNLineas(selectedRows.map(item => item.n_cliente));
             setSelectedRows(selectedRows);
           } else {
             setElementSelected(selectedRowKeys);
@@ -247,10 +255,10 @@ const WarrantyProductsForm = (props) => {
                     </Space>
                 </div>
             </div>}
-            {estado==="RE" && <div className="row col-12">
+            {(estado==="RE" && PrintTicketPermission) && <div className="row col-12">
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
-                        <Button onClick={handleClickGoToPrintTicket}>Imprimir Venta Terceris</Button>
+                        <Button onClick={handleClickGoToPrintTicket}>Imprimir Venta Terceros</Button>
                     </Space>
                 </div>
             </div>}

@@ -134,7 +134,7 @@ const TicketVentaTerceroPdfComponent = ({dataTickets}) => (
                     {renderLine()}
                     {/*Tikcet*/}
                     <View style={styles.table__column__container__big}>
-                    <Text style={styles.info_text}>TICKET - {index}</Text>
+                    <Text style={styles.info_text}>TICKET - {item.productos[0].n_linea}</Text>
                     </View>
                     {groupInfo('AGENCIA', item.agencia_nombre)}
                     {groupInfo('OPERACION', "VENTA TERCERO")}

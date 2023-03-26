@@ -9,7 +9,7 @@ import { obtenerDatosTicketVentaTercero } from '../../Api/Api';
 import ResponseModal from '../../components/Modal/ResponseModal';
 const TicketVentaTercero = () => {
     let history = useHistory();
-    const { id, nLineas } = useParams();
+    const { id, clientes } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [dataTickets, setDataTickets] = useState([]);
     const [instance, updateInstance] = usePDF({ document: TicketVentaTerceroPdfComponent({dataTickets})});
@@ -58,7 +58,7 @@ const TicketVentaTercero = () => {
 
     const getDataForTicket = async () => {
       const [c_compania, c_prestamo] = id.split('-');
-      const response = await obtenerDatosTicketVentaTercero({c_compania:c_compania, c_prestamo:c_prestamo, nLineas:nLineas});
+      const response = await obtenerDatosTicketVentaTercero({c_compania:c_compania, c_prestamo:c_prestamo, clientes:clientes});
       if(response.body && response.body.data) {
         convertDataToTicket(response.body.data);
       } else {

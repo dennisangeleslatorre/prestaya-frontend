@@ -123,6 +123,10 @@ const pagesArray = [
                                 title: 'FORMATO CANCELACIONES',
                                 value: 'FORMATO CANCELACIONES',
                                 key: 'FORMATO CANCELACIONES'
+                            },{
+                                title: 'FORMATO ACTA ENTREGA',
+                                value: 'FORMATO ACTA ENTREGA',
+                                key: 'FORMATO ACTA ENTREGA'
                             }
                         ]
                     },{
@@ -134,19 +138,37 @@ const pagesArray = [
                                 title: 'TRANSACCIONES TIENDA',
                                 value: 'TRANSACCIONES TIENDA',
                                 key: 'TRANSACCIONES TIENDA'
-                            },
-                            {
+                            },{
                                 title: 'NUEVA TRANSACCIÓN',
                                 value: 'NUEVA TRANSACCIÓN',
                                 key: 'NUEVA TRANSACCIÓN'
                             },{
-                                title: 'ACTUALIZAR TRANSACCIÓN',
-                                value: 'ACTUALIZAR TRANSACCIÓN',
-                                key: 'ACTUALIZAR TRANSACCIÓN'
+                                title: 'VISUALIZAR TRANSACCIÓN',
+                                value: 'VISUALIZAR TRANSACCIÓN',
+                                key: 'VISUALIZAR TRANSACCIÓN'
                             },{
                                 title: 'ANULAR TRANSACCIÓN',
                                 value: 'ANULAR TRANSACCIÓN',
                                 key: 'ANULAR TRANSACCIÓN'
+                            },{
+                                title: 'RECIBO VENTA TIENDA',
+                                value: 'RECIBO VENTA TIENDA',
+                                key: 'RECIBO VENTA TIENDA'
+                            }
+                        ]
+                    },{
+                        title: 'PRODUCTO',
+                        value: 'PRODUCTO',
+                        key: 'PRODUCTO',
+                        children: [
+                            {
+                                title: 'PRODUCTOS',
+                                value: 'PRODUCTOS',
+                                key: 'PRODUCTOS'
+                            },{
+                                title: 'STOCK',
+                                value: 'STOCK',
+                                key: 'STOCK'
                             }
                         ]
                     }

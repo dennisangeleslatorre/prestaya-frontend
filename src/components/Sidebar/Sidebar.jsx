@@ -12,11 +12,11 @@ import 'react-pro-sidebar/dist/css/styles.css'
 import './Sidebar.css'
 
 const systemModules = {
-    commercialModule: ['CLIENTES', 'PRÉSTAMOS', 'FLUJO CAJA USUARIOS', 'TRANSACCIONES TIENDA'],
+    commercialModule: ['CLIENTES', 'PRÉSTAMOS', 'FLUJO CAJA USUARIOS', 'TRANSACCIONES TIENDA', 'PRODUCTOS'],
     masterModule: [ 'AGENCIAS', 'COMPAÑÍAS', 'DEPARTAMENTOS', 'DISTRITOS', 'PAÍSES', 'PARÁMETROS', 'PERÍODOS', 'PROVINCIAS', 'TIPOS DE DOCUMENTO',
                     'TIPOS DE PRODUCTO', 'UNIDADES DE MEDIDA', 'TIPOS DE MOVIMIENTOS DE CAJA' ],
     systemModule: ['USUARIOS', 'PERFILES'],
-    reportModule: ['REPORTE DETALLADO', 'REPORTE RESUMIDO']
+    reportModule: ['REPORTE DETALLADO', 'REPORTE RESUMIDO', 'REPORTE FLUJO DE CAJA USUARIOS', 'REPORTE PRESTAMOS VENCIDOS Y NO VENCIDOS', 'REPORTE TRANSACCIONES TIENDA']
 }
 
 const Sidebar = ({isCollapse, showSidebar, toggled}) => {

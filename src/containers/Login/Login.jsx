@@ -72,6 +72,7 @@ const Login = (props) => {
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reportes.push('REPORTE RESUMIDO');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reportes.push('REPORTE DETALLADO');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 3) reportes.push('REPORTE PRESTAMOS VENCIDOS Y NO VENCIDOS');
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 4) reportes.push('REPORTE TRANSACCIONES TIENDA');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reportes.push('REPORTE FLUJO DE CAJA USUARIOS');
                     });
                     if(response2.body.data.length > 0) {

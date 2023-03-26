@@ -480,6 +480,12 @@ export const getAgenciaByCodigoAgencia = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getAgenciaAndCompaniaByCodigo = async (body) => {
+    console.log('---API--- : getAgenciaAndCompaniaByCodigo');
+    const url = `${port}/agencia/getAgenciaAndCompaniaByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 export const deleteAgencia = async (body) => {
     console.log('---API--- : deleteAgencia');
     const url = `${port}/agencia/delete`;
@@ -750,6 +756,18 @@ export const anularCancelacion = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const obtenerDatosActaEntrega = async (body) => {
+    console.log('---API--- : obtenerDatosActaEntrega');
+    const url = `${port}/prestamo/obtenerDatosActaEntrega`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getValidaSufijoProducto = async (body) => {
+    console.log('---API--- : getValidaSufijoProducto');
+    const url = `${port}/prestamo/getValidaSufijoProducto`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');
@@ -852,6 +870,56 @@ export const getMovimientosCajaUsuarioxConfirmar = async (body) => {
 export const confirmarMovimiento = async (body) => {
     console.log('---API--- : confirmarMovimiento');
     const url = `${port}/flujocaja/confirmarMovimiento`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//PRODUCTOS
+export const getProductoDinamico = async (body) => {
+    console.log('---API--- : getProductoDinamico');
+    const url = `${port}/producto/getProductoDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getProductoStockDinamico = async (body) => {
+    console.log('---API--- : getProductoStockDinamico');
+    const url = `${port}/producto/getProductoStockDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//TRANSACCION
+export const getTransaccionDinamico = async (body) => {
+    console.log('---API--- : getTransaccionDinamico');
+    const url = `${port}/transaccion/getTransaccionDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getTransaccionDetalle = async (body) => {
+    console.log('---API--- : getTransaccionDetalle');
+    const url = `${port}/transaccion/getTransaccionDetalle`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getTransaccionCabecera = async (body) => {
+    console.log('---API--- : getTransaccionCabecera');
+    const url = `${port}/transaccion/getTransaccionCabecera`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const registerTransaccion = async (body) => {
+    console.log('---API--- : registerTransaccion');
+    const url = `${port}/transaccion/registerTransaccion`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateTransaccionAnular = async (body) => {
+    console.log('---API--- : updateTransaccionAnular');
+    const url = `${port}/transaccion/updateTransaccionAnular`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getReporteTransaccion = async (body) => {
+    console.log('---API--- : getReporteTransaccion');
+    const url = `${port}/transaccion/getReporteTransaccion`;
     const response = await consumer(url, 'post', body);
     return response;
 };

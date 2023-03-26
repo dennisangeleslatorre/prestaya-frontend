@@ -52,23 +52,29 @@ import TicketVentaTercero from '../../containers/Prestamo/TicketVentaTercero'
 //Transaccion
 import TransaccionesTienda from '../../containers/TransaccionTienda/TransaccionesTienda'
 import TransaccionForm from '../../containers/TransaccionTienda/TransaccionForm'
+//PRODUCTOS
+import Productos from '../../containers/Productos/Productos'
 //FORMATO PRÉSTAMO
 import Contrato from '../../containers/Contrato/Contrato'
 //CANCELACIONES
 import Cancelaciones from '../../containers/Cancelar/Cancelaciones'
 import FormatoRecibos from '../../containers/Cancelar/FormatoRecibos'
 import FormatoCancelaciones from '../../containers/Cancelar/FormatoCancelaciones'
+import FormatoActaEntrega from '../../containers/Cancelar/FormatoActaEntrega'
 //REPORTE
 import Reportes from '../../containers/Reporte/Reportes'
 import ReporteDetallado from '../../containers/Reporte/ReporteDetallado'
 import ReporteResumido from '../../containers/Reporte/ReporteResumido'
 import ReporteFlujoCaja from '../../containers/Reporte/ReporteFlujoCaja'
 import ReportePrestamosVencidos from '../../containers/Reporte/ReportePrestamosVencidos'
+import ReporteTransaccionesTienda from '../../containers/Reporte/ReporteTransaccionesTienda'
 //FLUJO CAJA
 import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
 import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
 import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChicaUsuarioxDiaMov'
 import FormMovimientoCUxConfirmar from '../../containers/FlujoCaja/FormMovimientoCUxConfirmar'
+import TransaccionFormView from '../../containers/TransaccionTienda/TransaccionFormView'
+import TicketVentaTienda from '../../containers/TransaccionTienda/TicketVentaTienda'
 
 export default{
     initialPages: [
@@ -426,7 +432,7 @@ export default{
             name: 'REMATE'
         },{
             component: TicketVentaTercero,
-            path: '/ticketVentaTercero/:id/:nLineas',
+            path: '/ticketVentaTercero/:id/:clientes',
             exact: true,
             name: 'TICKET VENTA TERCEROS'
         },{
@@ -436,14 +442,24 @@ export default{
             name: 'TRANSACCIONES TIENDA'
         },{
             component: TransaccionForm,
-            path: '/nuevaTransaccion',
+            path: '/nuevaTransaccion/:compania/:agencia',
             exact: true,
             name: 'NUEVA TRANSACCIÓN'
         },{
-            component: TransaccionForm,
-            path: '/actualizarTransaccion',
+            component: TransaccionFormView,
+            path: '/visualizarTransaccion/:compania/:agencia/:tipodocumento/:numerodocumento',
             exact: true,
-            name: 'ACTUALIZAR TRANSACCIÓN'
+            name: 'VISUALIZAR TRANSACCIÓN'
+        },{
+            component: TicketVentaTienda,
+            path: '/ticketVentaTienda/:id',
+            exact: true,
+            name: 'RECIBO VENTA TIENDA'
+        },{
+            component: Productos,
+            path: '/productos',
+            exact: true,
+            name: 'PRODUCTOS'
         },{
             component: Contrato,
             path: '/formatoPrestamo/:id',
@@ -464,6 +480,11 @@ export default{
             path: '/formatoCancelaciones/:id',
             exact: true,
             name: 'FORMATO CANCELACIONES'
+        },{
+            component: FormatoActaEntrega,
+            path: '/formatoActaEntrega/:id',
+            exact: true,
+            name: 'FORMATO ACTA ENTREGA'
         },{
             component: BusquedaFlujoCaja,
             path: '/flujousuarios',
@@ -519,6 +540,11 @@ export default{
             path: '/reportePrestamosVencidosyNovencidos',
             exact: true,
             name: 'REPORTE PRESTAMOS VENCIDOS Y NO VENCIDOS'
+        },{
+            component: ReporteTransaccionesTienda,
+            path: '/reporteTransaccionesTienda',
+            exact: true,
+            name: 'REPORTE TRANSACCIONES TIENDA'
         }
     ]
 }
