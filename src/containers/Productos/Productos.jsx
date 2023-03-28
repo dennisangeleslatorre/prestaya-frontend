@@ -434,8 +434,8 @@ const Productos = () => {
         <StockProductModal
             isOpen={openStockModal}
             onClose={()=>setOpenStockModal(false)}
-            compania={compania}
-            agencia={agencia}
+            compania={elementSelected[0]?.c_compania}
+            agencia={elementSelected[0]?.c_agencia}
             codigoProducto={elementSelected[0]?.c_item}
         />
     </>

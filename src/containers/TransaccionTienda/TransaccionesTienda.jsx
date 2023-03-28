@@ -509,6 +509,7 @@ const TransaccionesTienda = () => {
 
     const getLastSearch = async () => {
         const parametros = getParamsForFilterTransaccion();
+        console.log("parametros obtenidos", parametros);
         if( parametros && Object.keys(parametros).length !== 0 ) {
             await onHandleSearch(parametros);
             if(parametros.c_compania) setCompania(parametros.c_compania);
@@ -516,14 +517,18 @@ const TransaccionesTienda = () => {
             if(parametros.d_fechadocumentoInicio && parametros.d_fechadocumentoFin) {
                 setFecha({fechaInicio: parametros.d_fechadocumentoInicio, fechaFin: parametros.d_fechadocumentoFin, isValid:true});
                 setDisabledFilterFecha(false);
+            } else {
+                setDisabledFilterFecha(true);
             }
             if(parametros.n_cliente) setCodigoCliente(parametros.n_cliente);
-            if(parametros.c_tipoproducto) setTipo(parametros.c_tipoproducto);
+            if(parametros.c_tipodocumento) setTipo(parametros.c_tipodocumento);
             if(parametros.c_numerodocumento) setNumeroDocumento(parametros.c_numerodocumento);
 
             if(parametros.periodo_inicio && parametros.periodo_fin) {
                 setPeriodo({periodoInicio: parametros.periodo_inicio, periodoFin: parametros.periodo_fin, isValid:true});
                 setDisabledPeriodo(false);
+            } else {
+                setDisabledPeriodo(true);
             }
             if(parametros.c_item) setCodigoProducto(parametros.c_item);
             if(parametros.c_estado) setEstado(parametros.c_estado);
