@@ -133,7 +133,7 @@ const TransactionDetailModal = (props) => {
                         readOnly={true}
                         classForm="col-12 col-md-6"
                         marginForm=""
-                        searchWidth={4}
+                        searchWidth={5}
                     />
                     <InputComponent
                         label="Cantidad"

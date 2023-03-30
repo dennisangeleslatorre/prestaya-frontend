@@ -17,7 +17,7 @@ const columnsExportExcel = [
     },
     {
         label: 'FECHA',
-        value: row => (moment(row.d_fechamov_format).format('DD/MM/yyyy') || '')
+        value: row => (moment(row.fechamov).format('DD/MM/yyyy') || '')
     },
     {
         label: 'OOBSERVACIONES',
@@ -57,7 +57,7 @@ const columnsExportExcel = [
     },
     {
         label: 'MNT TOTAL',
-        value: row => (row.n_montototalcancelar || '')
+        value: row => (row.n_montoxdiamov || '')
     },
     {
         label: 'FUENTE',

@@ -371,7 +371,7 @@ const Productos = () => {
                                             readOnly={true}
                                             classForm="col-12 col-md-6"
                                             marginForm="ml-0"
-                                            searchWidth={4}
+                                            searchWidth={5}
                                         />
                                         <SelectComponent
                                             labelText="Estado"
