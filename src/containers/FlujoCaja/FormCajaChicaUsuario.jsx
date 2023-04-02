@@ -145,19 +145,22 @@ const FormCajaChicaUsuario = () => {
     }
 
     const prepareUpdateDetailsToSend = (updateDetails) => {
-        return [...updateDetails].map( detalle => {
+        const updatedDetails = [...updateDetails].filter(detalle => detalle.general.is_updated === true);
+        if(updatedDetails.length > 0) {
+            return updatedDetails.map( detalle => {
                 let detalleFormat = `'${moment(detalle.general.d_fechamov).format("yyyy-MM-DD HH:mm:ss")}','${detalle.general.c_estado}','${detalle.general.c_observaciones}'`;
                 let movimientosDetail = detalle.movimientos;
                 const nuevosMovimientos = movimientosDetail.filter(movimiento => !movimiento.d_fecharegistro);
                 let newMovimientos = nuevosMovimientos.length > 0 ?
                 nuevosMovimientos.map(mov => `'${mov.d_fechamov}','${mov.c_tipomovimientocc}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${mov.c_flagxconfirmar}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
-                const actualizarMovimientos = movimientosDetail.filter(movimiento => movimiento.d_fecharegistro);
+                const actualizarMovimientos = movimientosDetail.filter(movimiento => movimiento.d_fecharegistro && movimiento.is_updated === true);
                 let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}';;'${mov.c_tipomovimientocc}';;${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null };;'${mov.c_observaciones}';;'${mov.n_montoxdiamov}';;'${mov.c_flagxconfirmar}';;'${userLogedIn}'`).reduce((acc, cv) => `${acc}//${cv}`)
                 : "'-'";
                 return `${detalleFormat}??${newMovimientos}??${updateMovimientos}`
-            }
-        ).reduce((acc,cv)=>`${acc}||${cv}`);
+            }).reduce((acc,cv)=>`${acc}||${cv}`);
+        }
+        return '';
     }
 
     const prepareDeleteDetailsToSend = (removeDetails) => {

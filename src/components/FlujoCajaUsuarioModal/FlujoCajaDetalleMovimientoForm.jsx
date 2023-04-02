@@ -110,7 +110,8 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
                             c_usuariomovimiento: usuarioMov,
                             c_observaciones: observaciones,
                             n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
-                            c_flagxconfirmar: flagConfirmar
+                            c_flagxconfirmar: flagConfirmar,
+                            is_updated: true
                         }
                         movimientosAux[Number(movimientoSeleccionado.general.key)-1] = movimiento;
                         setMovimientos(movimientosAux);

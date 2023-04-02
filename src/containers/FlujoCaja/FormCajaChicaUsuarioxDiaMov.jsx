@@ -229,7 +229,8 @@ const FormCajaChicaUsuarioxDiaMov = () => {
                 ...detalleSeleccionado.general,
                 d_fechamov:fechaMov.value,
                 c_estado:estado,
-                c_observaciones:observaciones
+                c_observaciones:observaciones,
+                is_updated: true
             }, movimientos:movimientos.map(item => {item.d_fechamov = fechaMov.value; return item;})
         }
     }
@@ -396,8 +397,8 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             aux.flagConfirmar = item.c_flagxconfirmar === "S" ? "SI" : "NO";
             aux.c_flagconfirmado_desc = item.c_flagconfirmado === "S" ? "SI" : "NO";
             aux.d_fechaconfirmado_format = item.d_fechaconfirmado ? moment(item.d_fechaconfirmado).format("DD/MM/yyyy") : "";
-            aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
-            aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
+            aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
+            aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
             saldoAux = saldoAux + Number(item.n_montoxdiamov ?  ( Number(item.n_montoxdiamov) * (tipoMov.c_clasetipomov === "I" ? 1 : -1) ) : 0);
             return aux;
         });
