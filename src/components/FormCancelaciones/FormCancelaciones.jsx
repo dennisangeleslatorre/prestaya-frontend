@@ -110,15 +110,16 @@ const FormCancelaciones = (props) => {
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
-        || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES" || item == "FORMATO ACTA ENTREGA"
+        || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES" || item == "FORMATO ACTA ENTREGA" || item === "ENTREGAR"
     })
     const cancelarPermission = userPermisssions.includes("CANCELAR");
     const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
     const regresarEntregaPermission = userPermisssions.includes("REGRESAR DE ENTREGA");
-    const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
+    //const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
     const formatoRecibosCancelaciones = userPermisssions.includes("FORMATO RECIBOS CANCELACIONES");
     const formatoCancelaciones = userPermisssions.includes("FORMATO CANCELACIONES");
     const formatoActaEntrega = userPermisssions.includes("FORMATO ACTA ENTREGA");
+    const entregarPermission = userPermisssions.includes("ENTREGAR");
 
     const getParameters = async () => {
         const [c_compania, c_prestamo] = elementId.split('-');
@@ -246,6 +247,10 @@ const FormCancelaciones = (props) => {
         history.push(`/formatoActaEntrega/${elementId}`);
     }
 
+    const handleIrEntrega = () => {
+        history.push(`/entregarPrestamo/${elementId}`);
+    }
+
     //Atributos de la tabla
     const rowSelection = {
         onChange: (selectedKeys, selectedRows) => {
@@ -282,6 +287,7 @@ const FormCancelaciones = (props) => {
                         { (formatoRecibosCancelaciones) && <Button onClick={handleIrFormatoRecibos}>FORMATO RECIBOS</Button> }
                         { (formatoCancelaciones) && <Button onClick={handleIrFormatoCancelaciones}>FORMATO CANCELACIONES</Button> }
                         { (formatoActaEntrega && estadoPrestamo === "EN") && <Button onClick={handleIrFormatoActaEntrega}>FORMATO ACTA ENTREGA</Button> }
+                        { (entregarPermission && estadoPrestamo === "CA") && <Button onClick={handleIrEntrega}>ENTREGAR</Button> }
                     </Space>
                 </div>
             </div>

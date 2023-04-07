@@ -531,6 +531,12 @@ const PrestamoForm = (props) => {
             setUsuarioCancelacion(data.c_usuariocancelacion);
             if(data.d_fechacancelacion) setFechaCancelacion(moment(data.d_fechacancelacion).format('DD/MM/yyy HH:mm:ss'));
             if(data.c_usuariodesembolso) setUsuarioDesembolso(data.c_usuariodesembolso);
+            if(urlFragment === "entregarPrestamo") {
+                setPersonaRecoge({value: data.c_nombrescompleto});
+                setNumeroDocumentoEntrega({value:data.c_numerodocumento, isValid: true});
+                setTipoDocumentoEntrega(data.c_tipodocumento);
+                setTelefonoEntrega({value:data.c_telefono1, isValid: true});
+            }
 
             const responseProducts = await getProductosByPrestamo({c_compania:c_compania, c_prestamo:c_prestamo});
             if( responseProducts && responseProducts.status === 200 && responseProducts.body.data ) setProductos(responseProducts.body.data);
@@ -1016,7 +1022,7 @@ const PrestamoForm = (props) => {
                         labelText="Tipo documento"
                         defaultValue="Seleccione un tipo documento"
                         items={tiposDocumentos}
-                        selectId="tipoDocId"
+                        selectId="tipoDocEntregaId"
                         valueField="c_tipodocumento"
                         optionField="c_descripcion"
                         valueSelected={tipoDocumentoEntrega}
@@ -1043,7 +1049,7 @@ const PrestamoForm = (props) => {
                         setState={setTelefonoEntrega}
                         type="text"
                         placeholder="Teléfono"
-                        inputId="telefonoId"
+                        inputId="telefonoEntregaId"
                         validation={urlFragment==="entregarPrestamo" ? "phone" : null}
                         max={20}
                         readOnly={urlFragment!=="entregarPrestamo" ? true : false}
@@ -1161,6 +1167,7 @@ const PrestamoForm = (props) => {
                 message={responseData.message}
                 buttonLink={responseData.url}
                 buttonLinkView={urlFragment === 'rematePrestamo' ? `/visualizarPrestamo/${elementId}` : ''}
+                buttonGoToCancellations={urlFragment === 'entregarPrestamo' ? `/cancelaciones/${elementId}` : ''}
             />
             <SearchModalCliente
                 isOpen={openSearchModal}

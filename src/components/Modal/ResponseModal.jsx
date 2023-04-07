@@ -2,7 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Modal from './ModalNotification';
 
-const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info", showCloseButton = true, buttonLinkView=null}) => {
+const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonClass="btn-info", showCloseButton = true, buttonLinkView=null,
+    buttonGoToCancellations=null}) => {
     return (
         <Modal isOpen={isOpen} title={title} onClose={onClose} showCloseButton={showCloseButton}>
             {/*body*/}
@@ -15,6 +16,9 @@ const ResponseModal = ({isOpen, title, onClose, message, buttonLink="", buttonCl
                     Aceptar
                 </Link> :
                     <>
+                    {buttonGoToCancellations && <Link to={buttonGoToCancellations} className={`btn btn-light mr-4`}>
+                        Ir a cancelaciones
+                    </Link>}
                     {buttonLink && <Link to={buttonLink} className={`btn ${buttonClass} mr-4`}>
                         Ir a lista
                     </Link>}
