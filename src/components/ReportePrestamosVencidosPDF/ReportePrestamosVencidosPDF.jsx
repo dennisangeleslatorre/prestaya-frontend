@@ -341,7 +341,7 @@ const getTable = (element) => (
     </View>
 )
 
-const ReporteDetalladoPDFComponent = ({element, general}) => (
+const ReportePrestamosVencidosPDF = ({element, general}) => (
     <Document>
         <Page size="A4" orientation='landscape' style={styles.page}>
             <View fixed style={styles.header__container}>
@@ -366,4 +366,4 @@ const ReporteDetalladoPDFComponent = ({element, general}) => (
     </Document>
 )
 
-export default ReporteDetalladoPDFComponent;
+export default ReportePrestamosVencidosPDF;

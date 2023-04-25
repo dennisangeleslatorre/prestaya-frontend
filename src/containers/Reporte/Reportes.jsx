@@ -46,6 +46,7 @@ const Reportes = () => {
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 2) reporteLink = '/reporteDetallado';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 3) reporteLink = '/reportePrestamosVencidosyNovencidos';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 4) reporteLink = '/reporteTransaccionesTienda';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 5) reporteLink = '/reportePrestamoDetalladoFechaCancelacion';
                                                 return (
                                                     <tr>
                                                         <td></td>

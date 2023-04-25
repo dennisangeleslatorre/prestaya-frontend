@@ -11,10 +11,10 @@ import DateRangeComponent from '../../components/DateRangeComponent/DateRangeCom
 import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRangeComponent';
 import InputComponent from '../../components/InputComponent/InputComponent';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getDataReporteVencidosyNoVencidos, listAllPaises,
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getPrestamosDetalladoPeriodo, listAllPaises,
     listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
-import ReportePrestamosVencidosPDF from '../../components/ReportePrestamosVencidosPDF/ReportePrestamosVencidosPDF'
+import ReportePrestamoDetalladoFCancelacionPdfComponent from '../../components/ReportePrestamoDetalladoFCancelacionPdfComponent/ReportePrestamoDetalladoFCancelacionPdfComponent';
 
 const columnsExportExcel = [
     {
@@ -115,11 +115,12 @@ const estados = [
     { name: 'REMATE', value: 'RE' }
 ]
 
-const ReportePrestamosVencidos = () => {
+
+const ReportePrestamoDetalladoFechaCancelacion = () => {
     //Filtros
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
-    const [estado, setEstado] = useState("VI");
+    const [estado, setEstado] = useState("T");
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
@@ -128,13 +129,16 @@ const ReportePrestamosVencidos = () => {
     const [fechaCancelacion, setFechaCancelacion] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [disabledFilterFechaCancelacion, setDisabledFilterFechaCancelacion] = useState(true);
     const [nPrestamo, setNPrestamo] = useState({value:""});
-    const [esVencido, setEsVencido] = useState("S");
+    const [esVencido, setEsVencido] = useState("T");
     const [diasVencido, setDiasVencido] = useState({inicio:0, fin:0, isValid: false});
     const [disabledFilterDiasVencido, setDisabledFilterDiasVencido] = useState(true);
     const [fechaVencimiento, setFechaVencimiento] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [disabledFilterFechaVencimiento, setDisabledFilterFechaVencimiento] = useState(true);
     const [fechaVencimientoReprogramada, setFechaVencimientoReprogramada] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [disabledFilterFechaVencimientoReprogramada, setDisabledFilterFechaVencimientoReprogramada] = useState(true);
+    const [fechaCancelacionDetalle, setFechaCancelacionDetalle] =
+        useState({fechaInicio: moment().startOf('month').format('YYYY-MM-DD'), fechaFin: moment().endOf('month').format('YYYY-MM-DD'), isValid: false});
+    const [disabledFilterFechaCancelacionDetalle, setDisabledFilterFechaCancelacionDetalle] = useState(false);
     const [paisCodigo, setPaisCodigo] = useState("");
     const [departamentoCodigo, setDepartamentoCodigo] = useState("");
     const [provinciaCodigo, setProvinciaCodigo] = useState("");
@@ -158,7 +162,6 @@ const ReportePrestamosVencidos = () => {
     const [openResponseModal , setOpenResponseModal] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -189,27 +192,33 @@ const ReportePrestamosVencidos = () => {
         let filters = {};
         if(compania) body.c_compania = compania;
         if(agencia && agencia !== "T") body.c_agencia = agencia;
+        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
         if(estado && estado !== "T") body.c_estado = estado;
         filters.estado = estados.find(e => e.value === estado).name;
         if(codigoCliente) body.n_cliente = codigoCliente;
-        if(fechaDesembolso.isValid && !disabledFilterFechaDesembolso) {
-            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
-            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
+        if(diasVencido.isValid && !disabledFilterDiasVencido) {
+            body.n_diasvencido_inicio = diasVencido.inicio;
+            body.n_diasvencido_fin = diasVencido.fin;
         }
+        if(esVencido && esVencido !== "T") {
+            body.c_vencido = esVencido === "S" ? "SI" : "NO";
+            filters.esVencido = esVencido === "S" ? "SI" : "NO";
+        } else {
+            filters.esVencido = "AMBOS";
+            filters.c_vencido = "AMBOS";
+        }
+        if(paisCodigo) body.c_paiscodigo = paisCodigo;
+        if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
+        if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
+        if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
+
         if(fechaCancelacion.isValid && !disabledFilterFechaCancelacion) {
             body.d_fechacancelacioninicio = fechaCancelacion.fechaInicio;
             body.d_fechacancelacionfin = fechaCancelacion.fechaFin;
         }
-        if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
-        if(esVencido && esVencido !== "T") {
-            body.esVencido = esVencido;
-            filters.esVencido = esVencido === "S" ? "SI" : "NO";
-        } else {
-            filters.esVencido = "AMBOS";
-        }
-        if(diasVencido.isValid && !disabledFilterDiasVencido) {
-            body.n_incio = diasVencido.inicio;
-            body.n_fin = diasVencido.fin;
+        if(fechaDesembolso.isValid && !disabledFilterFechaDesembolso) {
+            body.d_fechadesembolsoinicio = fechaDesembolso.fechaInicio;
+            body.d_fechadesembolsofin = fechaDesembolso.fechaFin;
         }
         if(fechaVencimiento.isValid && !disabledFilterFechaVencimiento) {
             body.d_fechavencimientoinicio = fechaVencimiento.fechaInicio;
@@ -219,73 +228,72 @@ const ReportePrestamosVencidos = () => {
             body.d_fechaentregainicio = fechaVencimientoReprogramada.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoReprogramada.fechaFin;
         }
-        if(paisCodigo) body.c_paiscodigo = paisCodigo;
-        if(departamentoCodigo) body.c_despartamentocodigo = departamentoCodigo;
-        if(provinciaCodigo) body.c_provinciacodigo = provinciaCodigo;
-        if(distritoCodigo) body.c_distritocodigo = distritoCodigo;
         if(fechaActual.value) {
             body.d_fechaactual = fechaActual.value;
             filters.fechaActual = fechaActual.value;
         };
+        if(fechaCancelacionDetalle.isValid && !disabledFilterFechaCancelacionDetalle) {
+            body.d_fechacancelacioninicio = fechaCancelacionDetalle.fechaInicio;
+            body.d_fechacancelacionfin = fechaCancelacionDetalle.fechaFin;
+        }
         setGeneral(filters);
         return body;
     }
 
-    const getSumas = (datos) => {
-        let element = {
-            suma_montoprestamo: 0,
-            suma_montointereses: 0,
-            suma_montototalprestamo: 0,
-            suma_interescancelado: 0,
-            suma_montoprestamocancelado: 0,
-            suma_montocomisioncancelado: 0,
-            suma_montototalcancelado: 0
-        };
-        element.lineasReporte = datos;
-        datos.forEach(item => {
-            if(item.n_montoprestamo) element.suma_montoprestamo += Number(item.n_montoprestamo);
-            if(item.n_montointereses) element.suma_montointereses += Number(item.n_montointereses);
-            if(item.n_montototalprestamo) element.suma_montototalprestamo += Number(item.n_montototalprestamo);
-            if(item.calc_sumainterescancelado) element.suma_interescancelado += Number(item.calc_sumainterescancelado);
-            if(item.calc_sumamontoprestamocancelado) element.suma_montoprestamocancelado += Number(item.calc_sumamontoprestamocancelado);
-            if(item.calc_sumamontocomisioncancelada) element.suma_montocomisioncancelado += Number(item.calc_sumamontocomisioncancelada);
-            if(item.calc_sumamontotalcancelado) element.suma_montototalcancelado += Number(item.calc_sumamontotalcancelado);
-        })
-        return element;
-    };
-
     const onHandleSearch = async () => {
         let parametros =  prepareBodyToSearch();
-        const response = await getDataReporteVencidosyNoVencidos(parametros);
+        const response = await getPrestamosDetalladoPeriodo(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
             getDataForTable(data);
+            getDataForPDF(data);
         }
-        else getDataForTable([]);
+        else {
+            getDataForTable([]);
+            getDataForPDF([]);
+        };
+    }
+
+    const getLineasReportes = (datos) => {
+        let element = {
+            suma_montointerescancelar: 0,
+            suma_montoprestamocancelar: 0,
+            suma_montocomisioncancelar: 0,
+            suma_montototalcancelar: 0
+        };
+
+        const sortedData = datos.sort((a, b) => {
+            if (a.n_prestamo !== b.n_prestamo) {
+              return a.n_prestamo - b.n_prestamo;
+            }
+            return a.c_cliente.localeCompare(b.c_cliente);
+        });
+
+        const groupedData = [];
+        let currentGroup = { n_prestamo: '', c_cliente: '' };
+
+        sortedData.forEach((obj) => {
+            if (obj.n_prestamo === currentGroup.n_prestamo && obj.c_cliente === currentGroup.c_cliente) {
+                groupedData.push({ ...obj, n_prestamo: '', c_cliente: '', c_estado: '' });
+            } else {
+                groupedData.push(obj);
+                currentGroup = { n_prestamo: obj.n_prestamo, c_cliente: obj.c_cliente };
+            }
+        });
+        element.lineasReporte = groupedData;
+        return element;
     }
 
     const getDataForPDF = (datos) => {
         let element = {};
-        const dataReportes = getSumas(datos);
-        element = {...dataReportes};
-        element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
-        setElementPdf(element);
+       const dataReportes = getLineasReportes(datos);
+       element = {...dataReportes};
+       element.compania = companias.find(item => item.c_compania = compania).c_descripcion;
+       setElementPdf(element);
     };
 
     const getDataForTable = (datos) => {
-        getDataForPDF(datos);
-        const listAux = datos.map((item) => {
-            item.key = `${item.c_prestamo}-${item.c_compania}`;
-            item.c_monedaprestamo = item.c_monedaprestamo === 'L' ? 'LOCAL' : 'EXTERIOR';
-            item.c_estado = estados.find(estado => estado.value === item.c_estado).name;
-            item.esVencido = item.esVencido === 'N' ? 'NO' : 'SI';
-            item.d_fechadesembolso = item.d_fechadesembolso ? moment(item.d_fechadesembolso).format('DD/MM/yyyy') : "";
-            item.d_fechavencimiento = item.d_fechavencimiento ? moment(item.d_fechavencimiento).format('DD/MM/yyyy') : "";
-            item.d_fechavencimientoreprogramada = item.d_fechavencimientoreprogramada ? moment(item.d_fechavencimientoreprogramada).format('DD/MM/yyyy') : "";
-            item.ultimafechacancelacionregistrada = item.ultimafechacancelacionregistrada ? moment(item.ultimafechacancelacionregistrada).format('DD/MM/yyyy') : "";
-            return item;
-        })
-        setDataReportToTable(listAux);
+        //setDataReportToTable(datos);
     }
 
     const onHandleClickSearch = async () => {
@@ -381,7 +389,7 @@ const ReportePrestamosVencidos = () => {
     return (
         <>
             <ReportContainer>
-                <div className="row col-12 col-md-12">
+            <div className="row col-12 col-md-12">
                     <ReactSelect
                         inputId="companiaCodeId"
                         labelText="Compañía"
@@ -565,6 +573,16 @@ const ReportePrestamosVencidos = () => {
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                     />
+                    <DateRangeComponent
+                        inputId="fechaCancelacionDetalleId"
+                        labelText="F. cancelación detalle"
+                        state={fechaCancelacionDetalle}
+                        setState={setFechaCancelacionDetalle}
+                        enabled={disabledFilterFechaCancelacionDetalle}
+                        setEnabled={setDisabledFilterFechaCancelacionDetalle}
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
                 </div>
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                     <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
@@ -579,7 +597,7 @@ const ReportePrestamosVencidos = () => {
                     {elementPdf ? <PDFViewer
                         className="col-12"
                         style={{height: "800px"}}
-                        children={<ReportePrestamosVencidosPDF element={elementPdf} general={general}/>}
+                        children={<ReportePrestamoDetalladoFCancelacionPdfComponent element={elementPdf} general={general}/>}
                     /> : <div className="text-center">
                         <h2>No se a realizado una búsqueda</h2>
                     </div>}
@@ -602,4 +620,4 @@ const ReportePrestamosVencidos = () => {
     )
 }
 
-export default ReportePrestamosVencidos
+export default ReportePrestamoDetalladoFechaCancelacion

@@ -68,6 +68,7 @@ import ReporteResumido from '../../containers/Reporte/ReporteResumido'
 import ReporteFlujoCaja from '../../containers/Reporte/ReporteFlujoCaja'
 import ReportePrestamosVencidos from '../../containers/Reporte/ReportePrestamosVencidos'
 import ReporteTransaccionesTienda from '../../containers/Reporte/ReporteTransaccionesTienda'
+import ReportePrestamoDetalladoFechaCancelacion from '../../containers/Reporte/ReportePrestamoDetalladoFechaCancelacion'
 //FLUJO CAJA
 import BusquedaFlujoCaja from '../../containers/FlujoCaja/BusquedaFlujoCaja'
 import FormCajaChicaUsuario from '../../containers/FlujoCaja/FormCajaChicaUsuario'
@@ -545,6 +546,11 @@ export default{
             path: '/reporteTransaccionesTienda',
             exact: true,
             name: 'REPORTE TRANSACCIONES TIENDA'
+        },{
+            component: ReportePrestamoDetalladoFechaCancelacion,
+            path: '/reportePrestamoDetalladoFechaCancelacion',
+            exact: true,
+            name: 'REPORTE PRESTAMO DETALLADO POR FECHA CANCELACION'
         }
     ]
 }

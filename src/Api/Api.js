@@ -824,6 +824,12 @@ export const getDataReporteVencidosyNoVencidos = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getPrestamosDetalladoPeriodo = async (body) => {
+    console.log('---API--- : getPrestamosDetalladoPeriodo');
+    const url = `${port}/reporte/getPrestamosDetalladoPeriodo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Flujo Caja
 export const registerFlujoCaja = async (body) => {
     console.log('---API--- : registerFlujoCaja');
