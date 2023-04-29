@@ -76,6 +76,9 @@ import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChic
 import FormMovimientoCUxConfirmar from '../../containers/FlujoCaja/FormMovimientoCUxConfirmar'
 import TransaccionFormView from '../../containers/TransaccionTienda/TransaccionFormView'
 import TicketVentaTienda from '../../containers/TransaccionTienda/TicketVentaTienda'
+//UBICACION
+import Ubicaciones from '../../containers/Ubicaciones/Ubicaciones'
+import UbicacionForm from '../../containers/Ubicaciones/UbicacionForm'
 
 export default{
     initialPages: [
@@ -331,6 +334,26 @@ export default{
             path: '/visualizarAgencia/:id',
             exact: true,
             name: 'VISUALIZAR AGENCIA'
+        },{
+            component: Ubicaciones,
+            path: '/ubicaciones',
+            exact: true,
+            name: 'UBICACIONES DE AGENCIA'
+        },{
+            component: UbicacionForm,
+            path: '/nuevaUbicacion',
+            exact: true,
+            name: 'AGREGAR UBICACIÓN AGENCIA'
+        },{
+            component: UbicacionForm,
+            path: '/editarUbicacion/:id',
+            exact: true,
+            name: 'ACTUALIZAR UBICACIÓN AGENCIA'
+        },{
+            component: UbicacionForm,
+            path: '/visualizarUbicacion/:id',
+            exact: true,
+            name: 'VISUALIZAR UBICACIÓN AGENCIA'
         },{
             component: Parametros,
             path: '/parametros',

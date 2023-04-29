@@ -233,8 +233,8 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
             filters.fechaActual = fechaActual.value;
         };
         if(fechaCancelacionDetalle.isValid && !disabledFilterFechaCancelacionDetalle) {
-            body.d_fechacancelacioninicio = fechaCancelacionDetalle.fechaInicio;
-            body.d_fechacancelacionfin = fechaCancelacionDetalle.fechaFin;
+            body.d_fechacancelaciondetinicio = fechaCancelacionDetalle.fechaInicio;
+            body.d_fechacancelaciondetfin = fechaCancelacionDetalle.fechaFin;
         }
         setGeneral(filters);
         return body;
@@ -262,25 +262,13 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
             suma_montototalcancelar: 0
         };
 
-        const sortedData = datos.sort((a, b) => {
-            if (a.n_prestamo !== b.n_prestamo) {
-              return a.n_prestamo - b.n_prestamo;
-            }
-            return a.c_cliente.localeCompare(b.c_cliente);
+        datos.forEach((obj) => {
+            element.suma_montointerescancelar = (Number(element.suma_montointerescancelar) + Number(obj.n_montointeresescancelar)).toFixed(2);
+            element.suma_montoprestamocancelar = (Number(element.suma_montoprestamocancelar) + Number(obj.n_montoprestamocancelar)).toFixed(2);
+            element.suma_montocomisioncancelar = (Number(element.suma_montocomisioncancelar) + Number(obj.n_montocomisioncancelar)).toFixed(2);
+            element.suma_montototalcancelar = (Number(element.suma_montototalcancelar) + Number(obj.n_montototalcancelar)).toFixed(2);
         });
-
-        const groupedData = [];
-        let currentGroup = { n_prestamo: '', c_cliente: '' };
-
-        sortedData.forEach((obj) => {
-            if (obj.n_prestamo === currentGroup.n_prestamo && obj.c_cliente === currentGroup.c_cliente) {
-                groupedData.push({ ...obj, n_prestamo: '', c_cliente: '', c_estado: '' });
-            } else {
-                groupedData.push(obj);
-                currentGroup = { n_prestamo: obj.n_prestamo, c_cliente: obj.c_cliente };
-            }
-        });
-        element.lineasReporte = groupedData;
+        element.lineasReporte = datos;
         return element;
     }
 

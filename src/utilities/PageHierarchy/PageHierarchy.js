@@ -91,6 +91,10 @@ const pagesArray = [
                         value: 'MODIFICA USUARIO OPERACIÓN',
                         key: 'MODIFICA USUARIO OPERACIÓN'
                     },{
+                        title: 'ASIGNAR UBICACIÓN',
+                        value: 'ASIGNAR UBICACIÓN',
+                        key: 'ASIGNAR UBICACIÓN'
+                    },{
                         title: 'CANCELAR PRÉSTAMO',
                         value: 'CANCELAR PRÉSTAMO',
                         key: 'CANCELAR PRÉSTAMO',
@@ -510,6 +514,33 @@ const pagesArray = [
                         title: 'ELIMINAR UNIDAD DE MEDIDA',
                         value: 'ELIMINAR UNIDAD DE MEDIDA',
                         key: 'ELIMINAR UNIDAD DE MEDIDA'
+                    }
+                ]
+            },{
+                title: 'UBICACIÓN AGENCIA',
+                value: 'UBICACIÓN AGENCIA',
+                key: 'UBICACIÓN AGENCIA',
+                children: [
+                    {
+                        title: 'UBICACIONES DE AGENCIA',
+                        value: 'UBICACIONES DE AGENCIA',
+                        key: 'UBICACIONES DE AGENCIA'
+                    },{
+                        title: 'AGREGAR UBICACIÓN AGENCIA',
+                        value: 'AGREGAR UBICACIÓN AGENCIA',
+                        key: 'AGREGAR UBICACIÓN AGENCIA'
+                    },{
+                        title: 'ACTUALIZAR UBICACIÓN AGENCIA',
+                        value: 'ACTUALIZAR UBICACIÓN AGENCIA',
+                        key: 'ACTUALIZAR UBICACIÓN AGENCIA'
+                    },{
+                        title: 'VISUALIZAR UBICACIÓN AGENCIA',
+                        value: 'VISUALIZAR UBICACIÓN AGENCIA',
+                        key: 'VISUALIZAR UBICACIÓN AGENCIA'
+                    },{
+                        title: 'ELIMINAR UBICACIÓN AGENCIA',
+                        value: 'ELIMINAR UBICACIÓN AGENCIA',
+                        key: 'ELIMINAR UBICACIÓN AGENCIA'
                     }
                 ]
             },{

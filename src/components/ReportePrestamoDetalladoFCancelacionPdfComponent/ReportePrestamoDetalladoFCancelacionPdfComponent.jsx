@@ -216,81 +216,97 @@ const getHeader = () => (
 );
 
 const getColumns = (lineasReporte) => {
-    return lineasReporte.map((item, index) => (
-        <View style={styles.table__row__container} key={'linea'+index}>
-            <View style={styles.table__body__column__cod}>
-                <Text style={styles.table__text__body}>{item.c_prestamo}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.n_cliente}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.c_nombrescompleto}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.d_fechadesembolso}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.d_fechavencimiento}</Text>
-            </View>
-            <View style={styles.table__body__column__short}>
-                <Text style={styles.table__text__body}>{item.c_monedaprestamo}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montoprestamo).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montointereses).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montototalprestamo).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column__short}>
-                <Text style={styles.table__text__body}>{item.calc_diasplazototales}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.d_fechavencimientoreprogramada}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.ultimafechacancelacionregistrada}</Text>
-            </View>
-            <View style={styles.table__body__column__short}>
-                <Text style={styles.table__text__body}>{item.calc_diasvencido}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.esvencido === 'N' ? 'NO' : 'SI'}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.c_tipocancelacion_det}</Text>
-            </View>
+    let agencia = '';
+    let prestamo = '';
+    let compania = '';
+    return lineasReporte.map((item, index) => {
+        let isNotBlank = true;
+        if(agencia === item.c_agenciadesc && prestamo === item.c_prestamo && compania === item.c_compania) isNotBlank = false;
+        else {
+            agencia = item.c_agenciadesc;
+            prestamo = item.c_prestamo;
+            compania = item.c_compania;
+        }
+        return (
+            <View style={styles.table__row__container} key={'linea'+index}>
+                <View style={styles.table__body__column__cod}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_prestamo : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.n_cliente : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_nombrescompleto : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_fechadesembolso ? moment(item.d_fechadesembolso).format("DD/MM/yyyy") : "") : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_fechavencimientoprestamo ? moment(item.d_fechavencimientoprestamo).format("DD/MM/yyyy") : "") : ""}</Text>
+                </View>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? item.c_monedaprestamo : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montoprestamo).toFixed(2)) : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montointereses).toFixed(2)) : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montototalprestamopres).toFixed(2)) : ""}</Text>
+                </View>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? item.n_diastranscurridos : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>
+                        { isNotBlank ? (item.d_fechavencimiento_reprog ? moment(item.d_fechavencimiento_reprog).format('DD/MM/yyyy'): '') : ""}
+                    </Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_fechacancelacion ? moment(item.d_fechacancelacion).format('DD/MM/yyyy'): '') : ""}</Text>
+                </View>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.DIAS_VENCIDOS : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.VENCIDOS : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{item.c_tipocancelacion}</Text>
+                </View>
 
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.d_fechacancelacion}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montointeresescancelar).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montoprestamocancelar).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montocomisioncancelar).toFixed(2))}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{separator(Number(item.n_montototalcancelar).toFixed(2))}</Text>
-            </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>
+                        {item.d_fechacancelaciondet ? moment(item.d_fechacancelaciondet).format('DD/MM/yyyy') : ''}
+                    </Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{separator(Number(item.n_montointeresescancelar).toFixed(2))}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{separator(Number(item.n_montoprestamocancelar).toFixed(2))}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{separator(Number(item.n_montocomisioncancelar).toFixed(2))}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{separator(Number(item.n_montototalcancelar).toFixed(2))}</Text>
+                </View>
 
-            <View style={styles.table__body__column__short}>
-                <Text style={styles.table__text__body}>{item.c_estado_desc}</Text>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.estado_prestamo : ""}</Text>
+                </View>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_agenciadesc : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_descripcionproducto : ""}</Text>
+                </View>
             </View>
-            <View style={styles.table__body__column__short}>
-                <Text style={styles.table__text__body}>{item.c_agencia_desc}</Text>
-            </View>
-            <View style={styles.table__body__column}>
-                <Text style={styles.table__text__body}>{item.c_descripcionproducto}</Text>
-            </View>
-        </View>
-    ))
+        )
+    })
 }
 
 const getSumas = (element) => (

@@ -492,6 +492,43 @@ export const deleteAgencia = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//Ubicacion
+export const listAllUbicaciones = async () => {
+    console.log('---API--- : listAllUbicaciones');
+    const url = `${port}/ubicacion/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listUbicacionesByCodigo = async (body) => {
+    console.log('---API--- : listUbicacionesByCodigo');
+    const url = `${port}/ubicacion/listUbicacionesByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getAgenciaUbicacionByCodigo = async (body) => {
+    console.log('---API--- : getAgenciaUbicacionByCodigo');
+    const url = `${port}/ubicacion/getAgenciaUbicacionByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const registerUbicacion = async (body) => {
+    console.log('---API--- : registerUbicacion');
+    const url = `${port}/ubicacion/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateUbicacion = async (body) => {
+    console.log('---API--- : updateUbicacion');
+    const url = `${port}/ubicacion/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteUbicacion = async (body) => {
+    console.log('---API--- : deleteUbicacion');
+    const url = `${port}/ubicacion/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Parametro
 export const listParametrosByCompania = async (c_codigocompania) => {
     console.log('---API--- : listParametros');
