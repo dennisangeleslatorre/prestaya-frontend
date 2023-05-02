@@ -286,7 +286,6 @@ const Productos = () => {
         }
     };
 
-
     useEffect(async() => {
         await setIsLoading(true);
         await getCompanias();

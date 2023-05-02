@@ -8,7 +8,6 @@ const Reportes = () => {
     //Context
     const { getReportesUsuarios, getUserData } = useContext(UserContext);
     const user = getUserData();
-    console.log("user", user)
     const reportes = getReportesUsuarios();
 
   return (
@@ -39,7 +38,7 @@ const Reportes = () => {
                                         <td></td>
                                     </tr>
                                     {
-                                        [...reportes].map(item => {
+                                        [...reportes].map((item, index) => {
                                             if(item.c_tiporeporte === "CO000001" && item.n_grupo === 2) {
                                                 let reporteLink = "";
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 1) reporteLink = '/reporteResumido';
@@ -47,8 +46,9 @@ const Reportes = () => {
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 3) reporteLink = '/reportePrestamosVencidosyNovencidos';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 4) reporteLink = '/reporteTransaccionesTienda';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 5) reporteLink = '/reportePrestamoDetalladoFechaCancelacion';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 6) reporteLink = '/reporteUbicacionesPrestamos';
                                                 return (
-                                                    <tr>
+                                                    <tr key={`CO000001_2_${index}`}>
                                                         <td></td>
                                                         <td>{item.n_reporte}</td>
                                                         <td><Link to={reporteLink}>{item.c_nombrereporte}</Link></td>
@@ -65,12 +65,12 @@ const Reportes = () => {
                                         <td></td>
                                     </tr>
                                     {
-                                        [...reportes].map(item => {
+                                        [...reportes].map((item, index) => {
                                             if(item.c_tiporeporte === "CO000001" && item.n_grupo === 3) {
                                                 let reporteLink = "";
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reporteLink = '/reporteFlujoCajaUsuario'
                                                 return (
-                                                    <tr>
+                                                    <tr key={`CO000001_3_${index}`}>
                                                         <td></td>
                                                         <td>{item.n_reporte}</td>
                                                         <td><Link to={reporteLink}>{item.c_nombrereporte}</Link></td>

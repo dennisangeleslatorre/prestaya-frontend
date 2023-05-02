@@ -207,13 +207,13 @@ const PrestamoForm = (props) => {
     }
 
     const prepareProducts = (productos) => {
-        const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}'`)
+        const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}','${item.c_ubicacion}','${item.c_observacionubicacion}','${item.c_usuarioubicacion}',${item.d_fechaubicacion ? `'${moment(item.d_fechaubicacion).format("yyyy-MM-DD HH:MM:ss")}'`: null}`)
         .reduce((acc, cv) => `${acc}|${cv}`)
         return aux;
     }
 
     const prepareProductsToUpdate = (productos) => {
-        const aux = productos.map((item)=>`'${item.n_linea}','${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}'`)
+        const aux = productos.map((item)=>`'${item.n_linea}'__'${item.c_tipoproducto}'__'${item.c_descripcionproducto}'__'${item.c_unidadmedida}'__'${item.n_cantidad}'__'${item.n_pesobruto}'__'${item.n_pesoneto}'__'${item.c_observaciones}'__'${item.n_montovalortotal}'__'${item.c_ubicacion}'__'${item.c_observacionubicacion}'__'${item.c_usuarioubicacion}'`)
         .reduce((acc, cv) => `${acc}|${cv}`)
         return aux;
     }
@@ -260,6 +260,16 @@ const PrestamoForm = (props) => {
         }
         prepareNotificationDanger("Error al registrar", responseValidateTipos.message);
         return false;
+    }
+
+    const validateLocations = () => {
+        let isValid = true;
+        productos.forEach(product => {
+            if(!product.c_ubicacion || !product.c_observacionubicacion) {
+                isValid = false;
+            }
+        })
+        return isValid;
     }
 
     const setCreatedAndUpdatedItems = (arrayItems) => {
@@ -315,18 +325,22 @@ const PrestamoForm = (props) => {
         setOpen(false);
         await setIsLoading(true);
         if(observacionesVigencia) {
-            const [c_compania, c_prestamo] = elementId.split('-');
-            const data = {
-                c_compania: c_compania,
-                c_prestamo: c_prestamo,
-                c_estado: "VI",
-                c_usuariovigente: userLogedIn,
-                c_observacionesvigente: observacionesVigencia,
-                c_usuariodesembolso: usuarioDesembolso,
-                n_monto: montoPrestamo.value
+            if(validateLocations()) {
+                const [c_compania, c_prestamo] = elementId.split('-');
+                const data = {
+                    c_compania: c_compania,
+                    c_prestamo: c_prestamo,
+                    c_estado: "VI",
+                    c_usuariovigente: userLogedIn,
+                    c_observacionesvigente: observacionesVigencia,
+                    c_usuariodesembolso: usuarioDesembolso,
+                    n_monto: montoPrestamo.value
+                }
+                const response = await updtVigentePrestamo(data);
+                (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Vigente") : prepareNotificationDanger("Error al actualizar", response.message);
+            } else {
+                prepareNotificationDanger("Error", "Favor de llenar las ubicaciones de los productos");
             }
-            const response = await updtVigentePrestamo(data);
-            (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el préstamo a Vigente") : prepareNotificationDanger("Error al actualizar", response.message);
         } else {
             prepareNotificationDanger("Error", "Favor de llenar el campo de Observaciones Vigencia");
         }
@@ -1122,6 +1136,9 @@ const PrestamoForm = (props) => {
                             readOnly={urlFragment!=="nuevoPrestamo" && urlFragment!=="editarPrestamo"}
                             estado={estado}
                             elementId={elementId}
+                            compania={compania}
+                            agencia={agencia}
+                            nPrestamo={nPrestamo.value}
                         />
                     }
                     <HeaderForm title="Datos de auditoria"/>

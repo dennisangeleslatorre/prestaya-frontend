@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     },
     //Header
     table__header__column: {
-        width: '1.17cm',
+        width: '1.14cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -73,7 +73,17 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__column__short: {
-        width: '1.08cm',
+        width: '1.05cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px',
+        backgroundColor: 'gray',
+        color: 'white'
+    },
+    table__header__column__tiny: {
+        width: '0.85cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -84,7 +94,7 @@ const styles = StyleSheet.create({
     },
     //Body
     table__body__column: {
-        width: '1.17cm',
+        width: '1.14cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -100,7 +110,15 @@ const styles = StyleSheet.create({
         margin: '0px'
     },
     table__body__column__short: {
-        width: '1.08cm',
+        width: '1.05cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        borderWidth: '1px',
+        margin: '0px'
+    },
+    table__body__column__tiny: {
+        width: '0.85cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
         margin: '0px'
     },
     table__body__column__without__border: {
-        width: '1.17cm',
+        width: '1.14cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -122,7 +140,14 @@ const styles = StyleSheet.create({
         margin: '0px'
     },
     table__body__column__short__without__border: {
-        width: '1.08cm',
+        width: '1.05cm',
+        minHeight: '0.7cm',
+        display: 'flex',
+        justifyContent: 'center',
+        margin: '0px'
+    },
+    table__body__column__tiny__without__border: {
+        width: '0.85cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -130,17 +155,27 @@ const styles = StyleSheet.create({
     },
     //Textos
     table__text__header: {
-        fontSize: '0.24cm',
+        fontSize: '0.22cm',
         textAlign: 'center'
     },
     table__text__body: {
-        fontSize: '0.19cm',
+        fontSize: '0.18cm',
         textAlign: 'center'
     },
 })
 
 const getHeader = () => (
     <View style={styles.table__row__container}>
+    <View style={styles.table__header__column__short}>
+        <Text style={styles.table__text__header}>Agencia</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Ubiacion</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Desc. ubicación</Text>
+    </View>
+
     <View style={styles.table__header__column__cod}>
         <Text style={styles.table__text__header}># Prestamo</Text>
     </View>
@@ -156,9 +191,9 @@ const getHeader = () => (
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>F. Vencimiento</Text>
     </View>
-    <View style={styles.table__header__column__short}>
+    {/*<View style={styles.table__header__column__short}>
         <Text style={styles.table__text__header}>Moneda</Text>
-    </View>
+    </View>*/}
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>Monto Prestamo</Text>
     </View>
@@ -168,141 +203,153 @@ const getHeader = () => (
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>Monto Total P.</Text>
     </View>
-    <View style={styles.table__header__column__short}>
+    {/*<View style={styles.table__header__column__short}>
         <Text style={styles.table__text__header}>Dias PT</Text>
-    </View>
+    </View>*/}
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>F. Vcto. Reprog.</Text>
     </View>
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>F. Cancelacion</Text>
     </View>
-    <View style={styles.table__header__column__short}>
+    <View style={styles.table__header__column__tiny}>
         <Text style={styles.table__text__header}>D. Venc</Text>
     </View>
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>Vencido</Text>
     </View>
-
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Tipo CA.</Text>
-    </View>
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Fecha CA DET</Text>
-    </View>
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Interes Cancelado</Text>
-    </View>
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Monto P. Can</Text>
-    </View>
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Monto Comi. Can</Text>
-    </View>
-    <View style={styles.table__header__column}>
-        <Text style={styles.table__text__header}>Monto Total Ca.</Text>
-    </View>
-
     <View style={styles.table__header__column__short}>
         <Text style={styles.table__text__header}>Estado</Text>
     </View>
-    <View style={styles.table__header__column__short}>
-        <Text style={styles.table__text__header}>Agencia</Text>
+
+    <View style={styles.table__header__column__tiny}>
+        <Text style={styles.table__text__header}>Linea</Text>
     </View>
     <View style={styles.table__header__column}>
         <Text style={styles.table__text__header}>Producto</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Unidad</Text>
+    </View>
+    <View style={styles.table__header__column__tiny}>
+        <Text style={styles.table__text__header}>Cnt</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Peso Bruto</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Peso Neto</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Observaciones</Text>
+    </View>
+    <View style={styles.table__header__column}>
+        <Text style={styles.table__text__header}>Obs. ubicación</Text>
     </View>
 </View>
 );
 
 const getColumns = (lineasReporte) => {
     let agencia = '';
+    let ubicacion = '';
     let prestamo = '';
-    let compania = '';
+    let cliente = '';
     return lineasReporte.map((item, index) => {
-        let isNotBlank = true;
-        if(agencia === item.c_agenciadesc && prestamo === item.c_prestamo && compania === item.c_compania) isNotBlank = false;
+        let isNotBlankPrestamo = true;
+        let isNotBlankUbicacion = true;
+        if(prestamo === item.c_prestamo && cliente === item.n_cliente) isNotBlankPrestamo = false;
+        else {
+            cliente = item.n_cliente;
+            prestamo = item.c_prestamo;
+        }
+        if(agencia === item.c_agenciadesc && ubicacion === item.c_ubicacion) isNotBlankUbicacion = false;
         else {
             agencia = item.c_agenciadesc;
-            prestamo = item.c_prestamo;
-            compania = item.c_compania;
+            ubicacion = item.c_ubicacion;
         }
         return (
             <View style={styles.table__row__container} key={'linea'+index}>
+                <View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{isNotBlankUbicacion ? item.c_agenciadesc : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlankUbicacion ? item.c_ubicacion : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlankUbicacion ? item.c_ubicaciondescripcion : ""}</Text>
+                </View>
+
                 <View style={styles.table__body__column__cod}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_prestamo : ""}</Text>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.c_prestamo : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.n_cliente : ""}</Text>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.n_cliente : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_nombrescompleto : ""}</Text>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.c_nombrescompleto : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_fechadesembolso ? moment(item.d_fechadesembolso).format("DD/MM/yyyy") : "") : ""}</Text>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? (item.d_fechadesembolso ? moment(item.d_fechadesembolso).format("DD/MM/yyyy") : "") : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_fechavencimientoprestamo ? moment(item.d_fechavencimientoprestamo).format("DD/MM/yyyy") : "") : ""}</Text>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? (item.d_fechavencimientoprestamo ? moment(item.d_fechavencimientoprestamo).format("DD/MM/yyyy") : "") : ""}</Text>
                 </View>
-                <View style={styles.table__body__column__short}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? item.c_monedaprestamo : ""}</Text>
+                {/*<View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? item.c_monedaprestamo : ""}</Text>
+                </View>*/}
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? separator(Number(item.n_montoprestapres).toFixed(2)) : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montoprestamo).toFixed(2)) : ""}</Text>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? separator(Number(item.n_montointeresespres).toFixed(2)) : ""}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montointereses).toFixed(2)) : ""}</Text>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? separator(Number(item.n_montototalprestamopres).toFixed(2)) : ""}</Text>
                 </View>
-                <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? separator(Number(item.n_montototalprestamopres).toFixed(2)) : ""}</Text>
-                </View>
-                <View style={styles.table__body__column__short}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? item.n_diastranscurridos : ""}</Text>
-                </View>
+                {/*<View style={styles.table__body__column__short}>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? item.n_diastranscurridos : ""}</Text>
+                </View>*/}
                 <View style={styles.table__body__column}>
                     <Text style={styles.table__text__body}>
-                        { isNotBlank ? (item.d_fechavencimiento_reprog ? moment(item.d_fechavencimiento_reprog).format('DD/MM/yyyy'): '') : ""}
+                        { isNotBlankPrestamo ? (item.d_fechavencimiento_reprog ? moment(item.d_fechavencimiento_reprog).format('DD/MM/yyyy'): '') : ""}
                     </Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{ isNotBlank ? (item.d_d_fechacancelacionmaxdet ? moment(item.d_d_fechacancelacionmaxdet).format('DD/MM/yyyy'): '') : ""}</Text>
+                    <Text style={styles.table__text__body}>{ isNotBlankPrestamo ? (item.d_fechacancelacionmaxdet ? moment(item.d_fechacancelacionmaxdet).format('DD/MM/yyyy'): '') : ""}</Text>
+                </View>
+                <View style={styles.table__body__column__tiny}>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.n_diasvencidos : ""}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.c_vencido : ""}</Text>
                 </View>
                 <View style={styles.table__body__column__short}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.DIAS_VENCIDOS : ""}</Text>
-                </View>
-                <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.VENCIDOS : ""}</Text>
-                </View>
-                <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{item.c_tipocancelacion}</Text>
+                    <Text style={styles.table__text__body}>{isNotBlankPrestamo ? item.c_estadoprestamo : ""}</Text>
                 </View>
 
-                <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>
-                        {item.d_fechacancelaciondet ? moment(item.d_fechacancelaciondet).format('DD/MM/yyyy') : ''}
-                    </Text>
+                <View style={styles.table__body__column__tiny}>
+                    <Text style={styles.table__text__body}>{item.n_lineaproducto}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{separator(Number(item.n_montointeresescancelar).toFixed(2))}</Text>
+                    <Text style={styles.table__text__body}>{item.c_descripcionproducto}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{separator(Number(item.n_montoprestamocancelar).toFixed(2))}</Text>
+                    <Text style={styles.table__text__body}>{item.c_unidadmedida}</Text>
+                </View>
+                <View style={styles.table__body__column__tiny}>
+                    <Text style={styles.table__text__body}>{Number(item.n_cantidad).toFixed(0)}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{separator(Number(item.n_montocomisioncancelar).toFixed(2))}</Text>
+                    <Text style={styles.table__text__body}>{Number(item.n_pesobruto).toFixed(4)}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{separator(Number(item.n_montototalcancelar).toFixed(2))}</Text>
-                </View>
-
-                <View style={styles.table__body__column__short}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.estado_prestamo : ""}</Text>
-                </View>
-                <View style={styles.table__body__column__short}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_agenciadesc : ""}</Text>
+                    <Text style={styles.table__text__body}>{Number(item.n_pesoneto).toFixed(4)}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{isNotBlank ? item.c_descripcionproducto : ""}</Text>
+                    <Text style={styles.table__text__body}>{item.c_observaciones}</Text>
+                </View>
+                <View style={styles.table__body__column}>
+                    <Text style={styles.table__text__body}>{isNotBlankUbicacion ? item.c_observacionubicacion : ""}</Text>
                 </View>
             </View>
         )
@@ -311,6 +358,15 @@ const getColumns = (lineasReporte) => {
 
 const getSumas = (element) => (
     <View style={styles.table__row__container}>
+        <View style={styles.table__body__column__short__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
         <View style={styles.table__body__column__cod__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
@@ -326,28 +382,8 @@ const getSumas = (element) => (
         <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
-        <View style={styles.table__body__column__short__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
+
         <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__short__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__short__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
         <View style={styles.table__body__column__without__border}>
@@ -357,26 +393,41 @@ const getSumas = (element) => (
             <Text style={styles.table__text__body}></Text>
         </View>
 
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__tiny__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__short__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+
+        <View style={styles.table__body__column__tiny__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
+        <View style={styles.table__body__column__without__border}>
+            <Text style={styles.table__text__body}></Text>
+        </View>
         <View style={styles.table__body__column__without__border}>
             <Text style={styles.table__text__body}>TOTALES</Text>
         </View>
-        <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}>{separator(Number(element.suma_montointerescancelar).toFixed(2))}</Text>
+        <View style={styles.table__body__column__tiny__without__border}>
+            <Text style={styles.table__text__body}>{element?.suma_cantidad}</Text>
         </View>
         <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}>{separator(Number(element.suma_montoprestamocancelar).toFixed(2))}</Text>
+            <Text style={styles.table__text__body}>{element?.suma_peso_bruto}</Text>
         </View>
         <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}>{separator(Number(element.suma_montocomisioncancelar).toFixed(2))}</Text>
+            <Text style={styles.table__text__body}>{element?.suma_peso_neto}</Text>
         </View>
         <View style={styles.table__body__column__without__border}>
-            <Text style={styles.table__text__body}>{separator(Number(element.suma_montototalcancelar).toFixed(2))}</Text>
-        </View>
-
-        <View style={styles.table__body__column__short__without__border}>
-            <Text style={styles.table__text__body}></Text>
-        </View>
-        <View style={styles.table__body__column__short__without__border}>
             <Text style={styles.table__text__body}></Text>
         </View>
         <View style={styles.table__body__column__without__border}>
@@ -390,20 +441,22 @@ const getTable = (element) => (
         <View style={styles.table__container}>
             {getHeader()}
             <View style={styles.table__row__container}>
-                {element.lineasReporte && getColumns(element.lineasReporte)}
+                {element?.lineasReporte && getColumns(element?.lineasReporte)}
                 {getSumas(element)}
             </View>
         </View>
     </View>
 )
 
-const ReportePrestamoDetalladoFCancelacionPdfComponent = ({element, general}) => (
+const ReporteUbicacionesPrestamoPdfComponent = ({element, general}) => (
     <Document>
     <Page size="A4" orientation='landscape' style={styles.page}>
         <View fixed style={styles.header__container}>
-            <Text style={styles.title__company}>{element.compania}</Text>
+            <Text style={styles.title__company}>{element?.compania}</Text>
             <View style={styles.title_container}>
-                <Text style={styles.title__reportname}>REPORTE DE PRESTAMOS DETALLADO POR FECHA DE CANCELACIÓN</Text>
+                <Text style={styles.title__reportname}>REPORTE UBICACIONES DE PRESTAMOS</Text>
+                <Text style={styles.title__reportFilters}>Agencia: {general.agencia}</Text>
+                <Text style={styles.title__reportFilters}>Ubicación: {general.ubicacion}</Text>
                 <Text style={styles.title__reportFilters}>Vencido: {general.esVencido}</Text>
                 <Text style={styles.title__reportFilters}>Fecha actual: {moment( general.fechaActual).format("DD/MM/yyyy")}</Text>
                 <Text style={styles.title__reportFilters}>Estado: {general.estado}</Text>
@@ -422,4 +475,4 @@ const ReportePrestamoDetalladoFCancelacionPdfComponent = ({element, general}) =>
 </Document>
 )
 
-export default ReportePrestamoDetalladoFCancelacionPdfComponent
+export default ReporteUbicacionesPrestamoPdfComponent

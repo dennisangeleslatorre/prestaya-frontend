@@ -4,9 +4,11 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
+import moment from 'moment'
 
 const WarrantyProductsModal = (props) => {
-    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, tiposProducto, userLogedIn, newNLine, warrantyProductUpdateList, setWarrantyProductUpdateList} = props;
+    const {isOpen, onClose, productos, setProductos, editProduct, setEditProduct, unidadesMedidas, tiposProducto, userLogedIn, newNLine,
+        warrantyProductUpdateList, setWarrantyProductUpdateList, locations} = props;
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState("");
@@ -17,6 +19,8 @@ const WarrantyProductsModal = (props) => {
     const [pesoNeto, setPesoNeto] = useState({value:"0", isValid:null});
     const [observaciones, setObservaciones] = useState("");
     const [montoValorTotal, setMontoValorTotal] = useState({value:"", isValid:null});
+    const [ubicacion, setUbicacion] = useState("");
+    const [observacionUbicacion, setObservacionUbicacion] = useState("");
     const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
 
@@ -42,6 +46,8 @@ const WarrantyProductsModal = (props) => {
         setPesoNeto({value:"0", isValid:null});
         setObservaciones("");
         setMontoValorTotal({value:"", isValid:null});
+        setObservacionUbicacion("");
+        setUbicacion("");
     }
 
     const prepareProduct = () => {
@@ -53,13 +59,19 @@ const WarrantyProductsModal = (props) => {
             n_pesoneto: pesoNeto.value,
             c_observaciones: observaciones,
             n_montovalortotal: montoValorTotal.value,
-            c_tipoproducto: tipo
+            c_tipoproducto: tipo,
+            c_ubicacion: ubicacion || "",
+            c_observacionubicacion: observacionUbicacion || "",
+            c_usuarioubicacion: (ubicacion || observacionUbicacion) ? userLogedIn : "",
+            c_ubicaciondesc: locations.find(l => l.c_ubicacion === ubicacion)?.c_descripcion || "",
+            d_fechaubicacion: (ubicacion || observacionUbicacion) ? moment() : ""
         }
         return product;
     }
 
     const handleAddProduct = () => {
         if(validate()) {
+            console.log("validatePeso", validatePeso());
             if(validatePeso()) {
                 const product = prepareProduct();
                 let listProducts = [...productos, product];
@@ -70,6 +82,7 @@ const WarrantyProductsModal = (props) => {
                 setIsAlert(true);
             }
         } else {
+            setNotification({...notification, message:"Favor de llenar los campos con valores válidos"})
             setIsAlert(true);
         }
     }
@@ -118,12 +131,15 @@ const WarrantyProductsModal = (props) => {
             setPesoNeto({value:editProduct.n_pesoneto, isValid:null});
             setObservaciones(editProduct.c_observaciones);
             setMontoValorTotal({value:editProduct.n_montovalortotal, isValid:null});
+            setUbicacion(editProduct.c_ubicacion);
+            setObservacionUbicacion(editProduct.c_observacionubicacion);
         }
     }, [editProduct])
 
     useEffect(() => {
         if(tipo) {
             const tipoAux = tiposProducto.find(item => item.c_tipoproducto === tipo);
+            console.log("tipoAux", tipoAux)
             setTipoSelected(tipoAux);
         }
     }, [tipo]);
@@ -224,6 +240,28 @@ const WarrantyProductsModal = (props) => {
                     placeholder="Monto valor total"
                     inputId="montoValorTotalId"
                     classForm="col-12 col-lg-6"
+                />
+                <ReactSelect
+                    inputId="ubicacionId"
+                    labelText="Ubicación"
+                    placeholder="Seleccione una ubicación"
+                    valueSelected={ubicacion}
+                    data={[{c_descripcion:"Seleciona una ubicación", c_ubicacion:""},...locations]}
+                    handleElementSelected={setUbicacion}
+                    optionField="c_descripcion"
+                    valueField="c_ubicacion"
+                    classForm="col-12 col-lg-6"
+                />
+                <TextareaComponent
+                    inputId="observacionesId"
+                    label="Obs. ubicación"
+                    placeholder="Observaciones"
+                    value={observacionUbicacion}
+                    setState={setObservacionUbicacion}
+                    max={500}
+                    classForm="col-12"
+                    labelSpace={0}
+                    labelLine={true}
                 />
             </div>
             {/*Alerta*/}

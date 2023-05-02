@@ -818,6 +818,13 @@ export const getProductosByFormato = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const updateProductoUbicacion = async (body) => {
+    console.log('---API--- : updateProductoUbicacion');
+    const url = `${port}/prestamoproducto/updateProductoUbicacion`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+
 //Reportes
 export const getReportesByPerfil = async (body) => {
     console.log('---API--- : getReportesByPerfil');
@@ -864,6 +871,12 @@ export const getDataReporteVencidosyNoVencidos = async (body) => {
 export const getPrestamosDetalladoPeriodo = async (body) => {
     console.log('---API--- : getPrestamosDetalladoPeriodo');
     const url = `${port}/reporte/getPrestamosDetalladoPeriodo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getPrestamosUbicacionProducto = async (body) => {
+    console.log('---API--- : getPrestamosUbicacionProducto');
+    const url = `${port}/reporte/getPrestamosUbicacionProducto`;
     const response = await consumer(url, 'post', body);
     return response;
 };

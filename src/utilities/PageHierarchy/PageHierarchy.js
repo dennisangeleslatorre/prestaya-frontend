@@ -91,9 +91,9 @@ const pagesArray = [
                         value: 'MODIFICA USUARIO OPERACIÓN',
                         key: 'MODIFICA USUARIO OPERACIÓN'
                     },{
-                        title: 'ASIGNAR UBICACIÓN',
-                        value: 'ASIGNAR UBICACIÓN',
-                        key: 'ASIGNAR UBICACIÓN'
+                        title: 'MODIFICAR UBICACIÓN',
+                        value: 'MODIFICAR UBICACIÓN',
+                        key: 'MODIFICAR UBICACIÓN'
                     },{
                         title: 'CANCELAR PRÉSTAMO',
                         value: 'CANCELAR PRÉSTAMO',

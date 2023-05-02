@@ -11,12 +11,24 @@ import DateRangeComponent from '../../components/DateRangeComponent/DateRangeCom
 import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRangeComponent';
 import InputComponent from '../../components/InputComponent/InputComponent';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getPrestamosDetalladoPeriodo, listAllPaises,
-    listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
+import ReporteUbicacionesPrestamoPdfComponent from '../../components/ReporteUbicacionesPrestamoPdfComponent/ReporteUbicacionesPrestamoPdfComponent';
+import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getPrestamosUbicacionProducto, listAllPaises,
+    listAllDepartamentos, listAllProvincias, listAllDistritos, listTiposProducto, listUbicacionesByCodigo  } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
-import ReportePrestamoDetalladoFCancelacionPdfComponent from '../../components/ReportePrestamoDetalladoFCancelacionPdfComponent/ReportePrestamoDetalladoFCancelacionPdfComponent';
 
 const columnsExportExcel = [
+    {
+        label: 'Agencia',
+        value: row => (row.c_agenciadesc || '')
+    },
+    {
+        label: 'Ubicacion',
+        value: row => (row.c_ubicacion || '')
+    },
+    {
+        label: 'Desc. ubicación',
+        value: row => (row.c_ubicaciondescripcion || '')
+    },
     {
         label: '# Prestamo',
         value: row => (row.c_prestamo || '')
@@ -38,24 +50,16 @@ const columnsExportExcel = [
         value: row => (row.d_fechavencimientoprestamo ? moment(row.d_fechavencimientoprestamo).format("DD/MM/yyyy") : '')
     },
     {
-        label: 'Moneda P.',
-        value: row => (row.c_monedaprestamo || '')
-    },
-    {
         label: 'Monto Prestamo',
-        value: row => (row.n_montoprestamo || '')
+        value: row => (row.n_montoprestapres || '')
     },
     {
         label: 'Monto Intereses',
-        value: row => (row.n_montointereses || '')
+        value: row => (row.n_montointeresespres || '')
     },
     {
         label: 'Monto Total P.',
         value: row => (row.n_montototalprestamopres || '')
-    },
-    {
-        label: 'Dias Plazo Totales',
-        value: row => (row.n_diastranscurridos || '')
     },
     {
         label: 'F. Vcto. Reprog.',
@@ -63,52 +67,52 @@ const columnsExportExcel = [
     },
     {
         label: 'F. Cancelacion',
-        value: row => (row.d_d_fechacancelacionmaxdet ? moment(row.d_d_fechacancelacionmaxdet).format('DD/MM/yyyy'): '')
+        value: row => (row.d_fechacancelacionmaxdet ? moment(row.d_fechacancelacionmaxdet).format('DD/MM/yyyy'): '')
     },
     {
         label: 'Dias Vencido',
-        value: row => (row.DIAS_VENCIDOS || '')
+        value: row => (row.n_diasvencidos || '')
     },
     {
         label: 'Vencido',
-        value: row => (row.VENCIDOS || '')
-    },
-    {
-        label: 'Tipo de cancelación',
-        value: row => (row.c_tipocancelacion || '')
-    },
-    {
-        label: 'F. cancelación detalle',
-        value: row => (row.d_fechacancelaciondet ? moment(row.d_fechacancelaciondet).format('DD/MM/yyyy') : '')
-    },
-    {
-        label: 'Interes cancelado',
-        value: row => (row.n_montointeresescancelar || '')
-    },
-    {
-        label: 'Monto P.Can',
-        value: row => (row.n_montoprestamocancelar || '')
-    },
-    {
-        label: 'M. Comi. Can',
-        value: row => (row.n_montocomisioncancelar || '')
-    },
-    {
-        label: 'Monto Total Ca.',
-        value: row => (row.n_montototalcancelar || '')
+        value: row => (row.c_vencido || '')
     },
     {
         label: 'Estado',
-        value: row => (row.estado_prestamo || '')
+        value: row => (row.c_estadoprestamo || '')
     },
     {
-        label: 'Agencia',
-        value: row => (row.c_agenciadesc || '')
+        label: 'Linea',
+        value: row => (row.n_lineaproducto || '')
     },
     {
         label: 'Producto',
         value: row => (row.c_descripcionproducto || '')
     },
+    {
+        label: 'Unidad',
+        value: row => (row.c_unidadmedida || '')
+    },
+    {
+        label: 'Cantidad',
+        value: row => (row.n_cantidad || '')
+    },
+    {
+        label: 'Peso Bruto',
+        value: row => (row.n_pesobruto || '')
+    },
+    {
+        label: 'Peso Neto',
+        value: row => (row.n_pesoneto || '')
+    },
+    {
+        label: 'Observaciones producto',
+        value: row => (row.c_observaciones || '')
+    },
+    {
+        label: 'Obs. ubicación',
+        value: row => (row.c_observacionubicacion || '')
+    }
 ]
 
 const estados = [
@@ -120,7 +124,7 @@ const estados = [
 ]
 
 
-const ReportePrestamoDetalladoFechaCancelacion = () => {
+const ReporteUbicacionesPrestamo = () => {
     //Filtros
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -140,14 +144,14 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
     const [disabledFilterFechaVencimiento, setDisabledFilterFechaVencimiento] = useState(true);
     const [fechaVencimientoReprogramada, setFechaVencimientoReprogramada] = useState({fechaInicio: "", fechaFin: "", isValid: false});
     const [disabledFilterFechaVencimientoReprogramada, setDisabledFilterFechaVencimientoReprogramada] = useState(true);
-    const [fechaCancelacionDetalle, setFechaCancelacionDetalle] =
-        useState({fechaInicio: moment().startOf('month').format('YYYY-MM-DD'), fechaFin: moment().endOf('month').format('YYYY-MM-DD'), isValid: false});
-    const [disabledFilterFechaCancelacionDetalle, setDisabledFilterFechaCancelacionDetalle] = useState(false);
     const [paisCodigo, setPaisCodigo] = useState("");
     const [departamentoCodigo, setDepartamentoCodigo] = useState("");
     const [provinciaCodigo, setProvinciaCodigo] = useState("");
     const [distritoCodigo, setDistritoCodigo] = useState("");
     const [fechaActual, setFechaActual] = useState({value:moment().format("yyyy-MM-DD")});
+    const [ubicacion, setUbicacion] = useState("T");
+    const [tipoProducto, setTipoProducto] = useState("T");
+    const [nombreProducto, setNombreProducto] = useState({value:""});
     //Listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -158,10 +162,12 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
     const [departamentosFiltrados, setDepartamentosFiltrados] = useState([]);
     const [provinciasFiltradas, setProvinciasFiltradas] = useState([]);
     const [distritosFiltrados, setDistritosFiltrados] = useState([]);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [tiposProducto, setTiposProducto] = useState([]);
     //Form
     const [dataReportToTable, setDataReportToTable] = useState([]);
     const [elementPdf, setElementPdf] = useState(null);
-    const [general, setGeneral] = useState({esVencido:"", fechaActual:"", estado:""});
+    const [general, setGeneral] = useState({esVencido:"", fechaActual:"", estado:"", agencia:"", ubicacion:""});
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal] = useState(false);
     const [openSearchModal, setOpenSearchModal] = useState(false);
@@ -195,7 +201,10 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
         let body = {};
         let filters = {};
         if(compania) body.c_compania = compania;
-        if(agencia && agencia !== "T") body.c_agencia = agencia;
+        if(agencia && agencia !== "T") {
+            body.c_agencia = agencia;
+            filters.agencia = agencias.find(item => item.c_agencia === agencia).c_descripcion;
+        };
         if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
         if(estado && estado !== "T") body.c_estado = estado;
         filters.estado = estados.find(e => e.value === estado).name;
@@ -236,17 +245,19 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
             body.d_fechaactual = fechaActual.value;
             filters.fechaActual = fechaActual.value;
         };
-        if(fechaCancelacionDetalle.isValid && !disabledFilterFechaCancelacionDetalle) {
-            body.d_fechacancelaciondetinicio = fechaCancelacionDetalle.fechaInicio;
-            body.d_fechacancelaciondetfin = fechaCancelacionDetalle.fechaFin;
-        }
+        if(ubicacion && ubicacion !== "T") {
+            body.c_ubicacion = ubicacion;
+            filters.ubicacion = ubicaciones.find(item => item.c_ubicacion === ubicacion).c_descripcion;
+        };
+        if(nombreProducto.value) body.c_descripcionproducto = nombreProducto.value;
+        if(tipoProducto && tipoProducto !== "T") body.c_tipoproducto = tipoProducto;
         setGeneral(filters);
         return body;
     }
 
     const onHandleSearch = async () => {
         let parametros =  prepareBodyToSearch();
-        const response = await getPrestamosDetalladoPeriodo(parametros);
+        const response = await getPrestamosUbicacionProducto(parametros);
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
             getDataForTable(data);
@@ -260,17 +271,15 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
 
     const getLineasReportes = (datos) => {
         let element = {
-            suma_montointerescancelar: 0,
-            suma_montoprestamocancelar: 0,
-            suma_montocomisioncancelar: 0,
-            suma_montototalcancelar: 0
+            suma_cantidad: 0,
+            suma_peso_bruto: 0,
+            suma_peso_neto: 0
         };
 
         datos.forEach((obj) => {
-            element.suma_montointerescancelar = (Number(element.suma_montointerescancelar) + Number(obj.n_montointeresescancelar)).toFixed(2);
-            element.suma_montoprestamocancelar = (Number(element.suma_montoprestamocancelar) + Number(obj.n_montoprestamocancelar)).toFixed(2);
-            element.suma_montocomisioncancelar = (Number(element.suma_montocomisioncancelar) + Number(obj.n_montocomisioncancelar)).toFixed(2);
-            element.suma_montototalcancelar = (Number(element.suma_montototalcancelar) + Number(obj.n_montototalcancelar)).toFixed(2);
+            element.suma_cantidad = (Number(element.suma_cantidad) + Number(obj.n_cantidad)).toFixed(2);
+            element.suma_peso_bruto = (Number(element.suma_peso_bruto) + Number(obj.n_pesobruto)).toFixed(2);
+            element.suma_peso_neto = (Number(element.suma_peso_neto) + Number(obj.n_pesoneto)).toFixed(2);
         });
         element.lineasReporte = datos;
         return element;
@@ -292,6 +301,11 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
         await setIsLoading(true);
         await onHandleSearch();
         setIsLoading(false);
+    }
+
+    const selectCompania = (compania) => {
+        setCompania(compania);
+        getAgenciasByCompany(compania);
     }
 
     //Listas
@@ -317,7 +331,20 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
     }
     const getAgenciasByCompany = async (companyCode) => {
         const response = await listAgencias({c_compania: companyCode});
-        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
+        if(response && response.status === 200 && response.body.data) {
+            setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
+            setAgencia("T");
+        };
+    }
+    const getTiposProducto = async () => {
+        const response = await listTiposProducto();
+        if(response && response.status === 200) setTiposProducto([{c_descripcion:"TODOS",c_tipoproducto:"T"},...response.body.data]);
+    }
+    const getLocations = async () => {
+        const response = await listUbicacionesByCodigo({c_compania: compania, c_agencia: agencia});
+        if(response && response.status === 200 && response.body.data) {
+            setUbicaciones([{c_descripcion:"TODOS",c_ubicacion:"T"},...response.body.data]);
+        }
     }
 
     useEffect(() => {
@@ -368,6 +395,15 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
         };
     }, [companias])
 
+    useEffect(() => {
+        if(compania !== "T" && agencia !== "T") {
+            getLocations();
+        } else {
+            setUbicaciones([{c_ubicacion:"T", c_descripcion:"TODOS"}]);
+        }
+        setUbicacion("T")
+    }, [compania, agencia])
+
     useEffect(async () => {
         await setIsLoading(true);
         await getCompanias();
@@ -375,6 +411,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
         await getDepartamentos();
         await getProvincias();
         await getDistritos();
+        await getTiposProducto();
         setIsLoading(false);
     }, [])
 
@@ -388,7 +425,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
                         placeholder="Seleccione un compañía"
                         valueSelected={compania}
                         data={companias}
-                        handleElementSelected={setCompania}
+                        handleElementSelected={selectCompania}
                         optionField="c_descripcion"
                         valueField="c_compania"
                         classForm="col-12 col-md-6"
@@ -565,14 +602,38 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                     />
-                    <DateRangeComponent
-                        inputId="fechaCancelacionDetalleId"
-                        labelText="F. cancelación detalle"
-                        state={fechaCancelacionDetalle}
-                        setState={setFechaCancelacionDetalle}
-                        enabled={disabledFilterFechaCancelacionDetalle}
-                        setEnabled={setDisabledFilterFechaCancelacionDetalle}
+                    <ReactSelect
+                        inputId="ubicacioneCodeId"
+                        labelText="Ubicación"
+                        placeholder="Seleccione una ubicación"
+                        valueSelected={ubicacion}
+                        data={ubicaciones}
+                        handleElementSelected={setUbicacion}
+                        optionField="c_descripcion"
+                        valueField="c_ubicacion"
                         classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
+                    <InputComponent
+                        label="Producto"
+                        state={nombreProducto}
+                        setState={setNombreProducto}
+                        type="text"
+                        placeholder="Producto"
+                        inputId="productoId"
+                        classForm="col-12 col-md-6"
+                        marginForm="ml-0"
+                    />
+                    <ReactSelect
+                        inputId="tiposId"
+                        labelText="Tipos de producto"
+                        placeholder="Seleccione un tipo"
+                        valueSelected={tipoProducto}
+                        data={tiposProducto}
+                        handleElementSelected={setTipoProducto}
+                        optionField="c_descripcion"
+                        valueField="c_tipoproducto"
+                        classForm="col-12 col-lg-6"
                         marginForm="ml-0"
                     />
                 </div>
@@ -580,7 +641,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
                     <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
                 </div>
                 <ButtonDownloadExcel
-                    fileName="reporteDetalladoFechaCancelacion"
+                    fileName="reporteUbicacionPrestamo"
                     sheet="reporte"
                     columns={columnsExportExcel}
                     content={dataReportToTable}
@@ -589,7 +650,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
                     {elementPdf ? <PDFViewer
                         className="col-12"
                         style={{height: "800px"}}
-                        children={<ReportePrestamoDetalladoFCancelacionPdfComponent element={elementPdf} general={general}/>}
+                        children={<ReporteUbicacionesPrestamoPdfComponent element={elementPdf} general={general}/>}
                     /> : <div className="text-center">
                         <h2>No se a realizado una búsqueda</h2>
                     </div>}
@@ -612,4 +673,4 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
     )
 }
 
-export default ReportePrestamoDetalladoFechaCancelacion
+export default ReporteUbicacionesPrestamo

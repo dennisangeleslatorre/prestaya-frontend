@@ -9,11 +9,13 @@ import PagesContext from '../../context/PagesContext/PagesContext'
 //Servicios
 import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida } from '../../Api/Api'
 import moment from 'moment'
+import LocationAssignmentModal from '../LocationAssignmentModal/LocationAssignmentModal'
+import { listUbicacionesByCodigo } from '../../Api/Api';
 
 const columns = [
     {
         title: 'Línea',
-        dataIndex: 'n_linea'
+        dataIndex: 'index'
     },{
         title: 'Descripción producto',
         dataIndex: 'c_descripcionproducto'
@@ -83,12 +85,24 @@ const columns = [
     },{
         title: 'U. Fecha Modificación',
         dataIndex: 'd_ultimafechamodificacion_format'
+    },{
+        title: 'Ubicación',
+        dataIndex: 'c_ubicaciondesc'
+    },{
+        title: 'Obs. ubicacion',
+        dataIndex: 'c_observacionubicacion'
+    },{
+        title: 'Usuario ubic.',
+        dataIndex: 'c_usuarioubicacion'
+    },{
+        title: 'Fecha Ubicación',
+        dataIndex: 'd_fechaubicacion_format'
     }
 ]
 
 const WarrantyProductsForm = (props) => {
     const { productos=[], setProductos, readOnly=false, userLogedIn, warrantyProductUpdateList, setWarrantyProductUpdateList,
-         warrantyProductRemovalList, setWarrantyProductRemovalList, estado, elementId } = props;
+         warrantyProductRemovalList, setWarrantyProductRemovalList, estado, elementId, compania, agencia, nPrestamo } = props;
     //Navegacion
     let history = useHistory();
     //Estados
@@ -101,25 +115,28 @@ const WarrantyProductsForm = (props) => {
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [newNLine, setNewNLine] = useState({value:1});
     const [showModal, setShowModal] = useState(false);
+    const [openLocationModal, setOpenLocationModal] = useState(false);
     const [typeSelector, setTypeSelector] = useState("radio");
     const [selectedNLineas, setSelectedNLineas] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [locations, setLocations] = useState([]);
     //Response
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [responseData, setResponseData] = useState({});
     //Permisos
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "TICKET VENTA TERCEROS"
+        return item === "TICKET VENTA TERCEROS" || item === "MODIFICAR UBICACIÓN"
     })
     const PrintTicketPermission = userPermisssions.includes("TICKET VENTA TERCEROS");
+    const LocationPermission = userPermisssions.includes("MODIFICAR UBICACIÓN");
 
     const handleDeleteProduct = () => {
         if(elementSelected) {
             let listProducts = [...productos];
             const productAux = productos[elementSelected];
             if(productAux.c_usuarioregistro) {
-                const auxDeletedList = [...warrantyProductRemovalList, productos[elementSelected].n_linea];
+                const auxDeletedList = [...warrantyProductRemovalList, productos[elementSelected].n_linea_product];
                 setWarrantyProductRemovalList(auxDeletedList);
             }
             listProducts.splice(elementSelected, 1);
@@ -181,6 +198,7 @@ const WarrantyProductsForm = (props) => {
             setSelectedRows(selectedRows);
           } else {
             setElementSelected(selectedRowKeys);
+            setSelectedRows(selectedRows);
           }
         }
     };
@@ -208,7 +226,27 @@ const WarrantyProductsForm = (props) => {
                 setOpenResponseModal(true);
             }
         } else {
-            setResponseData({title:"Aviso", message:"Debe seleccionar al menos una cancelación"});
+            setResponseData({title:"Aviso", message:"Debe seleccionar al menos un producto"});
+            setOpenResponseModal(true);
+        }
+    }
+
+    const handleOpenModalLocation = () => {
+        if( elementSelected && elementSelected.length > 0 ) {
+            if(elementSelected.length === 1) {
+                let editProductAux = productos[0];
+                editProductAux.n_cantidad = Number(editProductAux.n_cantidad).toFixed(1);
+                editProductAux.n_pesobruto = Number(editProductAux.n_pesobruto).toFixed(4);
+                editProductAux.n_pesoneto = Number(editProductAux.n_pesoneto).toFixed(4);
+                editProductAux.n_montovalortotal = Number(editProductAux.n_montovalortotal).toFixed(2);
+                setEditProduct({...editProductAux, index:elementSelected});
+                setOpenLocationModal(true);
+            } else {
+                setResponseData({title:"Aviso", message:"Debe seleccionar solo un producto"});
+                setOpenResponseModal(true);
+            }
+        } else {
+            setResponseData({title:"Aviso", message:"Debe seleccionar un producto"});
             setOpenResponseModal(true);
         }
     }
@@ -219,7 +257,7 @@ const WarrantyProductsForm = (props) => {
             aux.key = index;
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
             aux.c_unidadmedida_name = allUnidadesMedidas.find(unidad => unidad.c_unidadmedida === item.c_unidadmedida).c_descripcion;
-            aux.n_linea = index+1;
+            aux.index = index+1;
             aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
             aux.n_pesobruto = Number(item.n_pesobruto).toFixed(4);
             aux.n_pesoneto = Number(item.n_pesoneto).toFixed(4);
@@ -234,6 +272,7 @@ const WarrantyProductsForm = (props) => {
             aux.n_montototal = item.n_montocap ? Number(item.n_montototal).toFixed(2) : "";
             aux.c_observacionesventa = item.c_observacionesventa;
             aux.n_linea_product = item.n_linea;
+            aux.d_fechaubicacion_format = item.d_fechaubicacion ? moment(item.d_fechaubicacion).format("DD/MM/yyyy") : "";
             return aux;
         });
         setTableDataProducts(listProducts);
@@ -243,6 +282,17 @@ const WarrantyProductsForm = (props) => {
         getDataTable();
         setNewNLine({value: productos.length+1});
     }, [productos])
+
+    const getLocations = async () => {
+        const response = await listUbicacionesByCodigo({c_compania: compania, c_agencia: agencia});
+        if(response && response.status === 200 && response.body.data) {
+            setLocations(response.body.data);
+        }
+    }
+
+    useEffect(() => {
+        getLocations();
+    }, [agencia])
 
     return (
         <>
@@ -255,13 +305,18 @@ const WarrantyProductsForm = (props) => {
                     </Space>
                 </div>
             </div>}
-            {(estado==="RE" && PrintTicketPermission) && <div className="row col-12">
+            { ((estado==="RE" && PrintTicketPermission) || (estado !== "PE" && LocationPermission)) && <div className="row col-12">
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
-                        <Button onClick={handleClickGoToPrintTicket}>Imprimir Venta Terceros</Button>
+                        {(estado==="RE" && PrintTicketPermission) && <Button onClick={handleClickGoToPrintTicket}>
+                            Imprimir Venta Terceros
+                        </Button>}
+                        {(estado !== "PE" && LocationPermission) && <Button onClick={handleOpenModalLocation}>
+                            Asignar Ubicación
+                        </Button>}
                     </Space>
                 </div>
-            </div>}
+            </div> }
             <div className="row mx-2 mb-2" style={{ overflow: 'scroll' }}>
                 <Table
                     rowSelection={{
@@ -286,6 +341,22 @@ const WarrantyProductsForm = (props) => {
                 userLogedIn={userLogedIn}
                 warrantyProductUpdateList={warrantyProductUpdateList}
                 setWarrantyProductUpdateList={setWarrantyProductUpdateList}
+                locations={locations}
+            />
+            <LocationAssignmentModal
+                isOpen={openLocationModal}
+                onClose={()=>setOpenLocationModal(false)}
+                editProduct={editProduct}
+                userLogedIn={userLogedIn}
+                compania={compania}
+                agencia={agencia}
+                nPrestamo={nPrestamo}
+                locations={locations}
+                setEditProduct={setEditProduct}
+                setResponseData={setResponseData}
+                setOpenResponseModal={setOpenResponseModal}
+                productos={productos}
+                setProductos={setProductos}
             />
             <ResponseModal
                 isOpen={openResponseModal}
