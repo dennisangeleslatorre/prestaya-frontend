@@ -39,6 +39,18 @@ const columns = [
     },{
         title: 'U. Fecha Modificación',
         dataIndex: 'd_ultimafechamodificacion_format'
+    },{
+        title: 'Ubicación',
+        dataIndex: 'c_ubicaciondesc'
+    },{
+        title: 'Obs. ubicacion',
+        dataIndex: 'c_observacionubicacion'
+    },{
+        title: 'Usuario ubic.',
+        dataIndex: 'c_usuarioubicacion'
+    },{
+        title: 'Fecha Ubicación',
+        dataIndex: 'd_fechaubicacion_format'
     }
 ];
 
@@ -56,6 +68,7 @@ const ProductosPrestamo = ({productos}) => {
             aux.c_usuarioregistro = item.c_usuarioregistro ? item.c_usuarioregistro : "";
             aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy") : "";
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy") : "";
+            aux.d_fechaubicacion_format = item.d_fechaubicacion ? moment(item.d_fechaubicacion).format("DD/MM/yyyy") : "";
             return aux;
         });
         setTableDataProducts(listProducts);

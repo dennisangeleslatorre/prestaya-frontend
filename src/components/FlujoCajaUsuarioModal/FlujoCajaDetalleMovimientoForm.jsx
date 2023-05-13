@@ -7,10 +7,10 @@ import Alert from '../Alert/Alert'
 import Modal from '../Modal/ModalNotification'
 import CajaContext from '../../context/CajaContext/CajaContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
-import { listUsers } from '../../Api/Api'
+import { listAgencias, listUsers, getCajaUsuarioByAgenciaAndUsuario } from '../../Api/Api'
 
 const FlujoCajaDetalleMovimientoForm = (props) => {
-    const { isOpen, onClose, tiposMovimientos=[], setMovimientos, movimientos=[] } = props;
+    const { isOpen, onClose, tiposMovimientos=[], setMovimientos, movimientos=[], compania, tipoCaja, agenciaCaja } = props;
     const { movimientoSeleccionado, setMovimientoSeleccionado } = useContext(CajaContext);
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -21,13 +21,16 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
     const [correlativo, setCorrelativo] = useState("");
     const [tipoMovimiento, setTipoMovimiento] = useState("");
     const [flagUsuario, setFlagUsuario] = useState("S");
+    const [flagAgencia, setFlagAgencia] = useState("N");
     const [usuarioMov, setUsuarioMov] = useState("");
     const [observaciones, setObservaciones] = useState("");
     const [montoxMov, setMontoxMov] = useState({value:"0.0"});
     const [esPermitido, setEsPermitido] = useState(false);
     const [flagConfirmar, setFlagConfirmar] = useState("");
+    const [otraAgencia, setOtraAgencia] = useState("");
     const [flagSinMonto, setFlagSinMonto] = useState("");
     const [usuarios, setUsuarios] = useState([]);
+    const [agencias, setAgencias] = useState([]);
     const [notification, setNotification]= useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
 
@@ -46,6 +49,33 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         return flagUsuario === "S" ? usuarioMov : true;
     }
 
+    const validateOtherAgency = async () => {
+        if(flagAgencia === "S") {
+            const body = {
+                c_compania: compania,
+                c_agencia: otraAgencia,
+                c_usuariofcu: usuarioMov
+            }
+            const responseValidate = await getCajaUsuarioByAgenciaAndUsuario(body);
+            if(responseValidate && responseValidate.status === 200 && responseValidate.body && responseValidate.body.data?.length > 0) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    const validateFlagAgencia = () => {
+        if(flagAgencia === "N" && otraAgencia) {
+            return "El movimiento no requiere agencia";
+        } else if(flagAgencia === "S" && !otraAgencia) {
+            return "El movimiento rquiere agencia";
+        } else if(flagAgencia === "S" && otraAgencia && tipoCaja !== "B") {
+            return "La agencia de origen debe ser de tipo bóveda";
+        }
+        return "OK";
+    }
+
     const validateMonto = () => {
         if(flagSinMonto === "N") {
             console.log(montoxMov.value);
@@ -61,29 +91,41 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         }
     }
 
-    const handleAddMovimiento = () => {
+    const handleAddMovimiento = async () => {
         if(validateData()) {
             if(validateUser()) {
-                const messageValidate = validateMonto();
-                if(messageValidate === "OK") {
-                    if(esPermitido) {
-                        //movimientos
-                        const movimiento = {
-                            ...movimientoSeleccionado.general,
-                            c_tipomovimientocc: tipoMovimiento,
-                            c_usuariomovimiento: usuarioMov,
-                            c_observaciones: observaciones,
-                            n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
-                            c_flagxconfirmar: flagConfirmar
+                const messageValidateFlagAgencia = validateFlagAgencia();
+                if(messageValidateFlagAgencia === "OK") {
+                    if( await validateOtherAgency()) {
+                        const messageValidate = validateMonto();
+                        if(messageValidate === "OK") {
+                            if(esPermitido) {
+                                //movimientos
+                                const movimiento = {
+                                    ...movimientoSeleccionado.general,
+                                    c_tipomovimientocc: tipoMovimiento,
+                                    c_usuariomovimiento: usuarioMov,
+                                    c_observaciones: observaciones,
+                                    n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
+                                    c_flagxconfirmar: flagConfirmar,
+                                    c_agenciaotra: otraAgencia
+                                }
+                                setMovimientos([...movimientos, movimiento]);
+                                handleClose();
+                            } else {
+                                setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                                setIsAlert(true);
+                            }
+                        } else {
+                            setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                            setIsAlert(true);
                         }
-                        setMovimientos([...movimientos, movimiento]);
-                        handleClose();
                     } else {
-                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"No se encontró una caja de tipo bóveda para la combinación de usuario, agencia y compañía que este activa"});
                         setIsAlert(true);
                     }
                 } else {
-                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidateFlagAgencia});
                     setIsAlert(true);
                 }
             } else {
@@ -96,32 +138,44 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         }
     }
 
-    const handleUpdateMovimiento = () => {
+    const handleUpdateMovimiento = async () => {
         if(validateData()) {
             if(validateUser()) {
-                const messageValidate = validateMonto();
-                if(messageValidate === "OK") {
-                    if(esPermitido) {
-                        const movimientosAux = [...movimientos];
-                        //movimientos
-                        const movimiento = {
-                            ...movimientoSeleccionado.general,
-                            c_tipomovimientocc: tipoMovimiento,
-                            c_usuariomovimiento: usuarioMov,
-                            c_observaciones: observaciones,
-                            n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
-                            c_flagxconfirmar: flagConfirmar,
-                            is_updated: true
+                const messageValidateFlagAgencia = validateFlagAgencia();
+                if(messageValidateFlagAgencia === "OK") {
+                    if( await validateOtherAgency()) {
+                        const messageValidate = validateMonto();
+                        if(messageValidate === "OK") {
+                            if(esPermitido) {
+                                const movimientosAux = [...movimientos];
+                                //movimientos
+                                const movimiento = {
+                                    ...movimientoSeleccionado.general,
+                                    c_tipomovimientocc: tipoMovimiento,
+                                    c_usuariomovimiento: usuarioMov,
+                                    c_observaciones: observaciones,
+                                    n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.00,
+                                    c_flagxconfirmar: flagConfirmar,
+                                    c_agenciaotra: otraAgencia,
+                                    is_updated: true
+                                }
+                                movimientosAux[Number(movimientoSeleccionado.general.key)-1] = movimiento;
+                                setMovimientos(movimientosAux);
+                                handleClose();
+                            } else {
+                                setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                                setIsAlert(true);
+                            }
+                        } else {
+                            setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                            setIsAlert(true);
                         }
-                        movimientosAux[Number(movimientoSeleccionado.general.key)-1] = movimiento;
-                        setMovimientos(movimientosAux);
-                        handleClose();
                     } else {
-                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"El usuario no tiene permisos para realizar esta clase de movimientos."});
+                        setNotification({title:"Hubo un problema", type:"alert-danger", message:"No se encontró una caja de tipo bóveda para la combinación de usuario, agencia y compañía que este activa"});
                         setIsAlert(true);
                     }
                 } else {
-                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidate});
+                    setNotification({title:"Hubo un problema", type:"alert-danger", message:messageValidateFlagAgencia});
                     setIsAlert(true);
                 }
             } else{
@@ -141,6 +195,13 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         };
     }
 
+    const getAgencia = async () => {
+        const response = await listAgencias({c_compania: compania});
+        if(response && response.status === 200 && response.body?.data.length > 0) {
+            setAgencias([{c_agencia:"", c_descripcion:"Seleccionar agencia"}, ...response.body.data.filter(a => a.c_agencia !== agenciaCaja)]);
+        };
+    }
+
     const getData = () => {
         setCorrelativo(movimientoSeleccionado.general.key);
         if(movimientoSeleccionado.action !=="ADD") {
@@ -148,6 +209,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
             setMontoxMov({value:movimientoSeleccionado.general.n_montoxdiamov});
             setUsuarioMov(movimientoSeleccionado.general.c_usuariomovimiento);
             setObservaciones(movimientoSeleccionado.general.c_observaciones);
+            setOtraAgencia(movimientoSeleccionado.general.c_agenciaotra)
         }
     }
 
@@ -157,6 +219,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
             setFlagConfirmar(tipoMov.c_flagxconfirmar);
             setFlagSinMonto(tipoMov.c_flagsinmonto);
             setFlagUsuario(tipoMov.c_flagusuario);
+            setFlagAgencia(tipoMov.c_flagotraagencia);
             if((tipoMov.c_clasetipomov === "I" && realizaIngresosPermiso) || (tipoMov.c_clasetipomov === "S" && realizaSalidasPermiso)) {
                 setEsPermitido(true);
             } else
@@ -170,6 +233,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
 
     useEffect(async () => {
         await getUsuarios();
+        await getAgencia();
     },[])
 
     return (
@@ -233,6 +297,18 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
                     labelSpace={0}
                     labelLine={true}
                     marginForm="mt-0"
+                />
+                <ReactSelect
+                    inputId="otraAgenciaId"
+                    labelText="Otra agencia"
+                    placeholder="Seleccione una agencia"
+                    valueSelected={otraAgencia}
+                    data={agencias}
+                    handleElementSelected={setOtraAgencia}
+                    optionField="c_descripcion"
+                    valueField="c_agencia"
+                    classForm="col-12 col-lg-6"
+                    disabledElement={(movimientoSeleccionado.general.c_prestamo || movimientoSeleccionado.general.c_flagconfirmado === 'S') ? true : false}
                 />
             </div>
             {/*Alerta*/}

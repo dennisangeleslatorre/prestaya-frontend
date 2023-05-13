@@ -62,7 +62,11 @@ const columnsExportExcel = [
     {
         label: 'FUENTE',
         value: row => (row.c_fuente || '')
-    }
+    },
+    {
+        label: 'Otra agencia',
+        value: row => (row.otraagenciadesc || '')
+    },
 ]
 
 const estados = [{name: "TODOS", value: "T"},{name: "ABIERTO", value: "A"},{name: "CERRADO", value: "C"}];
@@ -232,7 +236,8 @@ const ReporteFlujoCaja = () => {
                 montomov: item.n_montoxdiamov,
                 clasemov: item.c_clasetipomov,
                 fuente: item.c_fuente,
-                c_prestamo: item.c_prestamo
+                c_prestamo: item.c_prestamo,
+                otraagenciadesc: item.otraagenciadesc ? item.otraagenciadesc : ""
             })
 
             nuevoArray[indexmpc].sumas.suma_montointerescancelar = nuevoArray[indexmpc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : 0);
@@ -301,7 +306,8 @@ const ReporteFlujoCaja = () => {
                 clasemov: item.c_clasetipomov,
                 fuente: item.c_fuente,
                 c_prestamo: item.c_prestamo,
-                percent_ganancia: item.n_montoint && item.n_montocap ? (Number(item.n_montoint) / Number(item.n_montocap) * 100) : ""
+                percent_ganancia: item.n_montoint && item.n_montocap ? (Number(item.n_montoint) / Number(item.n_montocap) * 100) : "",
+                otraagenciadesc: item.otraagenciadesc ? item.otraagenciadesc : ""
             })
 
             nuevoArray[indexfc].sumas.suma_montointerescancelar = nuevoArray[indexfc].sumas.suma_montointerescancelar + (item.n_montointeresescancelar ? Number(item.n_montointeresescancelar) : (item.n_montoint ? Number(item.n_montoint) : 0));

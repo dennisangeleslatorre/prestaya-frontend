@@ -125,6 +125,18 @@ const columns = [
         width: 180,
         className: 'table-audit-column text-audit-table',
     },{
+        title: 'Otra agencia',
+        dataIndex: 'otraagenciadesc',
+        ellipsis: {
+            showTitle: true,
+        },
+        width: 200,
+        render: (otraagenciadesc) => (
+            <Tooltip placement="topLeft" title={otraagenciadesc}>
+              {otraagenciadesc}
+            </Tooltip>
+        ),
+    },{
         title:() => <label className='text-audit-table'>U. Confirmado</label>,
         dataIndex: 'c_usuarioconfirmado',
         ellipsis: {
@@ -176,6 +188,7 @@ const FlujoCajaDetalleMovimientosModal = (props) => {
             aux.c_flagconfirmado = item.c_flagconfirmado === "S" ? "SI" : "NO";
             aux.c_usuarioconfirmado = item.c_usuarioconfirmado;
             aux.d_fechaconfirmado_format = item.d_fechaconfirmado ? moment(item.d_fechaconfirmado).format("DD/MM/yyyy") : "";
+            aux.otraagenciadesc = item.otraagenciadesc || "";
             return aux;
         });
         setMovimientos(listAux);
