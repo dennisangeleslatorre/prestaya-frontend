@@ -349,7 +349,7 @@ const getColumns = (lineasReporte) => {
                     <Text style={styles.table__text__body}>{item.c_observaciones}</Text>
                 </View>
                 <View style={styles.table__body__column}>
-                    <Text style={styles.table__text__body}>{isNotBlankUbicacion ? item.c_observacionubicacion : ""}</Text>
+                    <Text style={styles.table__text__body}>{item.c_observacionubicacion||""}</Text>
                 </View>
             </View>
         )

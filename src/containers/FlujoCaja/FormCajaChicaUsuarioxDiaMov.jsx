@@ -15,7 +15,7 @@ import CajaContext from '../../context/CajaContext/CajaContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Librerias
 import { useHistory, useLocation } from 'react-router'
-import { listTipoMovimientoCaja } from '../../Api/Api'
+import { listTipoMovimientoCaja, listAgencias } from '../../Api/Api'
 import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
@@ -61,6 +61,14 @@ const columns = [
     },{
         title: 'Monto x Mov.',
         dataIndex: 'n_montoxdiamov_format',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160,
+        className: 'text-numbers-table'
+    },{
+        title: 'Otra agencia',
+        dataIndex: 'otraAgencia',
         ellipsis: {
             showTitle: false,
         },
@@ -177,6 +185,8 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     const [nroCorrelativo, setNroCorrelativo] = useState("");
     const [fechaMov, setFechaMov] = useState({value:"", isValid:false});
     const [estado, setEstado] = useState("A");
+    const [montoMaximo, setMontoMaximo] = useState({value: 0});
+    const [flagRestrinMonto, setFlagRestrinMonto] = useState("N")
     const [observaciones, setObservaciones] = useState("");
     const [usuarioRegistro, setUsuarioRegistro] = useState("");
     const [fechaRegistro, setFechaRegistro] = useState("");
@@ -187,7 +197,9 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     const [openResponseModal , setOpenResponseModal ] = useState(false);
     const [openMovimientoModal, setOpenMovimientoModal] = useState(false);
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [openAlertConfirmationModal, setOpenAlertConfirmationModal] = useState(false);
     const [tiposMovimientos, setTiposMovimientos] = useState([]);
+    const [agencias, setAgencias] = useState([]);
     const [movimientos, setMovimientos] = useState([]);
     const [elementSelectedRows, setElementSelectedRows] = useState(null);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -230,6 +242,8 @@ const FormCajaChicaUsuarioxDiaMov = () => {
                 d_fechamov:fechaMov.value,
                 c_estado:estado,
                 c_observaciones:observaciones,
+                n_montomaximofc: montoMaximo.value,
+                c_flagrestringexmtomax: flagRestrinMonto,
                 is_updated: true
             }, movimientos:movimientos.map(item => {item.d_fechamov = fechaMov.value; return item;})
         }
@@ -252,6 +266,43 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         }
     }
 
+    const validaMontoMaximo = () => {
+        const fc = {
+            c_flagsaldoxdia: flujoCaja.general.c_flagsaldoxdia,
+            n_montomaximofc: flujoCaja.general.n_montomaximofc,
+            c_flagrestringexmtomax: flujoCaja.general.c_flagrestringexmtomax
+        }
+        const fcd = {
+            n_montomaximofc: montoMaximo.value,
+            c_flagrestringexmtomax: flagRestrinMonto
+        }
+
+        if(fc.c_flagsaldoxdia === "S") {
+            if(Number(fcd.n_montomaximofc) > 0 && Number(fcd.n_montomaximofc) >= saldoDia) {
+                return "S"
+            } else if(Number(fcd.n_montomaximofc) > 0 && Number(fcd.n_montomaximofc) < saldoDia) {
+                return fcd.c_flagrestringexmtomax === "S" ? "N" : "I";
+            }
+            if(Number(fc.n_montomaximofc) > 0 && Number(fc.n_montomaximofc) >= saldoDia) {
+                return "S"
+            } else if(Number(fc.n_montomaximofc) > 0 && Number(fc.n_montomaximofc) < saldoDia) {
+                return fc.c_flagrestringexmtomax === "S" ? "N" : "I";
+            } else {
+                return "S";
+            }
+        }
+        return "S";
+    }
+
+    const addDetalle = () => {
+        const detalleAux = prepareDetalle();
+        //Establece los valores
+        setFlujoCaja({...flujoCaja, firstArrival:false});
+        setDetalles([...detalles, detalleAux]);
+        setDetalleSeleccionado({general:{}, movimientos:[]});
+        history.goBack();
+    }
+
     //Funciones de selecion
     const handleAgregarDetalle = () => {
         //Valida antes
@@ -260,12 +311,15 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             if(!validateFechaRegistrada) {
                 const isValidsaldo = validateSaldoMovimientos();
                 if(isValidsaldo) {
-                    const detalleAux = prepareDetalle();
-                    //Establece los valores
-                    setFlujoCaja({...flujoCaja, firstArrival:false});
-                    setDetalles([...detalles, detalleAux]);
-                    setDetalleSeleccionado({general:{}, movimientos:[]});
-                    history.goBack();
+                    const isValidaMontoMaximo = validaMontoMaximo();
+                    if(isValidaMontoMaximo === "S") {
+                        addDetalle();
+                    } else if (isValidaMontoMaximo === "N") {
+                        setResponseData({title:"Aviso", message:"El monto máximo es restrictivo."})
+                        setOpenResponseModal(true);
+                    } else {
+                        setOpenAlertConfirmationModal(true);
+                    }
                 } else {
                     setResponseData({title:"Aviso", message:"El saldo calculado por día es negativo."})
                     setOpenResponseModal(true);
@@ -280,6 +334,17 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         }
     }
 
+    const updateDetalle = () => {
+        const detalleAux = prepareDetalle();
+        let detallesAux = [...detalles];
+        detallesAux[Number(detalleSeleccionado.index)] = detalleAux;
+        //Establece los valores
+        setFlujoCaja({...flujoCaja, firstArrival:false});
+        setDetalles(detallesAux);
+        setDetalleSeleccionado({general:{}, movimientos:[]});
+        history.goBack();
+    }
+
     const handleActualizarDetalle = () => {
         //Valida antes
         if(fechaMov.value && validDate() && observaciones && movimientos.length !== 0) {
@@ -287,14 +352,15 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             if(!validateFechaRegistrada) {
                 const isValidsaldo = validateSaldoMovimientos();
                 if(isValidsaldo) {
-                    const detalleAux = prepareDetalle();
-                    let detallesAux = [...detalles];
-                    detallesAux[Number(detalleSeleccionado.index)] = detalleAux;
-                    //Establece los valores
-                    setFlujoCaja({...flujoCaja, firstArrival:false});
-                    setDetalles(detallesAux);
-                    setDetalleSeleccionado({general:{}, movimientos:[]});
-                    history.goBack();
+                    const isValidaMontoMaximo = validaMontoMaximo();
+                    if(isValidaMontoMaximo === "S") {
+                        updateDetalle();
+                    } else if (isValidaMontoMaximo === "N") {
+                        setResponseData({title:"Aviso", message:"El monto máximo es restrictivo."})
+                        setOpenResponseModal(true);
+                    } else {
+                        setOpenAlertConfirmationModal(true);
+                    }
                 } else {
                     setResponseData({title:"Aviso", message:"El saldo calculado por día es negativo."})
                     setOpenResponseModal(true);
@@ -329,9 +395,10 @@ const FormCajaChicaUsuarioxDiaMov = () => {
     }
     const handleSelectActualizar = () => {
         if(selectedRowKeys.length > 0) {
+            const movimientosAux = JSON.parse(JSON.stringify(movimientosCajaTabla))
             setMovimientoSeleccionado({
                 general:{
-                    ...elementSelectedRows[0]
+                    ...movimientosAux[selectedRowKeys[0]-1]
                 },
                 action:"UPDATE"
             });
@@ -369,6 +436,13 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         setMovimientos(movimientosAux);
     }
 
+    const getAgencias = async () => {
+        const response = await listAgencias({c_compania: flujoCaja.general.c_compania});
+        if(response && response.status === 200 && response.body?.data && response.body.data.length > 0) {
+            setAgencias(response.body.data);
+        };
+    }
+
     const getTiposMovimientoCaja = async () => {
         const response = await listTipoMovimientoCaja();
         if(response && response.status === 200) {
@@ -400,6 +474,7 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
             saldoAux = saldoAux + Number(item.n_montoxdiamov ?  ( Number(item.n_montoxdiamov) * (tipoMov.c_clasetipomov === "I" ? 1 : -1) ) : 0);
+            aux.otraAgencia = item.c_agenciaotra ? agencias.find(a => a.c_agencia === item.c_agenciaotra)?.c_descripcion : "";
             return aux;
         });
         setMovimientosCajaTabla(tableData);
@@ -411,6 +486,8 @@ const FormCajaChicaUsuarioxDiaMov = () => {
         setNroCorrelativo(flujoCaja.general.n_correlativo);
         detalleSeleccionado.general.d_fechamov && setFechaMov({value: detalleSeleccionado.general.d_fechamov});
         detalleSeleccionado.general.c_estado && setEstado(detalleSeleccionado.general.c_estado);
+        detalleSeleccionado.general.c_flagrestringexmtomax && setFlagRestrinMonto(detalleSeleccionado.general.c_flagrestringexmtomax);
+        detalleSeleccionado.general.n_montomaximofc && setMontoMaximo({value: Number(detalleSeleccionado.general.n_montomaximofc).toFixed(2)});
         detalleSeleccionado.general.c_observaciones && setObservaciones(detalleSeleccionado.general.c_observaciones);
         setMovimientos(detalleSeleccionado.movimientos);
         if(detalleSeleccionado.general.c_usuarioregistro) {
@@ -429,6 +506,7 @@ const FormCajaChicaUsuarioxDiaMov = () => {
 
     useEffect(async () => {
         await setIsLoading(true);
+        await getAgencias();
         await getTiposMovimientoCaja();
         await getData();
         setIsLoading(false);
@@ -484,6 +562,28 @@ const FormCajaChicaUsuarioxDiaMov = () => {
                                         optionField="name"
                                         valueSelected={estado}
                                         handleChange={setEstado}
+                                        classForm="col-12 col-lg-6"
+                                        disabledElement={!usuarioAccesoTotalCajaPermiso}
+                                    />
+                                    <InputComponent
+                                        label="Monto Max fc"
+                                        state={montoMaximo}
+                                        setState={setMontoMaximo}
+                                        type="number"
+                                        placeholder="Monto Max fc"
+                                        inputId="montoMaxFcId"
+                                        classForm="col-12 col-lg-6"
+                                        readOnly={!usuarioAccesoTotalCajaPermiso}
+                                    />
+                                    <SelectComponent
+                                        labelText="Flag restrin monto"
+                                        defaultValue="Seleccione"
+                                        items={[{value:"S", option:"SI"},{value:"N", option:"NO"}]}
+                                        selectId="flagRestinMontoId"
+                                        valueField="value"
+                                        optionField="option"
+                                        valueSelected={flagRestrinMonto}
+                                        handleChange={setFlagRestrinMonto}
                                         classForm="col-12 col-lg-6"
                                         disabledElement={!usuarioAccesoTotalCajaPermiso}
                                     />
@@ -577,6 +677,9 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             tiposMovimientos={tiposMovimientos}
             setMovimientos={setMovimientos}
             movimientos={movimientos}
+            compania={flujoCaja.general.c_compania}
+            tipoCaja={flujoCaja.general.c_tipofcu}
+            agenciaCaja={flujoCaja.general.c_agencia}
         />
         <ConfirmationModal
             isOpen={openConfirmationModal}
@@ -584,6 +687,14 @@ const FormCajaChicaUsuarioxDiaMov = () => {
             title={"Aviso de eliminación"}
             message={"¿Seguro que desea eliminar este elemento?. Una vez eliminado no podrás recuperarlo."}
             onHandleFunction={()=>handleEliminar()}
+            buttonClass="btn-danger"
+        />
+        <ConfirmationModal
+            isOpen={openAlertConfirmationModal}
+            onClose={()=>setOpenAlertConfirmationModal(false)}
+            title={"Aviso de operación"}
+            message={"¿Seguro que desea continuar con esta operación?. Se ha excedido el monto maximo del dia."}
+            onHandleFunction={() => urlFragment === "nuevaCUxDiaMovimiento" ? addDetalle() : updateDetalle()}
             buttonClass="btn-danger"
         />
     </>

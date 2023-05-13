@@ -23,6 +23,7 @@ const TipoMovimientoCajaForm = (props) => {
     const [flagConfirmar, setFlagConfirmar] = useState("N");
     const [movimientoInverso, setMovimientoInverso] = useState("");
     const [tiposMovimientos, setTiposMovimientos] = useState([]);
+    const [flagOtraAgencia, setFlagOtraAgencia] = useState("N");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +80,8 @@ const TipoMovimientoCajaForm = (props) => {
             c_estado: estado,
             c_flagsinmonto: flagSinMonto,
             c_flagxconfirmar: flagConfirmar,
-            c_tipomovimientoccinverso: movimientoInverso ? movimientoInverso : null
+            c_tipomovimientoccinverso: movimientoInverso ? movimientoInverso : null,
+            c_flagotraagencia: flagOtraAgencia
         }
         return data;
     }
@@ -130,6 +132,7 @@ const TipoMovimientoCajaForm = (props) => {
             setFlagSinMonto(data.c_flagsinmonto);
             setFlagConfirmar(data.c_flagxconfirmar);
             setMovimientoInverso(data.c_tipomovimientoccinverso || "");
+            setFlagOtraAgencia(data.c_flagotraagencia || "N");
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -241,6 +244,18 @@ const TipoMovimientoCajaForm = (props) => {
                     handleChange={setMovimientoInverso}
                     disabledElement={readOnlyView}
                     disableDefaultValue={false}
+                />
+                <SelectComponent
+                    labelText="Flag otra agencia"
+                    defaultValue="Selecciona una agencia"
+                    items={[{value: "N", option: "NO"},{value: "S", option: "SI"}]}
+                    selectId="flagOtraAgenciad"
+                    valueField="value"
+                    optionField="option"
+                    valueSelected={flagOtraAgencia}
+                    handleChange={setFlagOtraAgencia}
+                    disabledElement={readOnlyView}
+                    disableDefaultValue={true}
                 />
             </FormContainer>
             {isLoading === true && <Loading/>}

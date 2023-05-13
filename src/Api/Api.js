@@ -805,6 +805,19 @@ export const getValidaSufijoProducto = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+//Validar Monto
+export const getValidarAlertaMontoMaximo = async (body) => {
+    console.log('---API--- : getValidarAlertaMontoMaximo');
+    const url = `${port}/prestamo/getValidarAlertaMontoMaximo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getValidarMontoMaximoConfirMov = async (body) => {
+    console.log('---API--- : getValidarMontoMaximoConfirMov');
+    const url = `${port}/prestamo/getValidarMontoMaximoConfirMov`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Productos
 export const getProductosByPrestamo = async (body) => {
     console.log('---API--- : getProductosByPrestamo');
@@ -926,6 +939,12 @@ export const getMovimientosCajaUsuarioxConfirmar = async (body) => {
 export const confirmarMovimiento = async (body) => {
     console.log('---API--- : confirmarMovimiento');
     const url = `${port}/flujocaja/confirmarMovimiento`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getCajaUsuarioByAgenciaAndUsuario = async (body) => {
+    console.log('---API--- : getCajaUsuarioByAgenciaAndUsuario');
+    const url = `${port}/flujocaja/getCajaUsuarioByAgenciaAndUsuario`;
     const response = await consumer(url, 'post', body);
     return response;
 };

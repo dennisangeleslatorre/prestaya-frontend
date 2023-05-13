@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { Table, Space, Button, Tooltip } from 'antd'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
-import { listCompanias, listUsers, getMovimientosCajaUsuarioxConfirmar, confirmarMovimiento } from '../../Api/Api'
+import { listCompanias, listUsers, getMovimientosCajaUsuarioxConfirmar, confirmarMovimiento, listAgencias, getValidarMontoMaximoConfirMov } from '../../Api/Api'
 import moment from 'moment'
 import Loading from '../../components/Modal/LoadingModal'
 import { separator } from '../../utilities/Functions/FormatNumber';
@@ -108,6 +108,13 @@ const columns = [
         },
         width: 160,
         className: 'text-numbers-table'
+    },{
+        title: 'Otra agencia',
+        dataIndex: 'agenciaotradesc',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 200
     }
 ]
 
@@ -116,6 +123,8 @@ const FormMovimientoCUxConfirmar = () => {
     //Estados
     const [compania, setCompania] = useState("");
     const [usuarioFCMovimiento, setUsuarioFCMovimiento] = useState("T");
+    const [agenciaOrigen, setAgenciaOrigen] = useState("T")
+    const [agenciaDestino, setAgenciaDestino] = useState("T");
     const [isLoading, setIsLoading] = useState(false);
     const [responseData, setResponseData] = useState({});
     const [openResponseModal , setOpenResponseModal ] = useState(false);
@@ -123,8 +132,10 @@ const FormMovimientoCUxConfirmar = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [open, setOpen] = useState(false);
+    const [openAlertConfirmationModal, setOpenAlertConfirmationModal] = useState(false);
     //Estados de las listas
     const [companias, setCompanias] = useState([]);
+    const [agencias, setAgencias] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
     const [movimientos, setMovimientos] = useState([]);
      //Contextos
@@ -152,6 +163,8 @@ const FormMovimientoCUxConfirmar = () => {
         let body = {};
         if(compania) body.c_compania = compania;
         if(usuarioFCMovimiento && usuarioFCMovimiento !== "T") body.c_usuariofcu = usuarioFCMovimiento;
+        if(agenciaOrigen && agenciaOrigen !== "T") body.c_agencia = agenciaOrigen;
+        if(agenciaDestino && agenciaDestino !== "T") body.c_agenciaotra = agenciaDestino;
         return body;
     }
 
@@ -192,14 +205,31 @@ const FormMovimientoCUxConfirmar = () => {
             n_correlativo: movAux.n_correlativo,
             d_fechamov: moment(movAux.d_fechamov).format('yyyy-MM-DD'),
             n_secuencia: movAux.n_secuencia,
-            c_agencia: movAux.c_agencia,
+            c_agencia: movAux.c_agenciaotra ? movAux.c_agenciaotra : movAux.c_agencia,
             usuario_confirma: userLogedIn,
             c_usuariofcu: movAux.c_usuariofcu,
             c_usuariomovimiento: movAux.c_usuariomovimiento,
             n_montoxdiamov: movAux.n_montoxdiamov,
             c_tipomovimientoccinverso: movAux.c_tipomovimientoccinverso,
             c_observacionesmov: movAux.c_observaciones,
+            c_agenciaotra: movAux.c_agenciaotra ? movAux.c_agencia : null
         }
+    }
+
+    const confirMov = async () => {
+        const movAux = movimientos
+        .find( item => item.c_compania === elementSelected[0].c_compania && item.n_correlativo === elementSelected[0].n_correlativo
+            && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
+        setOpenAlertConfirmationModal(false);
+        const body = prepareBody(movAux);
+        const response = await confirmarMovimiento(body);
+        if(response && response.status === 200 && response.body.message === 'OK') {
+            await refresListTable();
+            setResponseData( {title: "Operación exitosa", message: "Se confirmo con éxito." });
+        } else {
+            setResponseData( {title: "Error al confirmar", message: response.body.message });
+        }
+        setOpenResponseModal(true);
     }
 
     const handleConfirmMov = async () => {
@@ -208,17 +238,36 @@ const FormMovimientoCUxConfirmar = () => {
             && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
         await setOpen(false);
         await setIsLoading(true);
-        const body = prepareBody(movAux);
-        const response = await confirmarMovimiento(body);
-        console.log("respuesta", response)
-        if(response && response.status === 200 && response.body.message === 'OK') {
-            await refresListTable();
-            setResponseData( {title: "Operación exitosa", message: "Se confirmo con éxito." });
+
+        const responseValida = await getValidarMontoMaximoConfirMov({
+            c_compania: movAux.c_compania,
+            c_agencia: movAux.c_agenciaotra ? movAux.c_agenciaotra : movAux.c_agencia,
+            d_fechamov: moment(movAux.d_fechamov).format('yyyy-MM-DD'),
+            n_montocons: movAux.n_montoxdiamov,
+            c_usuariooperacion: movAux.c_usuariomovimiento
+        });
+        if(responseValida && responseValida.status === 200) {
+            if(responseValida.body.message?.respuesta === "OK") confirMov();
+            else if(responseValida.body.message?.respuesta === "SE HA EXCEDIDO EL MONTO MAXIMO DESEA CONTINUAR") setOpenAlertConfirmationModal(true);
+            else if(responseValida.body.message?.respuesta === "NO SE PUEDE EXCEDER EL MONTO MAXIMO") {
+                setResponseData({title:"Error", message:"El monto máximo de la caja es restrictivo y se ha excedido"});
+                setOpenResponseModal(true);
+            } else {
+                setResponseData({title:"Error", message: responseValida.body.message || "Error en el servicio"});
+                setOpenResponseModal(true);
+            }
         } else {
-            setResponseData( {title: "Error al confirmar", message: response.body.message });
+            setResponseData({title:"Error", message:"Fallo la validación"});
+            setOpenResponseModal(true);
         }
-        setOpenResponseModal(true);
         setIsLoading(false);
+    }
+
+    const handleSeleccionarCompania = (value) => {
+        setCompania(value);
+        setAgenciaOrigen("T");
+        setAgenciaDestino("T");
+        getAgencias(value);
     }
 
     const setDataFlujoCajaTable = (movimientosxConfirmar) => {
@@ -242,9 +291,14 @@ const FormMovimientoCUxConfirmar = () => {
         if(response && response.status === 200) setUsuarios([{c_codigousuario: "T", c_nombres: "TODOS"}, ...response.body.data]);
     }
 
+    const getAgencias = async (companyCode) => {
+        const response = await listAgencias({c_compania: companyCode});
+        if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: "T", c_descripcion: "TODOS"}, ...response.body.data]);
+    }
+
     useEffect(() => {
         if(companias.length !== 0) {
-            setCompania(companias[0].c_compania);
+            handleSeleccionarCompania(companias[0].c_compania);
         };
     }, [companias])
 
@@ -271,7 +325,7 @@ const FormMovimientoCUxConfirmar = () => {
                                             placeholder="Seleccione un compañía"
                                             valueSelected={compania}
                                             data={companias}
-                                            handleElementSelected={setCompania}
+                                            handleElementSelected={handleSeleccionarCompania}
                                             optionField="c_descripcion"
                                             valueField="c_compania"
                                             classForm="col-12 col-md-6"
@@ -287,6 +341,30 @@ const FormMovimientoCUxConfirmar = () => {
                                             optionField="c_nombres"
                                             valueField="c_codigousuario"
                                             classForm="col-12 col-md-6"
+                                            marginForm="ml-0"
+                                        />
+                                        <ReactSelect
+                                            inputId="agenciaOrigenCodeId"
+                                            labelText="Agencia Origen"
+                                            placeholder="Seleccione una agencia"
+                                            valueSelected={agenciaOrigen}
+                                            data={agencias}
+                                            handleElementSelected={setAgenciaOrigen}
+                                            optionField="c_descripcion"
+                                            valueField="c_agencia"
+                                            classForm="col-12 col-lg-6"
+                                            marginForm="ml-0"
+                                        />
+                                        <ReactSelect
+                                            inputId="agenciaDestinoCodeId"
+                                            labelText="Agencia Destino"
+                                            placeholder="Seleccione una agencia"
+                                            valueSelected={agenciaDestino}
+                                            data={agencias}
+                                            handleElementSelected={setAgenciaDestino}
+                                            optionField="c_descripcion"
+                                            valueField="c_agencia"
+                                            classForm="col-12 col-lg-6"
                                             marginForm="ml-0"
                                         />
                                     </div>
@@ -335,6 +413,14 @@ const FormMovimientoCUxConfirmar = () => {
                 title={responseData.title}
                 onClose={()=>setOpenResponseModal(false)}
                 message={responseData.message}
+            />
+            <ConfirmationModal
+                isOpen={openAlertConfirmationModal}
+                onClose={()=>setOpenAlertConfirmationModal(false)}
+                title={"Aviso de operación"}
+                message={"¿Seguro que desea continuar con esta operación?. Se ha excedido el monto maximo del dia."}
+                onHandleFunction={() => confirMov()}
+                buttonClass="btn-danger"
             />
         </>
     )

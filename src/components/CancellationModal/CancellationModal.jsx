@@ -5,13 +5,14 @@ import TextareaComponent from '../../components/TextareaComponent/TextareaCompon
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
 //Api
-import { cancelarPrestamo } from '../../Api/Api'
+import { getValidarAlertaMontoMaximo, cancelarPrestamo } from '../../Api/Api'
 import moment from 'moment'
 //Contexto
 import UserContext from '../../context/UserContext/UserContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
 import ReactSelect from '../ReactSelect/ReactSelect'
 import InputComponentView from '../InputComponent/InputComponentView'
+import ConfirmationModal from '../Modal/ConfirmationModal'
 
 const CancellationModal = (props) => {
     const {isOpen, onClose, elementId, ultimaCancelacion, setResponseData, setOpenResponseModal, fechaDesembolsoCancelacion, diasComisionParametros,
@@ -36,6 +37,7 @@ const CancellationModal = (props) => {
     const [montoTotalCancelar, setMontoTotalCancelar] = useState({value:"0.0", isValid:null});
     const [observaciones, setObservaciones] = useState("");
     const [usuarioOperacion, setUsuarioOperacion] = useState(userLogedIn);
+    const [openAlertConfirmationModal, setOpenAlertConfirmationModal] = useState(false);
     //Permiso
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
@@ -92,19 +94,46 @@ const CancellationModal = (props) => {
         }
     }
 
+    const saveCancelation = async () => {
+        setOpenAlertConfirmationModal(false);
+        const body = prepareCancellation();
+        const response = await cancelarPrestamo(body)
+        if(response && response.status === 200) {
+            await handleClose();
+            setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
+            setOpenResponseModal(true);
+            getCancelaciones();
+        } else {
+            await handleClose();
+            setResponseData({title:"Error", message:response.message});
+            setOpenResponseModal(true);
+        }
+    }
+
     const handleSaveCancellation = async () => {
+        const [c_compania, c_prestamo] = elementId.split('-');
         if(validate()) {
             if(validacionesFuncion[tipoCancelacion]() === "OK" ) {
-                const body = prepareCancellation();
-                const response = await cancelarPrestamo(body)
-                if(response && response.status === 200) {
-                    await handleClose();
-                    setResponseData({title:"Operación", message:"Se guardó la cancelación con éxito"});
-                    setOpenResponseModal(true);
-                    getCancelaciones();
+                const responseValida = await getValidarAlertaMontoMaximo({
+                    c_compania: c_compania,
+                    c_prestamo: c_prestamo,
+                    d_fechamov: fechaCancelacion.value,
+                    n_montocons: montoTotalCancelar.value,
+                    c_usuariooperacion: usuarioOperacion
+                });
+                if(responseValida && responseValida.status === 200) {
+                    if(responseValida.body.message?.respuesta === "OK") saveCancelation();
+                    else if(responseValida.body.message?.respuesta === "SE HA EXCEDIDO EL MONTO MAXIMO DESEA CONTINUAR") setOpenAlertConfirmationModal(true);
+                    else if(responseValida.body.message?.respuesta === "NO SE PUEDE EXCEDER EL MONTO MAXIMO") {
+                        setResponseData({title:"Error", message:"El monto máximo de la caja es restrictivo y se ha excedido"});
+                        setOpenResponseModal(true);
+                        handleClose();
+                    } else {
+                        setResponseData({title:"Error", message: responseValida.body.message || "Error en el servicio"});
+                        setOpenResponseModal(true);
+                    }
                 } else {
-                    await handleClose();
-                    setResponseData({title:"Error", message:response.message});
+                    setResponseData({title:"Error", message:"Fallo la validación"});
                     setOpenResponseModal(true);
                 }
             } else {
@@ -157,7 +186,8 @@ const CancellationModal = (props) => {
     }, [interesCancelar, montoPrestamoCancelar, montoComision])
 
     return (
-        <Modal isOpen={isOpen} title="Cancelaciones" onClose={handleClose} modal_class="Modal__container__form__cancellation">
+        <>
+            <Modal isOpen={isOpen} title="Cancelaciones" onClose={handleClose} modal_class="Modal__container__form__cancellation">
             <div className="modal-body row">
                 <InputComponent
                     label="Línea"
@@ -328,6 +358,15 @@ const CancellationModal = (props) => {
                 </button>
             </div>
         </Modal>
+        <ConfirmationModal
+                isOpen={openAlertConfirmationModal}
+                onClose={()=>setOpenAlertConfirmationModal(false)}
+                title={"Aviso de operación"}
+                message={"¿Seguro que desea continuar con esta operación?. Se ha excedido el monto maximo del dia."}
+                onHandleFunction={() => saveCancelation()}
+                buttonClass="btn-danger"
+            />
+        </>
     )
 }
 
