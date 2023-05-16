@@ -24,6 +24,7 @@ const TipoMovimientoCajaForm = (props) => {
     const [movimientoInverso, setMovimientoInverso] = useState("");
     const [tiposMovimientos, setTiposMovimientos] = useState([]);
     const [flagOtraAgencia, setFlagOtraAgencia] = useState("N");
+    const [flagListaAdmin, setFlagListaAdmin] = useState("N");
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +82,8 @@ const TipoMovimientoCajaForm = (props) => {
             c_flagsinmonto: flagSinMonto,
             c_flagxconfirmar: flagConfirmar,
             c_tipomovimientoccinverso: movimientoInverso ? movimientoInverso : null,
-            c_flagotraagencia: flagOtraAgencia
+            c_flagotraagencia: flagOtraAgencia,
+            c_flaglistaadmin: flagListaAdmin
         }
         return data;
     }
@@ -133,6 +135,7 @@ const TipoMovimientoCajaForm = (props) => {
             setFlagConfirmar(data.c_flagxconfirmar);
             setMovimientoInverso(data.c_tipomovimientoccinverso || "");
             setFlagOtraAgencia(data.c_flagotraagencia || "N");
+            setFlagListaAdmin(data.c_flaglistaadmin || "N");
         }else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
@@ -254,6 +257,18 @@ const TipoMovimientoCajaForm = (props) => {
                     optionField="option"
                     valueSelected={flagOtraAgencia}
                     handleChange={setFlagOtraAgencia}
+                    disabledElement={readOnlyView}
+                    disableDefaultValue={true}
+                />
+                <SelectComponent
+                    labelText="Flag Lista Admin"
+                    defaultValue="Selecciona"
+                    items={[{value: "N", option: "NO"},{value: "S", option: "SI"}]}
+                    selectId="flagListaAdmin"
+                    valueField="value"
+                    optionField="option"
+                    valueSelected={flagListaAdmin}
+                    handleChange={setFlagListaAdmin}
                     disabledElement={readOnlyView}
                     disableDefaultValue={true}
                 />

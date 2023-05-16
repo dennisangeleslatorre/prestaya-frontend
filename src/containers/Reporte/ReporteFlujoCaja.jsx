@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import ReportContainer from '../../components/ReportContainer/ReportContainer';
 import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent';
 import ReactSelect from '../../components/ReactSelect/ReactSelect';
@@ -8,6 +8,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
 import { listAllCompanias, listAgencias, listUsers, listAllTipoMovimientoCaja, getDataReporteFlujoCaja } from '../../Api/Api'
 import ReporteFlujoCajaPDFComponent from '../../components/ReporteFlujoCajaPDFComponent/ReporteFlujoCajaPDFComponent';
+import PagesContext from '../../context/PagesContext/PagesContext'
 import moment from 'moment'
 
 const columnsExportExcel = [
@@ -45,11 +46,11 @@ const columnsExportExcel = [
     },
     {
         label: 'MNTO. INTERES A CANCELAR',
-        value: row => (row.n_montointeresescancelar || '')
+        value: row => (row.n_montointeresescancelar ? row.n_montointeresescancelar : (row.n_montoint ? row.n_montoint : ""))
     },
     {
         label: 'MNTO. PRESTAMO A CANCELAR',
-        value: row => (row.n_montoprestamocancelar || '')
+        value: row => (row.n_montoprestamocancelar ? row.n_montoprestamocancelar : (row.n_montocap ? row.n_montocap : ""))
     },
     {
         label: 'MNTO. COMISION',
@@ -105,6 +106,11 @@ const ReporteFlujoCaja = () => {
     const [tiposMovimientos, setTiposMovimientos] = useState([]);
     //Estados del pdf
     const [dataReportToTable, setDataReportToTable] = useState([]);
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item)=>{
+        return item === "USUARIO ACCESO TOTAL CAJA"
+    });
+    const usuarioAccesoTotalCajaPermiso = userPermisssions.includes("USUARIO ACCESO TOTAL CAJA");
     //Prepare
     const prepareBodyToSearch = () => {
         let body = {};
@@ -121,6 +127,7 @@ const ReporteFlujoCaja = () => {
         if(fuente && fuente !== "T") body.c_fuente = fuente;
         if(tipoMovimiento && tipoMovimiento !== "T") body.c_tipomovimientocc = tipoMovimiento;
         if(claseTipoMov && claseTipoMov !== "T") body.c_clasetipomov = claseTipoMov;
+        if(!usuarioAccesoTotalCajaPermiso) body.in_flaglistaadmin = "N";
         return body;
     }
     //Evento

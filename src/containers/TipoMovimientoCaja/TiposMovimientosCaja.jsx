@@ -80,6 +80,7 @@ const TiposMovimientosCaja = () => {
         {name:'c_flagxconfirmar', label: 'Flag Confirmar', sortVar:1 },
         {name:'c_tipomovimientoccinverso', label: 'Mov. Inverso', sortVar:1 },
         {name:'c_flagotraagencia', label: 'F. otra agencia', sortVar:1 },
+        {name:'c_flaglistaadmin', label: 'F. Lista admin', sortVar:1 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
@@ -96,7 +97,8 @@ const TiposMovimientosCaja = () => {
         {name:'c_flagsinmonto'},
         {name:'c_flagxconfirmar'},
         {name:'c_tipomovimientoccinverso'},
-        {name:'c_flagotraagencia'}
+        {name:'c_flagotraagencia'},
+        {name:'c_flaglistaadmin'},
     ];
 
     //consumo de api
@@ -150,6 +152,7 @@ const TiposMovimientosCaja = () => {
             aux.c_flagxconfirmar = item.c_flagxconfirmar === "N" ? "NO" : "SI";
             aux.c_tipomovimientoccinverso = item.c_tipomovimientoccinverso ? item.c_tipomovimientoccinverso : "";
             aux.c_flagotraagencia = item.c_flagotraagencia === "S" ? "SI" : "NO";
+            aux.c_flaglistaadmin = item.c_flaglistaadmin === "S" ? "SI" : "NO";
             aux.c_usuarioregistro = item.c_usuarioregistro || "";
             aux.d_fecharegistro = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
             aux.c_ultimousuario = item.c_ultimousuario || "";
