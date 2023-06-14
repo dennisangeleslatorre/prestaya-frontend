@@ -234,7 +234,7 @@ const WarrantyProductsForm = (props) => {
     const handleOpenModalLocation = () => {
         if( elementSelected && elementSelected.length > 0 ) {
             if(elementSelected.length === 1) {
-                let editProductAux = productos[0];
+                let editProductAux = productos[elementSelected[0]];
                 editProductAux.n_cantidad = Number(editProductAux.n_cantidad).toFixed(1);
                 editProductAux.n_pesobruto = Number(editProductAux.n_pesobruto).toFixed(4);
                 editProductAux.n_pesoneto = Number(editProductAux.n_pesoneto).toFixed(4);
