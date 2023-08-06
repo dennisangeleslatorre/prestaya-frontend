@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from './ModalNotification';
 
-const ConfirmationModal = ({isOpen, title, onClose, message, onHandleFunction, buttonClass="btn-success"}) => {
+const ConfirmationModal = ({isOpen, title, onClose, message, onHandleFunction, buttonClass="btn-success", disabledButton=false}) => {
     return (
         <Modal isOpen={isOpen} title={title} onClose={onClose}>
             {/*body*/}
@@ -10,7 +10,7 @@ const ConfirmationModal = ({isOpen, title, onClose, message, onHandleFunction, b
             </div>
             {/*Footer*/}
             <div className="modal-footer">
-                <button onClick={onHandleFunction} className={`btn ${buttonClass} mr-4`}>
+                <button onClick={onHandleFunction} className={`btn ${buttonClass} mr-4`} disabled={disabledButton}>
                     Aceptar
                 </button>
                 <button onClick={onClose} className="btn btn-primary">

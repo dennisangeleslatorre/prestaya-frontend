@@ -78,6 +78,7 @@ const FormCajaChicaUsuario = () => {
     const [flujoCajaForm, setFlujoCajaForm] = useState({});
     const [openAlertConfirmationModal, setOpenAlertConfirmationModal] = useState(false);
     const [diasMontoExcedido, setDiasMontoExcedido] = useState("");
+    const [disabledButton, setDisabledButton] = useState(false);
     //Estados de las listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -320,6 +321,7 @@ const FormCajaChicaUsuario = () => {
     }
 
     const handleRegistrarFlujo = async () => {
+        setDisabledButton(true);
         if(flujoCajaForm.general.c_usuariofcu === userLogedIn || usuarioAccesoTotalCajaPermiso) {
             if(validateGeneralData() && detalles && detalles.length > 0) {
                 if(validateDetailDateRange()) {
@@ -351,6 +353,9 @@ const FormCajaChicaUsuario = () => {
         }  else {
             prepareNotificationDanger("Aviso", "El usuario no tiene permisos para crear una caja para un usuario diferente.");
         }
+        setTimeout(()=>{
+            setDisabledButton(false);
+        }, 2000)
     }
 
     const handleCancelar = () => {
@@ -737,7 +742,13 @@ const FormCajaChicaUsuario = () => {
                                   />
                               </div>
                               <div className="col-12 mb-3 text-center">
-                                    <button onClick={urlFragment === "nuevaCajaChicaUsuario" ? handleRegistrarFlujo : handleActualizarFlujo} className="btn btn-light btn-form">Guardar</button>
+                                    <button
+                                        onClick={urlFragment === "nuevaCajaChicaUsuario" ? handleRegistrarFlujo : handleActualizarFlujo}
+                                        className="btn btn-light btn-form"
+                                        disabled={disabledButton}
+                                    >
+                                        Guardar
+                                    </button>
                                     <button onClick={handleCancelar} className="btn btn-light btn-form ml-md-3">Cancelar</button>
                               </div>
                               <HeaderForm title="Datos de auditoria"/>

@@ -133,6 +133,7 @@ const FormMovimientoCUxConfirmar = () => {
     const [modalAttributes, setModalAttributes] = useState({title:"", message:""});
     const [open, setOpen] = useState(false);
     const [openAlertConfirmationModal, setOpenAlertConfirmationModal] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
     //Estados de las listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -217,6 +218,7 @@ const FormMovimientoCUxConfirmar = () => {
     }
 
     const confirMov = async () => {
+        setDisabledButton(true);
         const movAux = movimientos
         .find( item => item.c_compania === elementSelected[0].c_compania && item.n_correlativo === elementSelected[0].n_correlativo
             && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
@@ -230,6 +232,9 @@ const FormMovimientoCUxConfirmar = () => {
             setResponseData( {title: "Error al confirmar", message: response.body.message });
         }
         setOpenResponseModal(true);
+        setTimeout(() => {
+            setDisabledButton(false);
+        }, 2000);
     }
 
     const handleConfirmMov = async () => {
@@ -407,6 +412,7 @@ const FormMovimientoCUxConfirmar = () => {
                 title={modalAttributes.title}
                 message={modalAttributes.message}
                 onHandleFunction={()=>handleConfirmMov()}
+                disabledButton={disabledButton}
             />
             <ResponseModal
                 isOpen={openResponseModal}
