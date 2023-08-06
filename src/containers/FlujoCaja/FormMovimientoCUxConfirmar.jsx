@@ -8,6 +8,7 @@ import { separator } from '../../utilities/Functions/FormatNumber';
 import { useHistory } from 'react-router'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
+import { debounce } from 'lodash';
 //Context
 import UserContext from '../../context/UserContext/UserContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
@@ -217,55 +218,75 @@ const FormMovimientoCUxConfirmar = () => {
         }
     }
 
-    const confirMov = async () => {
-        setDisabledButton(true);
-        const movAux = movimientos
-        .find( item => item.c_compania === elementSelected[0].c_compania && item.n_correlativo === elementSelected[0].n_correlativo
-            && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
-        setOpenAlertConfirmationModal(false);
-        const body = prepareBody(movAux);
-        const response = await confirmarMovimiento(body);
-        if(response && response.status === 200 && response.body.message === 'OK') {
-            await refresListTable();
-            setResponseData( {title: "Operación exitosa", message: "Se confirmo con éxito." });
-        } else {
-            setResponseData( {title: "Error al confirmar", message: response.body.message });
-        }
-        setOpenResponseModal(true);
-        setTimeout(() => {
-            setDisabledButton(false);
-        }, 2000);
-    }
+    const confirMov = debounce(async () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+              setDisabledButton(true);
+              const movAux = movimientos.find(
+                (item) =>
+                  item.c_compania === elementSelected[0].c_compania &&
+                  item.n_correlativo === elementSelected[0].n_correlativo &&
+                  item.d_fechamov === elementSelected[0].d_fechamov &&
+                  item.n_secuencia === elementSelected[0].n_secuencia
+              );
+              setOpenAlertConfirmationModal(false);
+              const body = prepareBody(movAux);
+              const response = await confirmarMovimiento(body);
+              if (response && response.status === 200 && response.body.message === 'OK') {
+                await refresListTable();
+                setResponseData({ title: 'Operación exitosa', message: 'Se confirmo con éxito.' });
+              } else {
+                setResponseData({ title: 'Error al confirmar', message: response.body.message });
+              }
+              setOpenResponseModal(true);
+              setTimeout(() => {
+                setDisabledButton(false);
+              }, 2000);
+              setIsLoading(false);
+              resolve();
+            } catch (error) {
+              reject(error);
+              setIsLoading(false)
+            }
+        });
+    }, 2000);
 
     const handleConfirmMov = async () => {
-        const movAux = movimientos
-        .find( item => item.c_compania === elementSelected[0].c_compania && item.n_correlativo === elementSelected[0].n_correlativo
-            && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
-        await setOpen(false);
-        await setIsLoading(true);
+        try {
+            await setIsLoading(true);
+            const movAux = movimientos
+            .find( item => item.c_compania === elementSelected[0].c_compania && item.n_correlativo === elementSelected[0].n_correlativo
+                && item.d_fechamov === elementSelected[0].d_fechamov && item.n_secuencia === elementSelected[0].n_secuencia )
+            await setOpen(false);
 
-        const responseValida = await getValidarMontoMaximoConfirMov({
-            c_compania: movAux.c_compania,
-            c_agencia: movAux.c_agenciaotra ? movAux.c_agenciaotra : movAux.c_agencia,
-            d_fechamov: moment(movAux.d_fechamov).format('yyyy-MM-DD'),
-            n_montocons: movAux.n_montoxdiamov,
-            c_usuariooperacion: movAux.c_usuariomovimiento
-        });
-        if(responseValida && responseValida.status === 200) {
-            if(responseValida.body.message?.respuesta === "OK") confirMov();
-            else if(responseValida.body.message?.respuesta === "SE HA EXCEDIDO EL MONTO MAXIMO DESEA CONTINUAR") setOpenAlertConfirmationModal(true);
-            else if(responseValida.body.message?.respuesta === "NO SE PUEDE EXCEDER EL MONTO MAXIMO") {
-                setResponseData({title:"Error", message:"El monto máximo de la caja es restrictivo y se ha excedido"});
-                setOpenResponseModal(true);
+            const responseValida = await getValidarMontoMaximoConfirMov({
+                c_compania: movAux.c_compania,
+                c_agencia: movAux.c_agenciaotra ? movAux.c_agenciaotra : movAux.c_agencia,
+                d_fechamov: moment(movAux.d_fechamov).format('yyyy-MM-DD'),
+                n_montocons: movAux.n_montoxdiamov,
+                c_usuariooperacion: movAux.c_usuariomovimiento
+            });
+            if(responseValida && responseValida.status === 200) {
+                if(responseValida.body.message?.respuesta === "OK") await confirMov();
+                else if(responseValida.body.message?.respuesta === "SE HA EXCEDIDO EL MONTO MAXIMO DESEA CONTINUAR") setOpenAlertConfirmationModal(true);
+                else if(responseValida.body.message?.respuesta === "NO SE PUEDE EXCEDER EL MONTO MAXIMO") {
+                    setResponseData({title:"Error", message:"El monto máximo de la caja es restrictivo y se ha excedido"});
+                    setOpenResponseModal(true);
+                    setIsLoading(false);
+                } else {
+                    setResponseData({title:"Error", message: responseValida.body.message || "Error en el servicio"});
+                    setOpenResponseModal(true);
+                    setIsLoading(false);
+                }
             } else {
-                setResponseData({title:"Error", message: responseValida.body.message || "Error en el servicio"});
+                setResponseData({title:"Error", message:"Fallo la validación"});
                 setOpenResponseModal(true);
+                setIsLoading(false);
             }
-        } else {
-            setResponseData({title:"Error", message:"Fallo la validación"});
-            setOpenResponseModal(true);
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
 
     const handleSeleccionarCompania = (value) => {

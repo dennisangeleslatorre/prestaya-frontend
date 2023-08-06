@@ -21,6 +21,7 @@ import { listCompanias, listAgencias, listUsers, registerFlujoCaja, getFlujoCaja
 import moment from 'moment'
 import HeaderForm from '../../components/HeaderForm/HeaderForm'
 import InputComponent from '../../components/InputComponent/InputComponent'
+import { debounce } from 'lodash';
 
 const monedas = [
   {value:"L" , name:"LOCAL" }, {value:"E" , name:"EXTERIOR" }
@@ -106,11 +107,13 @@ const FormCajaChicaUsuario = () => {
         setEliminarDetalles([]);
         setEliminarMovimientos([]);
         setOpenResponseModal(true);
+        setIsLoading(false);
     }
 
     const prepareNotificationDanger = (title, message="Error al consumir el servicio.") => {
         setResponseData({title:title, message:message})
         setOpenResponseModal(true);
+        setIsLoading(false);
     }
 
     const validateGeneralData = () => {
@@ -204,7 +207,7 @@ const FormCajaChicaUsuario = () => {
         return validSaldo;
     }
 
-    const actualizarFC = async () => {
+    const actualizarFC = debounce( async () => {
         setOpenAlertConfirmationModal(false);
         const flujoCajaToSend = {
             c_compania: flujoCajaForm.general.c_compania,
@@ -230,15 +233,17 @@ const FormCajaChicaUsuario = () => {
         const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
         const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend, nuevosDetalles: nuevosDetallesToSend, actualizarDetalles:actualizarDetallesToSend, eliminarDetalles:eliminarDetallesToSend, eliminarMovimientos:eliminarMovimientosToSend});
         (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el flujo de caja") : prepareNotificationDanger("Error al actualizar", response.message);
-    }
+    }, 2000 );
 
-    const handleActualizarFlujo = async () => {
+    const handleActualizarFlujo = () => {
+        setDisabledButton(true);
+        setIsLoading(true);
         if(flujoCajaForm.general.c_usuariofcu === userLogedIn || usuarioAccesoTotalCajaPermiso) {
             if(validateGeneralData() && detalles && detalles.length > 0) {
                 if(validateDetailDateRange()) {
                     const isValidoSaldo = validateSaldo();
                     if(isValidoSaldo) {
-                        const detalleNoValidos =validaMontoMaximo();
+                        const detalleNoValidos = validaMontoMaximo();
                         const detallesNoValidosRestringe = detalleNoValidos.filter(det => det.restringe === "S");
                         const detallesNoValidosNoRestringe = detalleNoValidos.filter(det => det.restringe === "N");
                         if(detalleNoValidos.length === 0) {
@@ -247,10 +252,12 @@ const FormCajaChicaUsuario = () => {
                             const detMessage = detallesNoValidosRestringe.map(det => moment(det.d_fechamov).format("DD/MM/yyyy")).reduce((acc, cv) => acc + ", " + cv)
                             setResponseData({title:"Aviso", message:"El monto máximo es restrictivo para los detalles: " + detMessage })
                             setOpenResponseModal(true);
+                            setIsLoading(false);
                         } else {
                             const detMessage = detallesNoValidosNoRestringe.map(det => moment(det.d_fechamov).format("DD/MM/yyyy")).reduce((acc, cv) => acc + ", " + cv);
                             setDiasMontoExcedido(detMessage)
                             setOpenAlertConfirmationModal(true);
+                            setIsLoading(false);
                         }
                     } else {
                         prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
@@ -264,7 +271,10 @@ const FormCajaChicaUsuario = () => {
         } else {
             prepareNotificationDanger("Aviso", "El usuario no tiene permisos para modificar una caja de un usuario diferente.");
         }
-    }
+        setTimeout(()=>{
+            setDisabledButton(false);
+        }, 2000)
+    };
 
     const validaMontoMaximo = () => {
         let detalleNoValidos = [];
@@ -298,7 +308,7 @@ const FormCajaChicaUsuario = () => {
         return detalleNoValidos;
     }
 
-    const registrarFC = async () => {
+    const registrarFC = debounce( async () => {
         setOpenAlertConfirmationModal(false);
         const flujoCajaToSend = {
             c_compania: flujoCajaForm.general.c_compania,
@@ -318,16 +328,17 @@ const FormCajaChicaUsuario = () => {
         const detailsToSend = prepareNewDetailsToSend(detalles);
         const response = await registerFlujoCaja({flujoCaja:flujoCajaToSend, detalles: detailsToSend});
         (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
-    }
+    }, 2000 );
 
     const handleRegistrarFlujo = async () => {
         setDisabledButton(true);
+        setIsLoading(true);
         if(flujoCajaForm.general.c_usuariofcu === userLogedIn || usuarioAccesoTotalCajaPermiso) {
             if(validateGeneralData() && detalles && detalles.length > 0) {
                 if(validateDetailDateRange()) {
                     const isValidoSaldo = validateSaldo();
                     if(isValidoSaldo) {
-                        const detalleNoValidos =validaMontoMaximo();
+                        const detalleNoValidos = validaMontoMaximo();
                         const detallesNoValidosRestringe = detalleNoValidos.filter(det => det.restringe === "S");
                         const detallesNoValidosNoRestringe = detalleNoValidos.filter(det => det.restringe === "N");
                         if(detalleNoValidos.length === 0) {
@@ -336,10 +347,12 @@ const FormCajaChicaUsuario = () => {
                             const detMessage = detallesNoValidosRestringe.map(det => moment(det.d_fechamov).format("DD/MM/yyyy")).reduce((acc, cv) => acc + ", " + cv)
                             setResponseData({title:"Aviso", message:"El monto máximo es restrictivo para los detalles: " + detMessage })
                             setOpenResponseModal(true);
+                            setIsLoading(false);
                         } else {
                             const detMessage = detallesNoValidosNoRestringe.map(det => moment(det.d_fechamov).format("DD/MM/yyyy")).reduce((acc, cv) => acc + ", " + cv);
                             setDiasMontoExcedido(detMessage)
                             setOpenAlertConfirmationModal(true);
+                            setIsLoading(false);
                         }
                     } else {
                         prepareNotificationDanger("Aviso", `El cálculo del saldo por ${flujoCajaForm.general.c_flagsaldoxdia === 'S' ? 'DÍA' : 'CAJA'} es negativo.`);
@@ -356,7 +369,7 @@ const FormCajaChicaUsuario = () => {
         setTimeout(()=>{
             setDisabledButton(false);
         }, 2000)
-    }
+    };
 
     const handleCancelar = () => {
         setDetalleSeleccionado({general:{}, movimientos:[], firstArrival:true});
