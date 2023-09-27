@@ -15,6 +15,8 @@ import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getDataRepor
     listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
 import ReportePrestamosVencidosPDF from '../../components/ReportePrestamosVencidosPDF/ReportePrestamosVencidosPDF'
+import { Radio, Table } from 'antd';
+import { separator } from '../../utilities/Functions/FormatNumber';
 
 const columnsExportExcel = [
     {
@@ -115,6 +117,225 @@ const estados = [
     { name: 'REMATE', value: 'RE' }
 ]
 
+const columnsTable = [
+    {
+        title: '# Prestamo',
+        dataIndex: 'c_prestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'Cliente',
+        dataIndex: 'n_cliente',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 80,
+    },
+    {
+        title: 'Nombre Completo',
+        dataIndex: 'c_nombrescompleto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 210,
+    },
+    {
+        title: 'F. Desembolso',
+        dataIndex: 'd_fechadesembolso',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'F. Vencimiento',
+        dataIndex: 'd_fechavencimiento',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'Moneda P.',
+        dataIndex: 'c_monedaprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'Monto Prestamo',
+        dataIndex: 'n_montoprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+        render: n_montoprestamo => (
+            <span>
+              {separator(Number(n_montoprestamo).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Monto Intereses',
+        dataIndex: 'n_montointereses',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+        render: n_montointereses => (
+            <span>
+              {separator(Number(n_montointereses).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Monto Total P.',
+        dataIndex: 'n_montototalprestamo',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+        render: n_montototalprestamo => (
+            <span>
+              {separator(Number(n_montototalprestamo).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Dias Plazo Totales',
+        dataIndex: 'calc_diasplazototales',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
+    },
+    {
+        title: 'F. Vcto. Reprog.',
+        dataIndex: 'd_fechavencimientoreprogramada',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
+    },
+    {
+        title: 'F. Cancelacion',
+        dataIndex: 'ultimafechacancelacionregistrada',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'Dias Vencido',
+        dataIndex: 'calc_diasvencido',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
+    },
+    {
+        title: 'Vencido',
+        dataIndex: 'esvencido',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 100,
+        render: esvencido => (
+            <span>
+                {esvencido === 'N' ? 'NO' : 'SI'}
+            </span>
+        ),
+    },
+    {
+        title: 'Interes Cancelado',
+        dataIndex: 'calc_sumainterescancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
+        render: calc_sumainterescancelado => (
+            <span>
+              {separator(Number(calc_sumainterescancelado).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Monto Prest. Cancelado',
+        dataIndex: 'calc_sumamontoprestamocancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
+        render: calc_sumamontoprestamocancelado => (
+            <span>
+              {separator(Number(calc_sumamontoprestamocancelado).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Mnto. Comision Canc.',
+        dataIndex: 'calc_sumamontocomisioncancelada',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160,
+        render: calc_sumamontocomisioncancelada => (
+            <span>
+              {separator(Number(calc_sumamontocomisioncancelada).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Mnto. Total Cancelado',
+        dataIndex: 'calc_sumamontotalcancelado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160,
+        render: calc_sumamontotalcancelado => (
+            <span>
+              {separator(Number(calc_sumamontotalcancelado).toFixed(2))}
+            </span>
+        ),
+    },
+    {
+        title: 'Estado',
+        dataIndex: 'c_estado',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 130,
+    },
+    {
+        title: 'Agencia',
+        dataIndex: 'agenciadesc',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 160,
+    },
+    {
+        title: 'Producto',
+        dataIndex: 'c_descripcionproducto',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 220,
+    },
+    {
+        title: 'Teléfono',
+        dataIndex: 'c_telefono1',
+        ellipsis: {
+            showTitle: false,
+        },
+        width: 150,
+    },
+]
+
 const ReportePrestamosVencidos = () => {
     //Filtros
     const [compania, setCompania] = useState("");
@@ -140,6 +361,7 @@ const ReportePrestamosVencidos = () => {
     const [provinciaCodigo, setProvinciaCodigo] = useState("");
     const [distritoCodigo, setDistritoCodigo] = useState("");
     const [fechaActual, setFechaActual] = useState({value:moment().format("yyyy-MM-DD")});
+    const [isPdfGenerated, setIsPdfGenerated] = useState(true);
     //Listas
     const [companias, setCompanias] = useState([]);
     const [agencias, setAgencias] = useState([]);
@@ -565,6 +787,15 @@ const ReportePrestamosVencidos = () => {
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                     />
+                    <div className={`form-group col-12 row`}>
+                        <label className={`col-12 col-form-label label-input`}>¿Generar pdf?</label>
+                        <div className='col-12'>
+                            <Radio.Group onChange={(e) => setIsPdfGenerated(e.target.value)} value={isPdfGenerated}>
+                                <Radio value={true}>SI</Radio>
+                                <Radio value={false}>NO</Radio>
+                            </Radio.Group>
+                        </div>
+                    </div>
                 </div>
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                     <button onClick={onHandleClickSearch} className='btn btn-light' style={{width: "200px"}}>Buscar</button>
@@ -575,15 +806,27 @@ const ReportePrestamosVencidos = () => {
                     columns={columnsExportExcel}
                     content={dataReportToTable}
                 />
-                <div className="col-12">
-                    {elementPdf ? <PDFViewer
-                        className="col-12"
-                        style={{height: "800px"}}
-                        children={<ReportePrestamosVencidosPDF element={elementPdf} general={general}/>}
-                    /> : <div className="text-center">
-                        <h2>No se a realizado una búsqueda</h2>
-                    </div>}
-                </div>
+                {
+                    isPdfGenerated ? <div className="col-12">
+                        {elementPdf ? <PDFViewer
+                            className="col-12"
+                            style={{height: "800px"}}
+                            children={<ReportePrestamosVencidosPDF element={elementPdf} general={general}/>}
+                        /> : <div className="text-center">
+                            <h2>No se a realizado una búsqueda</h2>
+                        </div>}
+                    </div> :
+                    <div className="row" style={{overflow: 'hidden'}}>
+                        <div className="col" style={{ overflow: 'scroll' }}>
+                            <Table
+                                classForm
+                                columns={columnsTable}
+                                dataSource={elementPdf?.lineasReporte || []}
+                                pagination={{ pageSize: 50 }}
+                            />
+                        </div>
+                    </div>
+                }
             </ReportContainer>
             {isLoading === true && <LoadingModal/>}
             <ResponseModal
