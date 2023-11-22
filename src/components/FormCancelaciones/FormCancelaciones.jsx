@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import HeaderForm from '../HeaderForm/HeaderForm'
 import { Table, Space, Button } from 'antd'
 import CancellationModal from '../CancellationModal/CancellationModal'
+import SimulationModal from '../CancellationModal/SimulationModal'
 import ConfirmationModal from '../../components/Modal/ConfirmationModal'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
@@ -92,6 +93,7 @@ const FormCancelaciones = (props) => {
     //Estados
     const [tableCancelaciones, setTableCancelaciones] = useState([]);
     const [openCancellationModal, setOpenCancellationModal] = useState(false);
+    const [openSimulationModal, setOpenSimulationModal] = useState(false);
     const [ultimaCancelacion, setUltimaCancelacion] = useState(null);
     const [fechaDesembolsoCancelacion, setfechaDesembolsoCancelacion] = useState("");
     const [diasComisionParametros, setDiasComisionParametros] = useState(0);
@@ -176,6 +178,17 @@ const FormCancelaciones = (props) => {
             setResponseData({title: "Aviso", message:"Se canceló por completo el préstamo"})
             setOpenResponseModal(true);
         }
+    }
+
+    const handleSimulation = () => {
+        const nLineaPosition = tableCancelaciones.length-1;
+        if(nLineaPosition > 0) {
+            setfechaDesembolsoCancelacion(tableCancelaciones[nLineaPosition-1].d_fechacancelacion);
+        } else {
+            setfechaDesembolsoCancelacion(fechaDesembolsoPrestamo);
+        }
+        //Abrimos el modal
+        setOpenSimulationModal(true);
     }
 
     const handleDeleteCancelacion = async () => {
@@ -281,6 +294,7 @@ const FormCancelaciones = (props) => {
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
                         { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button> }
+                        { (cancelarPermission && estadoPrestamo === "RE") && <Button onClick={handleSimulation}>SIMULAR</Button> }
                         { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button> }
                         { (regresarEntregaPermission && estadoPrestamo === "EN") && <Button onClick={()=>setOpenRegresarEntrega(true)}>REGRESAR DE ENTREGA</Button>}
                         {/* (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button> */}
@@ -314,6 +328,15 @@ const FormCancelaciones = (props) => {
                 diasComisionParametros={diasComisionParametros}
                 montoComisionParametros={montoComisionParametros}
                 getCancelaciones={getData}
+                usuarios={usuarios}
+            />
+            <SimulationModal
+                isOpen={openSimulationModal}
+                onClose={()=>setOpenSimulationModal(false)}
+                ultimaCancelacion={ultimaCancelacion}
+                fechaDesembolsoCancelacion={fechaDesembolsoCancelacion}
+                diasComisionParametros={diasComisionParametros}
+                montoComisionParametros={montoComisionParametros}
                 usuarios={usuarios}
             />
             <ConfirmationModal
