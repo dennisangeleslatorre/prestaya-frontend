@@ -111,10 +111,11 @@ const FormCancelaciones = (props) => {
     //Contexto
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
-        return item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
+        return item === "SIMULAR" || item === "CANCELAR" || item === "ANULAR CANCELACIÓN" || item === "REGRESAR DE ENTREGA" || item === "REGRESAR DE REMATE"
         || item == "FORMATO RECIBOS CANCELACIONES" || item == "FORMATO CANCELACIONES" || item == "FORMATO ACTA ENTREGA" || item === "ENTREGAR"
     })
     const cancelarPermission = userPermisssions.includes("CANCELAR");
+    const simulationPermission = userPermisssions.includes("SIMULAR");
     const anularCancelacionPermission = userPermisssions.includes("ANULAR CANCELACIÓN");
     const regresarEntregaPermission = userPermisssions.includes("REGRESAR DE ENTREGA");
     //const regresarRematePermission = userPermisssions.includes("REGRESAR DE REMATE");
@@ -294,7 +295,7 @@ const FormCancelaciones = (props) => {
                 <div className="col">
                     <Space style={{ marginBottom: 16 }}>
                         { (cancelarPermission && estadoPrestamo === "VI") && <Button onClick={handleAddCancelacion}>CANCELAR</Button> }
-                        { (cancelarPermission && estadoPrestamo === "RE") && <Button onClick={handleSimulation}>SIMULAR</Button> }
+                        { (simulationPermission && estadoPrestamo === "RE") && <Button onClick={handleSimulation}>SIMULAR</Button> }
                         { (anularCancelacionPermission && (estadoPrestamo === "VI" || estadoPrestamo === "CA")) && <Button onClick={()=>setOpen(true)}>ANULAR CANCELACIÓN</Button> }
                         { (regresarEntregaPermission && estadoPrestamo === "EN") && <Button onClick={()=>setOpenRegresarEntrega(true)}>REGRESAR DE ENTREGA</Button>}
                         {/* (regresarRematePermission && estadoPrestamo === "RE") && <Button onClick={()=>setOpenRegresarRemate(true)}>REGRESAR DE REMATE</Button> */}

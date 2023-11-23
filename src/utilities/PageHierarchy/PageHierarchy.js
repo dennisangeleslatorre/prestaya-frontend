@@ -108,6 +108,10 @@ const pagesArray = [
                                 value: 'CANCELAR',
                                 key: 'CANCELAR'
                             },{
+                                title: 'SIMULAR',
+                                value: 'SIMULAR',
+                                key: 'SIMULAR'
+                            },{
                                 title: 'ANULAR CANCELACIÓN',
                                 value: 'ANULAR CANCELACIÓN',
                                 key: 'ANULAR CANCELACIÓN'

@@ -96,7 +96,7 @@ const SimulationModal = (props) => {
 
     return (
         <>
-            <Modal isOpen={isOpen} title="Cancelaciones" onClose={handleClose} modal_class="Modal__container__form__cancellation">
+            <Modal isOpen={isOpen} title="Simulación" onClose={handleClose} modal_class="Modal__container__form__cancellation">
             <div className="modal-body row">
                 <InputComponent
                     label="Línea"
