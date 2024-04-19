@@ -397,7 +397,7 @@ export default{
             name: 'VISUALIZAR PERÍODO'
         },{
             component: Clientes,
-            path: '/clientes',
+            path: '/listaClientes',
             exact: true,
             name: 'CLIENTES'
         },{

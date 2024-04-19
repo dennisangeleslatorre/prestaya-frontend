@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 //Componentes
+import { Checkbox } from "antd";
 import FormContainer from '../../components/FormContainer/FormContainer'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
@@ -11,7 +12,8 @@ import Loading from '../../components/Modal/LoadingModal'
 import UserContext from '../../context/UserContext/UserContext'
 //Functions
 import { useLocation, useHistory } from 'react-router'
-import { registerUser, updateUser, getUserByCodigoUsuario, listActivePerfiles } from '../../Api/Api'
+import { registerUser, updateUser, getUserByCodigoUsuario, listActivePerfiles, listAllAgencias, assignAgenciesToUser, listAgenciesByUser } from '../../Api/Api'
+import TreeSelectComponent from '../../components/TreeSelectComponent/TreeSelectComponent';
 
 const UserForm = (props) => {
     const [codigoUsuario, setcodigoUsuario] = useState({value: "", isValid:null});
@@ -22,6 +24,9 @@ const UserForm = (props) => {
     const [nPerfil, setNPerfil] = useState("");
     const [perfiles, setPerfiles] = useState([]);
     const [estado, setEstado] = useState("A");
+    const [todasAgencias, setTodasAgencias] = useState(false);
+    const [agencias, setAgencias] = useState([]);
+    const [agenciasSeleccionadas, setAgenciasSeleccionadas] = useState([]);
     //Estados del formulario
     const [buttonAttributes, setButtonAttributes] = useState({label:"", class:""});
     const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +81,8 @@ const UserForm = (props) => {
             c_correo: correo.value,
             c_telefono: telefono.value,
             n_perfil: nPerfil,
-            c_estado: estado
+            c_estado: estado,
+            b_todas_agencias: todasAgencias,
         }
         return data;
     }
@@ -88,7 +94,25 @@ const UserForm = (props) => {
         data.c_clave = clave.value;
         data.c_usuarioregistro = userLogedIn;
         const response = await registerUser(data);
-        (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el usuario") : prepareNotificationDanger("Error al registrar", response.message);
+        if (response && response.status === 200) {
+            if (agenciasSeleccionadas.length > 0) {
+                const dataAssign = {
+                    c_codigousuario: data.c_codigousuario,
+                    c_codigousuarioconsultado: userLogedIn,
+                    listagencia: agenciasSeleccionadas.join(",")
+                }
+                const responseAssign = await assignAgenciesToUser(dataAssign);
+                if ( responseAssign && responseAssign.status === 200 ) {
+                    prepareNotificationSuccess("Se registró con éxito el usuario")
+                } else {
+                    prepareNotificationDanger("Error al asignar agencias", responseAssign.message);
+                }
+            } else {
+                prepareNotificationSuccess("Se registró con éxito el usuario")
+            }
+        } else {
+            prepareNotificationDanger("Error al registrar", response.message);
+        }
         setIsLoading(false);
     }
 
@@ -98,7 +122,25 @@ const UserForm = (props) => {
         const data = prepareData();
         data.c_ultimousuario = userLogedIn;
         const response = await updateUser({body:data, id:elementId});
-        (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el usuario") : prepareNotificationDanger("Error al actualizar", response.message);
+        if (response && response.status === 200) {
+            if (agenciasSeleccionadas.length > 0) {
+                const dataAssign = {
+                    c_codigousuario: data.c_codigousuario,
+                    c_codigousuarioconsultado: userLogedIn,
+                    listagencia: agenciasSeleccionadas.join(",")
+                }
+                const responseAssign = await assignAgenciesToUser(dataAssign);
+                if ( responseAssign && responseAssign.status === 200 ) {
+                    prepareNotificationSuccess("Se actualizó con éxito el usuario");
+                } else {
+                    prepareNotificationDanger("Error al asignar agencias", responseAssign.message);
+                }
+            } else {
+                prepareNotificationSuccess("Se actualizó con éxito el usuario");
+            }
+        } else {
+            prepareNotificationDanger("Error al actualizar", response.message);
+        }
         setIsLoading(false);
     }
 
@@ -125,7 +167,7 @@ const UserForm = (props) => {
         }
     }
 
-    const getData = async () => {
+    const getUserDataOfService = async () => {
         const response = await getUserByCodigoUsuario(elementId);
         if(response.status === 200) {
             const data = response.body.data;
@@ -135,9 +177,27 @@ const UserForm = (props) => {
             setTelefono({value:data.c_telefono, isValid: true});
             setNPerfil(data.n_perfil);
             setEstado(data.c_estado);
-        }else {
+            setTodasAgencias(data.b_todas_agencias);
+        } else {
             prepareNotificationDanger("Error obteniendo datos", response.message);
         }
+    }
+
+    const getAgenciesOfUser = async () => {
+        const response = await listAgenciesByUser({c_codigousuario: elementId});
+        if(response.status === 200) {
+            const data = response.body.data;
+            setAgenciasSeleccionadas(
+                data.map(agency => `${agency.c_compania}-${agency.c_agencia}`)
+            );
+        } else {
+            prepareNotificationDanger("Error obteniendo datos", response.message);
+        }
+    }
+
+    const getData = async () => {
+        await getUserDataOfService();
+        await getAgenciesOfUser();
     }
 
     const getPerfiles = async () => {
@@ -145,9 +205,27 @@ const UserForm = (props) => {
         if(response && response.status === 200) setPerfiles(response.body.data);
     }
 
+    const prepareAgenciesToReport = (agencias) => {
+        const agenciaToList = [];
+        agencias.forEach(agencia => {
+            agenciaToList.push({
+                title: agencia.c_descripcion,
+                value: `${agencia.c_compania}-${agencia.c_agencia}`,
+                key: `${agencia.c_compania}-${agencia.c_agencia}`,
+            });
+        })
+        setAgencias(agenciaToList);
+    }
+
+    const getAgencias = async () => {
+        const response = await listAllAgencias();
+        if(response && response.status === 200 && response.body.data) prepareAgenciesToReport(response.body.data);
+    }
+
     useEffect(async () => {
         await setIsLoading(true);
         await getPerfiles();
+        await getAgencias();
         setButtonAttributes(buttonTypes[urlFragment]);
         if(urlFragment !== "nuevoUsuario") await getData();
         setIsLoading(false);
@@ -234,6 +312,30 @@ const UserForm = (props) => {
                     valueSelected={estado}
                     handleChange={setEstado}
                     disabledElement={readOnlyView}
+                />
+                <div className={`form-group row`}>
+                    <label
+                        htmlFor="all_agencies"
+                        className={`col-md-2 w-100 col-form-label label-input d-flex`}
+                        style={{
+                            gap: "8px"
+                        }}
+                    >
+                        Todas las agencias
+                        <Checkbox
+                        id="all_agencies"
+                        checked={todasAgencias}
+                        onChange={() => setTodasAgencias(!todasAgencias)}
+                        disabledElement={readOnlyView}
+                    />
+                    </label>
+                </div>
+                <TreeSelectComponent
+                    label="Agencias"
+                    data={agencias}
+                    value={agenciasSeleccionadas}
+                    handleOnChange={(value) => setAgenciasSeleccionadas(value)}
+                    readOnly={readOnlyView}
                 />
             </FormContainer>
             {isLoading === true && <Loading/>}

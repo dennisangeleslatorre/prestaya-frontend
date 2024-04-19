@@ -82,7 +82,7 @@ const ClienteForm = (props) => {
      const prepareNotificationSuccess = (message) => {
          setIsAlert(true);
          setNotification({title:"Operación exitosa", type:"alert-success", message:message});
-         setResponseData({message: message, title: "Operación exitosa", url:"/clientes"});
+         setResponseData({message: message, title: "Operación exitosa", url:"/listaClientes"});
          setOpenResponseModal(true);
      }
 
@@ -161,7 +161,7 @@ const ClienteForm = (props) => {
                 prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
             }
         } else {
-            history.push("/clientes")
+            history.push("/listaClientes")
         }
     }
 
@@ -289,7 +289,7 @@ const ClienteForm = (props) => {
     return (
         <>
             <FormContainer buttonAttributes={buttonAttributes} handleClick={handleClick} isAlert={isAlert} notification={notification}
-            goList={()=>history.push("/clientes")} view={readOnlyView}>
+            goList={()=>history.push("/listaClientes")} view={readOnlyView}>
                 <ReactSelect
                     inputId="companiaCodeId"
                     labelText="Compañía"

@@ -73,6 +73,24 @@ export const changePassword = async (id, body) => {
     const response = await consumer(url, 'put', body);
     return response;
 };
+export const listAgenciesByUserAndCompany = async (body) => {
+    console.log('---API--- : listAgenciesByUserAndCompany');
+    const url = `${port}/user/getAgenciaXUsuarioAndCompany`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const listAgenciesByUser = async (body) => {
+    console.log('---API--- : listAgenciesByUser');
+    const url = `${port}/user/getAllAgenciesOfUser`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const assignAgenciesToUser = async (body) => {
+    console.log('---API--- : assignAgenciesToUser');
+    const url = `${port}/user/assignAgentXUsers`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Perfiles
 export const listPerfiles = async () => {
     console.log('---API--- : listPerfiles');
