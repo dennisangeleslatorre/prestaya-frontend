@@ -15,15 +15,15 @@ import SearchModalCliente from '../../components/Modal/SearchModalCliente';
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
 import UserContext from '../../context/UserContext/UserContext'
+import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //Servicios
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getTransaccionDinamico, updateTransaccionAnular } from '../../Api/Api';
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getProductoDinamico,
+    getTransaccionDinamico, updateTransaccionAnular } from '../../Api/Api';
 //Librerias
 import moment from 'moment';
 import { Button, Space, Table, Tooltip } from 'antd';
 import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
-//Context
-import FiltersContext from '../../context/FiltersContext/FiltersContext'
 
 const estados = [
     { name: 'TODOS', value: 'TO' },
@@ -347,6 +347,7 @@ const TransaccionesTienda = () => {
         if(codigoProducto) body.c_item = codigoProducto;
         if(estado && estado !== "TO") body.c_estado = estado;
         if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -401,7 +402,9 @@ const TransaccionesTienda = () => {
     const findProductoByCode = async () => {
         setIsLoading(true);
         if(codigoProducto) {
-            const response = await getProductoDinamico({ c_compania:compania, c_agencia:agencia, c_item:codigoProducto });
+            const response = await getProductoDinamico({
+                c_compania:compania, c_agencia:agencia, c_item:codigoProducto, c_codigousuario: userLogedIn
+            });
             if(response && response.status === 200 && response.body.data) {
                 setNombreProducto(response.body.data[0].c_descripcionproducto);
             } else {
@@ -482,7 +485,7 @@ const TransaccionesTienda = () => {
         if(response && response.status === 200) setCompanias(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 

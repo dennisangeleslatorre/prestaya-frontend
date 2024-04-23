@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import DateRangeComponent from '../../components/DateRangeComponent/DateRangeComponent'
@@ -12,9 +12,10 @@ import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
 import LoadingModal from '../../components/Modal/LoadingModal';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getProductoDinamico, getReporteTransaccion } from '../../Api/Api';
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getProductoDinamico, getReporteTransaccion } from '../../Api/Api';
 import moment from 'moment';
 import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
+import UserContext from '../../context/UserContext/UserContext'
 //PDF
 import { PDFViewer  } from "@react-pdf/renderer"
 import ReporteTransaccionesPdfComponent from '../../components/ReporteTransaccionesPdfComponent/ReporteTransaccionesPdfComponent'
@@ -95,6 +96,8 @@ const columnsExportExcel = [
 ]
 
 const ReporteTransaccionesTienda = () => {
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Estados
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -168,6 +171,7 @@ const ReporteTransaccionesTienda = () => {
         if(codigoProducto) body.c_item = codigoProducto;
         if(estado && estado !== "TO") body.c_estado = estado;
         if(nPrestamo.value) body.c_prestamo = nPrestamo.value;
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -265,7 +269,7 @@ const ReporteTransaccionesTienda = () => {
         if(response && response.status === 200) setCompanias(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 

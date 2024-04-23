@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import LoadingModal from '../../components/Modal/LoadingModal';
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import ResponseModal from '../../components/Modal/ResponseModal';
@@ -11,10 +11,11 @@ import DateRangeComponent from '../../components/DateRangeComponent/DateRangeCom
 import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRangeComponent';
 import InputComponent from '../../components/InputComponent/InputComponent';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getPrestamosDetalladoPeriodo, listAllPaises,
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getPrestamosDetalladoPeriodo, listAllPaises,
     listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
 import ReportePrestamoDetalladoFCancelacionPdfComponent from '../../components/ReportePrestamoDetalladoFCancelacionPdfComponent/ReportePrestamoDetalladoFCancelacionPdfComponent';
+import UserContext from '../../context/UserContext/UserContext'
 
 const columnsExportExcel = [
     {
@@ -121,6 +122,8 @@ const estados = [
 
 
 const ReportePrestamoDetalladoFechaCancelacion = () => {
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Filtros
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -240,6 +243,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
             body.d_fechacancelaciondetinicio = fechaCancelacionDetalle.fechaInicio;
             body.d_fechacancelaciondetfin = fechaCancelacionDetalle.fechaFin;
         }
+        body.c_codigousuario = userLogedIn;
         setGeneral(filters);
         return body;
     }
@@ -316,7 +320,7 @@ const ReportePrestamoDetalladoFechaCancelacion = () => {
         if(response && response.status === 200) setDistritos(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
     }
 

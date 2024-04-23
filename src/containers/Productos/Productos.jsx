@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 //Servicios
-import { listAllCompanias, listAgencias, listTiposProducto, getProductoDinamico } from '../../Api/Api';
+import { listAllCompanias, listAgenciesByUserAndCompany, listTiposProducto, getProductoDinamico } from '../../Api/Api';
 import SearcherComponent from '../../components/SearcherComponent/SearcherComponent';
 import Loading from '../../components/Modal/LoadingModal'
 import ResponseModal from '../../components/Modal/ResponseModal';
@@ -12,6 +12,7 @@ import moment from 'moment';
 import StockProductModal from '../../components/StockProductModal/StockProductModal';
 //Context
 import FiltersContext from '../../context/FiltersContext/FiltersContext'
+import UserContext from '../../context/UserContext/UserContext'
 
 const estados = [{ name: 'TODOS', value: 'T' },{ name: 'ACTIVO', value: 'A' },{ name: 'INACTIVO', value: 'I' }];
 
@@ -159,7 +160,8 @@ const columns = [
 ]
 
 const Productos = () => {
-
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Estados
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -197,6 +199,7 @@ const Productos = () => {
         if(codigoProducto) body.c_item = codigoProducto;
         if(tipo && tipo !== "T") body.c_tipoproducto = tipo;
         if(estado && estado !== "T") body.c_estado = estado;
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -253,7 +256,7 @@ const Productos = () => {
         if(response && response.status === 200) setCompanias(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
     const getTiposProducto = async () => {

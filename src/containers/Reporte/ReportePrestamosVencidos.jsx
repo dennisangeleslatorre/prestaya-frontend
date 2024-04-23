@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import LoadingModal from '../../components/Modal/LoadingModal';
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import ResponseModal from '../../components/Modal/ResponseModal';
@@ -11,12 +11,13 @@ import DateRangeComponent from '../../components/DateRangeComponent/DateRangeCom
 import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRangeComponent';
 import InputComponent from '../../components/InputComponent/InputComponent';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getDataReporteVencidosyNoVencidos, listAllPaises,
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getDataReporteVencidosyNoVencidos, listAllPaises,
     listAllDepartamentos, listAllProvincias, listAllDistritos } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
 import ReportePrestamosVencidosPDF from '../../components/ReportePrestamosVencidosPDF/ReportePrestamosVencidosPDF'
 import { Radio, Table } from 'antd';
 import { separator } from '../../utilities/Functions/FormatNumber';
+import UserContext from '../../context/UserContext/UserContext'
 
 const columnsExportExcel = [
     {
@@ -337,6 +338,8 @@ const columnsTable = [
 ]
 
 const ReportePrestamosVencidos = () => {
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Filtros
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -407,7 +410,9 @@ const ReportePrestamosVencidos = () => {
     }
 
     const prepareBodyToSearch = () => {
+        //Parametros para buscar en el servicio
         let body = {};
+        //Lo que se muestra en el reporte
         let filters = {};
         if(compania) body.c_compania = compania;
         if(agencia && agencia !== "T") body.c_agencia = agencia;
@@ -449,6 +454,7 @@ const ReportePrestamosVencidos = () => {
             body.d_fechaactual = fechaActual.value;
             filters.fechaActual = fechaActual.value;
         };
+        body.c_codigousuario = userLogedIn;
         setGeneral(filters);
         return body;
     }
@@ -538,7 +544,7 @@ const ReportePrestamosVencidos = () => {
         if(response && response.status === 200) setDistritos(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
     }
 

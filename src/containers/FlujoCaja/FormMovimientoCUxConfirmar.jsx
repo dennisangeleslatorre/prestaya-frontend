@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useContext} from 'react'
 import { Table, Space, Button, Tooltip } from 'antd'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
-import { listCompanias, listUsers, getMovimientosCajaUsuarioxConfirmar, confirmarMovimiento, listAgencias, getValidarMontoMaximoConfirMov } from '../../Api/Api'
+import { listCompanias, listUsers, getMovimientosCajaUsuarioxConfirmar, confirmarMovimiento,
+    listAgenciesByUserAndCompany, getValidarMontoMaximoConfirMov } from '../../Api/Api'
 import moment from 'moment'
 import Loading from '../../components/Modal/LoadingModal'
 import { separator } from '../../utilities/Functions/FormatNumber';
@@ -167,6 +168,7 @@ const FormMovimientoCUxConfirmar = () => {
         if(usuarioFCMovimiento && usuarioFCMovimiento !== "T") body.c_usuariofcu = usuarioFCMovimiento;
         if(agenciaOrigen && agenciaOrigen !== "T") body.c_agencia = agenciaOrigen;
         if(agenciaDestino && agenciaDestino !== "T") body.c_agenciaotra = agenciaDestino;
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -318,7 +320,7 @@ const FormMovimientoCUxConfirmar = () => {
     }
 
     const getAgencias = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: "T", c_descripcion: "TODOS"}, ...response.body.data]);
     }
 

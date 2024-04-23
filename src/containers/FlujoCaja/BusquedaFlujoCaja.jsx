@@ -10,11 +10,12 @@ import FlujoCajaDetalleModal from '../../components/FlujoCajaUsuarioModal/FlujoC
 import FlujoCajaDetalleMovimientosModal from '../../components/FlujoCajaUsuarioModal/FlujoCajaDetalleMovimientosModal'
 //Context
 import PagesContext from '../../context/PagesContext/PagesContext'
+import UserContext from '../../context/UserContext/UserContext'
 import CajaContext from '../../context/CajaContext/CajaContext'
 import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //Funciones
 import { useHistory } from 'react-router'
-import { listCompanias, listAgencias, listUsers, getFlujoCajaDinamico } from '../../Api/Api'
+import { listCompanias, listAgenciesByUserAndCompany, listUsers, getFlujoCajaDinamico } from '../../Api/Api'
 import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
@@ -249,6 +250,9 @@ const estadosCajaUsuario = [
 
 const BusquedaFlujoCaja = () => {
     let history = useHistory();
+     //Contexto
+     const { getUserData } = useContext(UserContext);
+     const userLogedIn = getUserData().c_codigousuario;
     const { setParamsForFilterFlujoCaja, getParamsForFilterFlujoCaja } = useContext(FiltersContext);
     const { setFlujoCaja, setDetalles, setEliminarDetalles, setEliminarMovimientos } = useContext(CajaContext);
     const { getPagesKeysForUser } = useContext(PagesContext);
@@ -311,6 +315,7 @@ const BusquedaFlujoCaja = () => {
             body.d_fechamovimientoinicio = fechaMovimiento.fechaInicio;
             body.d_fechamovimientofin = fechaMovimiento.fechaFin;
         }
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -403,7 +408,7 @@ const BusquedaFlujoCaja = () => {
         if(response && response.status === 200) setCompanias(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
     }
     const getUsuarios = async () => {
@@ -434,7 +439,7 @@ const BusquedaFlujoCaja = () => {
     useEffect(() => {
         if(companias.length !== 0) {
             handleSeleccionarCompania(companias[0].c_compania);
-            setAgencia("");
+            setAgencia("T");
         };
     }, [companias])
 

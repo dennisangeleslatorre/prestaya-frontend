@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import LoadingModal from '../../components/Modal/LoadingModal';
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import ResponseModal from '../../components/Modal/ResponseModal';
@@ -12,9 +12,10 @@ import NumberRangeComponent from '../../components/NumberRangeComponent/NumberRa
 import InputComponent from '../../components/InputComponent/InputComponent';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
 import ReporteUbicacionesPrestamoPdfComponent from '../../components/ReporteUbicacionesPrestamoPdfComponent/ReporteUbicacionesPrestamoPdfComponent';
-import { listAllCompanias, listAgencias, getClienteByCodigoCliente, getPrestamosUbicacionProducto, listAllPaises,
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getPrestamosUbicacionProducto, listAllPaises,
     listAllDepartamentos, listAllProvincias, listAllDistritos, listTiposProducto, listUbicacionesByCodigo  } from '../../Api/Api';
 import { PDFViewer  } from "@react-pdf/renderer";
+import UserContext from '../../context/UserContext/UserContext'
 
 const columnsExportExcel = [
     {
@@ -125,6 +126,9 @@ const estados = [
 
 
 const ReporteUbicacionesPrestamo = () => {
+    //Contexto
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     //Filtros
     const [compania, setCompania] = useState("");
     const [agencia, setAgencia] = useState("T");
@@ -251,6 +255,7 @@ const ReporteUbicacionesPrestamo = () => {
         };
         if(nombreProducto.value) body.c_descripcionproducto = nombreProducto.value;
         if(tipoProducto && tipoProducto !== "T") body.c_tipoproducto = tipoProducto;
+        body.c_codigousuario = userLogedIn;
         setGeneral(filters);
         return body;
     }
@@ -330,7 +335,7 @@ const ReporteUbicacionesPrestamo = () => {
         if(response && response.status === 200) setDistritos(response.body.data);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) {
             setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
             setAgencia("T");

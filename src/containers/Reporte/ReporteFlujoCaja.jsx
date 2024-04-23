@@ -6,10 +6,11 @@ import SelectComponent from '../../components/SelectComponent/SelectComponent';
 import Loading from '../../components/Modal/LoadingModal';
 import { PDFViewer } from '@react-pdf/renderer';
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel';
-import { listAllCompanias, listAgencias, listUsers, listAllTipoMovimientoCaja, getDataReporteFlujoCaja } from '../../Api/Api'
+import { listAllCompanias, listAgenciesByUserAndCompany, listUsers, listAllTipoMovimientoCaja, getDataReporteFlujoCaja } from '../../Api/Api'
 import ReporteFlujoCajaPDFComponent from '../../components/ReporteFlujoCajaPDFComponent/ReporteFlujoCajaPDFComponent';
 import PagesContext from '../../context/PagesContext/PagesContext'
 import moment from 'moment'
+import UserContext from '../../context/UserContext/UserContext'
 
 const columnsExportExcel = [
     {
@@ -106,6 +107,9 @@ const ReporteFlujoCaja = () => {
     const [tiposMovimientos, setTiposMovimientos] = useState([]);
     //Estados del pdf
     const [dataReportToTable, setDataReportToTable] = useState([]);
+    //Contexto
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     const { getPagesKeysForUser } = useContext(PagesContext);
     const userPermisssions = getPagesKeysForUser().filter((item)=>{
         return item === "USUARIO ACCESO TOTAL CAJA"
@@ -128,6 +132,7 @@ const ReporteFlujoCaja = () => {
         if(tipoMovimiento && tipoMovimiento !== "T") body.c_tipomovimientocc = tipoMovimiento;
         if(claseTipoMov && claseTipoMov !== "T") body.c_clasetipomov = claseTipoMov;
         if(!usuarioAccesoTotalCajaPermiso) body.in_flaglistaadmin = "N";
+        body.c_codigousuario = userLogedIn;
         return body;
     }
     //Evento
@@ -151,7 +156,7 @@ const ReporteFlujoCaja = () => {
         if(response && response.status === 200) setUsuarios([{c_codigousuario: "T", c_nombres: "TODOS"}, ...response.body.data]);
     }
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia:"T", c_descripcion:"TODAS"}, ...response.body.data]);
     }
     const getTiposMovimientosCaja = async () => {

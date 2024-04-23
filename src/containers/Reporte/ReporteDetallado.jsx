@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { Table, Space } from 'antd'
+import React, { useContext, useEffect, useState } from 'react'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
@@ -16,6 +15,7 @@ import { listAllCompanias, getClienteByCodigoCliente, listAllPaises, listAllDepa
 import { PDFViewer  } from "@react-pdf/renderer"
 import ReporteDetalladoPDFComponent from '../../components/ReporteDetalladoPDFComponent/ReporteDetalladoPDFComponent'
 import moment from 'moment'
+import UserContext from '../../context/UserContext/UserContext'
 
 const columnsExportExcel = [
     {
@@ -123,6 +123,9 @@ const estados = [
 ]
 
 const ReporteDetallado = () => {
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
+    //Estados
     const [compania, setCompania] = useState("");
     const [estado, setEstado] = useState("T");
     const [excluiranulados, setExcluiranulados] = useState(false);
@@ -216,6 +219,7 @@ const ReporteDetallado = () => {
             body.d_fechavencimientoreprogramadainicio = fechaVencimientoReprogramada.fechaInicio;
             body.d_fechavencimientoreprogramadafin = fechaVencimientoReprogramada.fechaFin;
         }
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ReportContainer from '../../components/ReportContainer/ReportContainer'
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
@@ -8,6 +8,7 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 import ButtonDownloadExcel from '../../components/ButtonDownloadExcel/ButtonDownloadExcel'
 import moment from 'moment'
+import UserContext from '../../context/UserContext/UserContext'
 //Api
 import { listAllCompanias, getDataReporteResumidos, getClienteByCodigoCliente } from '../../Api/Api'
 //PDF
@@ -66,11 +67,15 @@ const columnsExportExcel = [
 ]
 
 const ReporteResumido = () => {
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
+    //Estados
     const [compania, setCompania] = useState("");
     const [codigoCliente, setCodigoCliente] = useState("");
     const [nombreCliente, setNombreCliente] = useState("");
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [periodo, setPeriodo] = useState({periodoInicio:"", periodoFin:"", isValid:null});
+    const [disabledPeriod, setDisabledPeriod] = useState(false);
     const [dataReportToTable, setDataReportToTable] = useState([]);
     const [elementPdf, setElementPdf] = useState(null);
     //Estados del formulario
@@ -112,6 +117,7 @@ const ReporteResumido = () => {
             body.periodo_inicio = periodo.periodoInicio.replace("-", "");
             body.periodo_fin = periodo.periodoFin.replace("-", "");
         }
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -276,6 +282,8 @@ const ReporteResumido = () => {
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                         labelSpace={3}
+                        setDisabledPeriodo={setDisabledPeriod}
+                        disabledPeriodo={disabledPeriod}
                     />
                 </div>
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">

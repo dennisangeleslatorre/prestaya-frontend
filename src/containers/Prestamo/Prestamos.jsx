@@ -18,7 +18,8 @@ import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //States
 import { useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, getClienteByCodigoCliente, getPrestamoDinamico, listAllPaises, listAllDepartamentos,
-    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate, retornarRemate, listAgencias } from '../../Api/Api'
+    listAllProvincias, listAllDistritos, validarRetornarPendiente, retornarPendiente, validarEstadoRemate, retornarRemate,
+    listAgenciesByUserAndCompany } from '../../Api/Api'
 import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
@@ -941,6 +942,7 @@ const Prestamos = () => {
             body.d_fechaentregainicio = fechaVencimientoRepro.fechaInicio;
             body.d_fechaentregafin = fechaVencimientoRepro.fechaFin;
         }
+        body.c_codigousuario = userLogedIn;
         return body;
     }
 
@@ -1116,7 +1118,7 @@ const Prestamos = () => {
     };
 
     const getAgenciasByCompany = async (companyCode) => {
-        const response = await listAgencias({c_compania: companyCode});
+        const response = await listAgenciesByUserAndCompany({c_compania: companyCode, c_codigousuario: userLogedIn});
         if(response && response.status === 200 && response.body.data) setAgencias([{c_agencia: 'T', c_descripcion: 'TODOS'},...response.body.data]);
     }
 
