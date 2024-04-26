@@ -123,20 +123,16 @@ const UserForm = (props) => {
         data.c_ultimousuario = userLogedIn;
         const response = await updateUser({body:data, id:elementId});
         if (response && response.status === 200) {
-            if (agenciasSeleccionadas.length > 0) {
-                const dataAssign = {
-                    c_codigousuario: data.c_codigousuario,
-                    c_codigousuarioconsultado: userLogedIn,
-                    listagencia: agenciasSeleccionadas.join(",")
-                }
-                const responseAssign = await assignAgenciesToUser(dataAssign);
-                if ( responseAssign && responseAssign.status === 200 ) {
-                    prepareNotificationSuccess("Se actualizó con éxito el usuario");
-                } else {
-                    prepareNotificationDanger("Error al asignar agencias", responseAssign.message);
-                }
-            } else {
+            const dataAssign = {
+                c_codigousuario: data.c_codigousuario,
+                c_codigousuarioconsultado: userLogedIn,
+                listagencia: agenciasSeleccionadas.join(",")
+            }
+            const responseAssign = await assignAgenciesToUser(dataAssign);
+            if ( responseAssign && responseAssign.status === 200 ) {
                 prepareNotificationSuccess("Se actualizó con éxito el usuario");
+            } else {
+                prepareNotificationDanger("Error al asignar agencias", responseAssign.message);
             }
         } else {
             prepareNotificationDanger("Error al actualizar", response.message);
