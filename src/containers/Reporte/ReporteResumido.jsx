@@ -282,8 +282,8 @@ const ReporteResumido = () => {
                         classForm="col-12 col-md-6"
                         marginForm="ml-0"
                         labelSpace={3}
-                        setDisabledPeriodo={setDisabledPeriod}
-                        disabledPeriodo={disabledPeriod}
+                        // setDisabledPeriodo={setDisabledPeriod}
+                        disabledPeriodo={false}
                     />
                 </div>
                 <div className="col-12 col-md-12 mt-3 mb-3 text-center">
