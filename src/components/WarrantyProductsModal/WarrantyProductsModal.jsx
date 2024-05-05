@@ -4,6 +4,7 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
+import { getSubtipoProductoByTipo } from '../../Api/Api'
 import moment from 'moment'
 
 const WarrantyProductsModal = (props) => {
@@ -13,6 +14,7 @@ const WarrantyProductsModal = (props) => {
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState("");
     const [tipoSelected, setTipoSelected] = useState({});
+    const [subtipo, setSubtipo] = useState("");
     const [unidadMedida, setUnidadMedida] = useState("");
     const [cantidad, setCantidad] = useState({value:1, isValid:null});
     const [pesoBruto, setPesoBruto] = useState({value:"0", isValid:null});
@@ -23,9 +25,10 @@ const WarrantyProductsModal = (props) => {
     const [observacionUbicacion, setObservacionUbicacion] = useState("");
     const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
+    const [subtiposProducto, setSubtiposProducto] = useState([]);
 
     const validate = () => {
-        if(!descripcion.value || !unidadMedida || !cantidad.value || !observaciones || !montoValorTotal.value || !tipo) return false;
+        if(!descripcion.value || !unidadMedida || !cantidad.value || !observaciones || !montoValorTotal.value || !tipo || !subtipo) return false;
         return true;
     }
 
@@ -38,6 +41,7 @@ const WarrantyProductsModal = (props) => {
 
     const cleanProduct = () => {
         setTipo("");
+        setSubtipo("");
         setNLinea({value:"", isValid:null});
         setDescripcion({value:"", isValid:null});
         setUnidadMedida("");
@@ -60,6 +64,7 @@ const WarrantyProductsModal = (props) => {
             c_observaciones: observaciones,
             n_montovalortotal: montoValorTotal.value,
             c_tipoproducto: tipo,
+            c_subtipoproducto: subtipo,
             c_ubicacion: ubicacion || "",
             c_observacionubicacion: observacionUbicacion || "",
             c_usuarioubicacion: (ubicacion || observacionUbicacion) ? userLogedIn : "",
@@ -71,7 +76,6 @@ const WarrantyProductsModal = (props) => {
 
     const handleAddProduct = () => {
         if(validate()) {
-            console.log("validatePeso", validatePeso());
             if(validatePeso()) {
                 const product = prepareProduct();
                 let listProducts = [...productos, product];
@@ -118,13 +122,15 @@ const WarrantyProductsModal = (props) => {
         onClose();
         setIsAlert(false);
         setEditProduct(null);
+        setSubtiposProducto([]);
     }
 
     useEffect(() => {
         if(editProduct) {
             if(editProduct.n_linea) setNLinea({value:editProduct.n_linea, isValid:null});
             setTipo(editProduct.c_tipoproducto);
-            setDescripcion({value:editProduct.c_descripcionproducto, isValid:null});
+            setSubtipo(editProduct.c_subtipoproducto);
+            setDescripcion({value:editProduct.c_descripcionproducto||"", isValid:null});
             setUnidadMedida(editProduct.c_unidadmedida);
             setCantidad({value:editProduct.n_cantidad, isValid:null});
             setPesoBruto({value:editProduct.n_pesobruto, isValid:null});
@@ -132,17 +138,36 @@ const WarrantyProductsModal = (props) => {
             setObservaciones(editProduct.c_observaciones);
             setMontoValorTotal({value:editProduct.n_montovalortotal, isValid:null});
             setUbicacion(editProduct.c_ubicacion);
-            setObservacionUbicacion(editProduct.c_observacionubicacion);
+            setObservacionUbicacion(editProduct.c_observacionubicacion||"");
+            // Obtener tipo seleccionado
+            const tipoAux = tiposProducto.find(item => item.c_tipoproducto === editProduct.c_tipoproducto);
+            setTipoSelected(tipoAux);
+            // Obtener Subtipos
+            getSubtipos(editProduct.c_tipoproducto);
         }
     }, [editProduct])
 
-    useEffect(() => {
-        if(tipo) {
-            const tipoAux = tiposProducto.find(item => item.c_tipoproducto === tipo);
-            console.log("tipoAux", tipoAux)
-            setTipoSelected(tipoAux);
+    const getSubtipos = async (c_tipoproducto) => {
+        try {
+            const response = await getSubtipoProductoByTipo(c_tipoproducto);
+            if ( response && response.status === 200 ) setSubtiposProducto(response.body.data || []);
+            else setSubtiposProducto([]);
+        } catch (e) {
+            setSubtiposProducto([]);
         }
-    }, [tipo]);
+    }
+
+    const handleSelectTipo = (c_tipoproducto) => {
+        setSubtipo("");
+        if (c_tipoproducto) {
+            setTipo(c_tipoproducto);
+            const tipoAux = tiposProducto.find(item => item.c_tipoproducto === c_tipoproducto);
+            setTipoSelected(tipoAux);
+            getSubtipos(c_tipoproducto);
+        } else {
+            setSubtiposProducto([]);
+        }
+    }
 
     return (
         <Modal isOpen={isOpen} title="Producto" onClose={handleClose} modal_class="Modal__container__form">
@@ -163,9 +188,20 @@ const WarrantyProductsModal = (props) => {
                     placeholder="Seleccione un tipo"
                     valueSelected={tipo}
                     data={tiposProducto}
-                    handleElementSelected={setTipo}
+                    handleElementSelected={handleSelectTipo}
                     optionField="c_descripcion"
                     valueField="c_tipoproducto"
+                    classForm="col-12 col-lg-6"
+                />
+                <ReactSelect
+                    inputId="subtiposId"
+                    labelText="Subtipos de producto"
+                    placeholder="Seleccione un subtipo"
+                    valueSelected={subtipo}
+                    data={subtiposProducto}
+                    handleElementSelected={setSubtipo}
+                    optionField="c_descripcion"
+                    valueField="c_subtipoproducto"
                     classForm="col-12 col-lg-6"
                 />
                 <InputComponent

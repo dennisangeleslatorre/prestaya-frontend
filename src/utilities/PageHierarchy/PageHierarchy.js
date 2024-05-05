@@ -137,48 +137,48 @@ const pagesArray = [
                                 key: 'FORMATO ACTA ENTREGA'
                             }
                         ]
+                    },
+                ]
+            },{
+                title: 'TRANSACCIÓN',
+                value: 'TRANSACCIÓN',
+                key: 'TRANSACCIÓN',
+                children: [
+                    {
+                        title: 'TRANSACCIONES TIENDA',
+                        value: 'TRANSACCIONES TIENDA',
+                        key: 'TRANSACCIONES TIENDA'
                     },{
-                        title: 'TRANSACCIÓN',
-                        value: 'TRANSACCIÓN',
-                        key: 'TRANSACCIÓN',
-                        children: [
-                            {
-                                title: 'TRANSACCIONES TIENDA',
-                                value: 'TRANSACCIONES TIENDA',
-                                key: 'TRANSACCIONES TIENDA'
-                            },{
-                                title: 'NUEVA TRANSACCIÓN',
-                                value: 'NUEVA TRANSACCIÓN',
-                                key: 'NUEVA TRANSACCIÓN'
-                            },{
-                                title: 'VISUALIZAR TRANSACCIÓN',
-                                value: 'VISUALIZAR TRANSACCIÓN',
-                                key: 'VISUALIZAR TRANSACCIÓN'
-                            },{
-                                title: 'ANULAR TRANSACCIÓN',
-                                value: 'ANULAR TRANSACCIÓN',
-                                key: 'ANULAR TRANSACCIÓN'
-                            },{
-                                title: 'RECIBO VENTA TIENDA',
-                                value: 'RECIBO VENTA TIENDA',
-                                key: 'RECIBO VENTA TIENDA'
-                            }
-                        ]
+                        title: 'NUEVA TRANSACCIÓN',
+                        value: 'NUEVA TRANSACCIÓN',
+                        key: 'NUEVA TRANSACCIÓN'
                     },{
-                        title: 'PRODUCTO',
-                        value: 'PRODUCTO',
-                        key: 'PRODUCTO',
-                        children: [
-                            {
-                                title: 'PRODUCTOS',
-                                value: 'PRODUCTOS',
-                                key: 'PRODUCTOS'
-                            },{
-                                title: 'STOCK',
-                                value: 'STOCK',
-                                key: 'STOCK'
-                            }
-                        ]
+                        title: 'VISUALIZAR TRANSACCIÓN',
+                        value: 'VISUALIZAR TRANSACCIÓN',
+                        key: 'VISUALIZAR TRANSACCIÓN'
+                    },{
+                        title: 'ANULAR TRANSACCIÓN',
+                        value: 'ANULAR TRANSACCIÓN',
+                        key: 'ANULAR TRANSACCIÓN'
+                    },{
+                        title: 'RECIBO VENTA TIENDA',
+                        value: 'RECIBO VENTA TIENDA',
+                        key: 'RECIBO VENTA TIENDA'
+                    }
+                ]
+            },{
+                title: 'PRODUCTO',
+                value: 'PRODUCTO',
+                key: 'PRODUCTO',
+                children: [
+                    {
+                        title: 'PRODUCTOS',
+                        value: 'PRODUCTOS',
+                        key: 'PRODUCTOS'
+                    },{
+                        title: 'STOCK',
+                        value: 'STOCK',
+                        key: 'STOCK'
                     }
                 ]
             },{
@@ -467,6 +467,33 @@ const pagesArray = [
                     }
                 ]
             },{
+                title: 'SUBTIPO PRODUCTO',
+                value: 'SUBTIPO PRODUCTO',
+                key: 'SUBTIPO PRODUCTO',
+                children: [
+                    {
+                        title: 'SUBTIPOS DE PRODUCTO',
+                        value: 'SUBTIPOS DE PRODUCTO',
+                        key: 'SUBTIPOS DE PRODUCTO'
+                    },{
+                        title: 'AGREGAR SUBTIPO DE PRODUCTO',
+                        value: 'AGREGAR SUBTIPO DE PRODUCTO',
+                        key: 'AGREGAR SUBTIPO DE PRODUCTO'
+                    },{
+                        title: 'ACTUALIZAR SUBTIPO DE PRODUCTO',
+                        value: 'ACTUALIZAR SUBTIPO DE PRODUCTO',
+                        key: 'ACTUALIZAR SUBTIPO DE PRODUCTO'
+                    },{
+                        title: 'VISUALIZAR SUBTIPO DE PRODUCTO',
+                        value: 'VISUALIZAR SUBTIPO DE PRODUCTO',
+                        key: 'VISUALIZAR SUBTIPO DE PRODUCTO'
+                    },{
+                        title: 'ELIMINAR SUBTIPO DE PRODUCTO',
+                        value: 'ELIMINAR SUBTIPO DE PRODUCTO',
+                        key: 'ELIMINAR SUBTIPO DE PRODUCTO'
+                    }
+                ]
+            },{
                 title: 'TIPO DE DOCUMENTO',
                 value: 'TIPO DE DOCUMENTO',
                 key: 'TIPO DE DOCUMENTO',
@@ -572,6 +599,33 @@ const pagesArray = [
                         title: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA',
                         value: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA',
                         key: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA'
+                    }
+                ]
+            },{
+                title: 'TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                value: 'TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                key: 'TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                children: [
+                    {
+                        title: 'TIPOS DE MOVIMIENTOS DE CAJA TIENDA',
+                        value: 'TIPOS DE MOVIMIENTOS DE CAJA TIENDA',
+                        key: 'TIPOS DE MOVIMIENTOS DE CAJA TIENDA'
+                    },{
+                        title: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        value: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        key: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
+                    },{
+                        title: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        value: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        key: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
+                    },{
+                        title: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        value: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        key: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
+                    },{
+                        title: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        value: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA TIENDA',
+                        key: 'ELIMINAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
                     }
                 ]
             }

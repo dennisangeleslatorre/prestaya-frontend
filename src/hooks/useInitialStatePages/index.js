@@ -52,6 +52,7 @@ const useInitialState = () => {
         //Buscamos la pagina que incluye el fragmento de la ruta
         auxArrayPages = auxArrayPages.map( (page) => {
             if(page.path.includes(routeFragment)) {
+                console.log("page", page.path);
                 page.isCurrent = true;
                 currentTitlePage = page.name;
             } else {
@@ -60,6 +61,8 @@ const useInitialState = () => {
             return page;
         })
         setPages(auxArrayPages);
+        console.log("routeFragment", routeFragment);
+        console.log("currentTitlePage", currentTitlePage);
         setTitle(currentTitlePage);
     }
 

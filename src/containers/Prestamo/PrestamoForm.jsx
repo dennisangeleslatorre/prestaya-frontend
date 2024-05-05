@@ -207,13 +207,13 @@ const PrestamoForm = (props) => {
     }
 
     const prepareProducts = (productos) => {
-        const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}','${item.c_ubicacion}','${item.c_observacionubicacion}','${item.c_usuarioubicacion}',${item.d_fechaubicacion ? `'${moment(item.d_fechaubicacion).format("yyyy-MM-DD HH:MM:ss")}'`: null}`)
+        const aux = productos.map((item)=>`'${item.c_tipoproducto}','${item.c_descripcionproducto}','${item.c_unidadmedida}','${item.n_cantidad}','${item.n_pesobruto}','${item.n_pesoneto}','${item.c_observaciones}','${item.n_montovalortotal}','${item.c_ubicacion}','${item.c_observacionubicacion}','${item.c_usuarioubicacion}',${item.d_fechaubicacion ? `'${moment(item.d_fechaubicacion).format("yyyy-MM-DD HH:MM:ss")}'`: null},'${item.c_subtipoproducto}'`)
         .reduce((acc, cv) => `${acc}|${cv}`)
         return aux;
     }
 
     const prepareProductsToUpdate = (productos) => {
-        const aux = productos.map((item)=>`'${item.n_linea}'__'${item.c_tipoproducto}'__'${item.c_descripcionproducto}'__'${item.c_unidadmedida}'__'${item.n_cantidad}'__'${item.n_pesobruto}'__'${item.n_pesoneto}'__'${item.c_observaciones}'__'${item.n_montovalortotal}'__'${item.c_ubicacion}'__'${item.c_observacionubicacion}'__'${item.c_usuarioubicacion}'`)
+        const aux = productos.map((item)=>`'${item.n_linea}'__'${item.c_tipoproducto}'__'${item.c_descripcionproducto}'__'${item.c_unidadmedida}'__'${item.n_cantidad}'__'${item.n_pesobruto}'__'${item.n_pesoneto}'__'${item.c_observaciones}'__'${item.n_montovalortotal}'__'${item.c_ubicacion}'__'${item.c_observacionubicacion}'__'${item.c_usuarioubicacion}'__'${item.c_subtipoproducto}'`)
         .reduce((acc, cv) => `${acc}|${cv}`)
         return aux;
     }
@@ -670,7 +670,6 @@ const PrestamoForm = (props) => {
             setNumeroDocumento({value: clienteSeleccionado.c_numerodocumento});
             setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setTelefono({value: clienteSeleccionado.c_telefono1});
-            //setTipoDocumento(clienteSeleccionado.c_tipodocumento);
             setPaisCodigo(clienteSeleccionado.c_paiscodigo);
             setDepartamentoCodigo(clienteSeleccionado.c_departamentocodigo);
             setProvinciaCodigo(clienteSeleccionado.c_provinciacodigo);

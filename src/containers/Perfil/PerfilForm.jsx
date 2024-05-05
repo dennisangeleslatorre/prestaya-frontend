@@ -31,7 +31,6 @@ const PerfilForm = (props) => {
   const [reportes, setReportes] = useState([]);
   const [reportsArray, setReportsArray] = useState([]);
   const [estado, setEstado] = useState("A");
-  const [agenciasSeleccionadas, setAgenciasSeleccionadas] = useState([]);
   //Estados del formulario
   const [buttonAttributes, setButtonAttributes] = useState({
     label: "",
@@ -106,8 +105,7 @@ const PerfilForm = (props) => {
       n_perfil: perfil.value,
       c_codigoperfil: codigo.value.toUpperCase(),
       c_paginas: paginas.reduce((value, cvv) => (cvv = `${value},${cvv}`)),
-      c_estado: estado,
-      c_perfilxagencias: agenciasSeleccionadas.length > 0 ? agenciasSeleccionadas.join(",") : null
+      c_estado: estado
     };
     return data;
   };
@@ -238,7 +236,6 @@ const PerfilForm = (props) => {
       setCodigo({ value: data.c_codigoperfil, isValid: true });
       setPaginas(data.c_paginas.split(","));
       setEstado(data.c_estado);
-      setAgenciasSeleccionadas(data.c_perfilxagencias?.split(",")||[]);
     } else {
       prepareNotificationDanger("Error obteniendo datos", response.message);
     }

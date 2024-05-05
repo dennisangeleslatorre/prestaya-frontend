@@ -239,6 +239,50 @@ export const deleteTipoProducto = async (c_tipoproducto) => {
     const response = await consumer(url, 'post', {});
     return response;
 };
+//Subtipo producto
+export const listSubtiposProductoActivos = async () => {
+    console.log('---API--- : listSubtiposProductoActivos');
+    const url = `${port}/subtipoproducto/list`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listAllSubtiposProducto = async () => {
+    console.log('---API--- : listAllSubtiposProducto');
+    const url = `${port}/subtipoproducto/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const getSubtipoProductoByTipo = async (c_tipoproducto) => {
+    console.log('---API--- : getSubtipoProductoByTipo');
+    const url = `${port}/subtipoproducto/get/${c_tipoproducto}`;
+    const response = await consumer(url, 'get');
+    return response;
+}
+export const getSubtipoProductoByCodigo = async (body) => {
+    console.log('---API--- : getSubtipoProductoByCodigo');
+    const url = `${port}/subtipoproducto/show`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const registerSubtipoProducto = async (body) => {
+    console.log('---API--- : registerSubtipoProducto');
+    const url = `${port}/subtipoproducto/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateSubtipoProducto = async (body) => {
+    console.log('---API--- : updateSubtipoProducto');
+    const url = `${port}/subtipoproducto/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteSubtipoProducto = async (body) => {
+    console .log("BODY", body)
+    console.log('---API--- : deleteSubtipoProducto');
+    const url = `${port}/subtipoproducto/delete`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Tipo Movimiento caja
 export const listTipoMovimientoCaja = async () => {
     console.log('---API--- : listTipoMovimientoCaja');
@@ -273,6 +317,43 @@ export const updateTipoMovimientoCaja = async ({body, id}) => {
 export const deleteTipoMovimientoCaja = async (c_tipoproducto) => {
     console.log('---API--- : deleteTipoMovimientoCaja');
     const url = `${port}/tipomovimientocaja/${c_tipoproducto}/delete`;
+    const response = await consumer(url, 'post', {});
+    return response;
+};
+// Tipo movimienton caja tienda
+export const listTipoMovimientoCajaTienda = async () => {
+    console.log('---API--- : listTipoMovimientoCajaTienda');
+    const url = `${port}/tipomovimientocajatienda/list`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const listAllTipoMovimientoCajaTienda = async () => {
+    console.log('---API--- : listAllTipoMovimientoCajaTienda');
+    const url = `${port}/tipomovimientocajatienda/listAll`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const getTipoMovimientoCajaTiendaByCodigo = async (id) => {
+    console.log('---API--- : getTipoMovimientoCajaTiendaByCodigo');
+    const url = `${port}/tipomovimientocajatienda/${id}/show`;
+    const response = await consumer(url, 'get');
+    return response;
+};
+export const registerTipoMovimientoCajaTienda = async (body) => {
+    console.log('---API--- : registerTipoMovimientoCajaTienda');
+    const url = `${port}/tipomovimientocajatienda/register`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateTipoMovimientoCajaTienda = async ({body, id}) => {
+    console.log('---API--- : updateTipoMovimientoCajaTienda');
+    const url = `${port}/tipomovimientocajatienda/${id}/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const deleteTipoMovimientoCajaTienda = async (c_tipomovimientoctd) => {
+    console.log('---API--- : deleteTipoMovimientoCajaTienda');
+    const url = `${port}/tipomovimientocajatienda/${c_tipomovimientoctd}/delete`;
     const response = await consumer(url, 'post', {});
     return response;
 };

@@ -12,12 +12,18 @@ import TipoDocumentoForm from '../../containers/TipoDocumento/TipoDocumentoForm'
 //TIPO DE PRODUCTO
 import TiposProducto from '../../containers/TipoProducto/TiposProducto'
 import TipoProductoForm from '../../containers/TipoProducto/TipoProductoForm'
+//SUBTIPOS DE PRODUCTO
+import SubtiposProductosLista from '../../containers/SubtiposProducto/SubtiposProductosLista'
+import SubtiposProductosForm from '../../containers/SubtiposProducto/SubtiposProductosForm'
 //UNIDAD DE MEDIDA
 import UnidadesMedida from '../../containers/UnidadMedida/UnidadesMedida'
 import UnidadMedidaForm from '../../containers/UnidadMedida/UnidadMedidaForm'
-//TIPO DE PRODUCTO
+//TIPO DE MOVIMIENTO
 import TiposMovimientosCaja from '../../containers/TipoMovimientoCaja/TiposMovimientosCaja'
 import TipoMovimientoCajaForm from '../../containers/TipoMovimientoCaja/TipoMovimientoCajaForm'
+// TIPO DE MOVIMIENTO TIENDA
+import TipoMovimientoCajaTiendaLista from '../../containers/TipoMovimientoCajaTienda/TipoMovimientoCajaTiendaLista'
+import TipoMovimientoCajaTiendaForm from '../../containers/TipoMovimientoCajaTienda/TipoMovimientoCajaTiendaForm'
 //COMPAÑIA
 import Companias from '../../containers/Compania/Companias'
 import CompaniaForm from '../../containers/Compania/CompaniaForm'
@@ -176,6 +182,26 @@ export default{
             exact: true,
             name: 'VISUALIZAR TIPO DE PRODUCTO'
         },{
+            component: SubtiposProductosLista,
+            path: '/listaSubtiposDeProductos',
+            exact: true,
+            name: 'SUBTIPOS DE PRODUCTO'
+        },{
+            component: SubtiposProductosForm,
+            path: '/nuevoSubtipoProduto',
+            exact: true,
+            name: 'AGREGAR SUBTIPO DE PRODUCTO'
+        },{
+            component: SubtiposProductosForm,
+            path: '/editarSubtipoProduto/:id',
+            exact: true,
+            name: 'ACTUALIZAR SUBTIPO DE PRODUCTO'
+        },{
+            component: SubtiposProductosForm,
+            path: '/visualizarSubtipoProduto/:id',
+            exact: true,
+            name: 'VISUALIZAR SUBTIPO DE PRODUCTO'
+        },{
             component: TiposMovimientosCaja,
             path: '/tiposMovimientosCaja',
             exact: true,
@@ -195,6 +221,26 @@ export default{
             path: '/visualizarTipoMovimientoCaja/:id',
             exact: true,
             name: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA'
+        },{
+            component: TipoMovimientoCajaTiendaLista,
+            path: '/tiposDeMovimientosCajaTienda',
+            exact: true,
+            name: 'TIPOS DE MOVIMIENTOS DE CAJA TIENDA'
+        },{
+            component: TipoMovimientoCajaTiendaForm,
+            path: '/nuevoTipoDeMovimientoCajaTienda',
+            exact: true,
+            name: 'AGREGAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
+        },{
+            component: TipoMovimientoCajaTiendaForm,
+            path: '/editarTipoDeMovimientoCajaTienda/:id',
+            exact: true,
+            name: 'ACTUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
+        },{
+            component: TipoMovimientoCajaTiendaForm,
+            path: '/visualizarTipoDeMovimientoCajaTienda/:id',
+            exact: true,
+            name: 'VISUALIZAR TIPO DE MOVIMIENTO DE CAJA TIENDA'
         },{
             component: UnidadesMedida,
             path: '/unidadesMedida',

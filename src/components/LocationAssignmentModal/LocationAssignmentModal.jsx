@@ -4,7 +4,7 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
-import { updateProductoUbicacion } from '../../Api/Api'
+import { updateProductoUbicacion, getSubtipoProductoByTipo } from '../../Api/Api'
 import moment from 'moment'
 
 const LocationAssignmentModal = (props) => {
@@ -13,6 +13,9 @@ const LocationAssignmentModal = (props) => {
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState({value: "", isValid:null});
+    const [codigoTipo, setCodigoTipo] = useState("");
+    const [subtipo, setSubtipo] = useState("");
+    const [subtiposProducto, setSubtiposProducto] = useState([]);
     const [unidadMedida, setUnidadMedida] = useState({value: ""});
     const [cantidad, setCantidad] = useState({value:1, isValid:null});
     const [pesoBruto, setPesoBruto] = useState({value:"0", isValid:null});
@@ -25,7 +28,7 @@ const LocationAssignmentModal = (props) => {
     const [observacionUbicacion, setObservacionUbicacion] = useState("");
 
     const validate = () => {
-        if(!ubicacion || !observacionUbicacion) return false;
+        if(!ubicacion || !observacionUbicacion || !subtipo) return false;
         return true;
     }
 
@@ -42,7 +45,8 @@ const LocationAssignmentModal = (props) => {
                 n_linea: nLinea.value,
                 c_ubicacion: ubicacion,
                 c_observacionubicacion: observacionUbicacion,
-                c_usuarioubicacion: userLogedIn
+                c_usuarioubicacion: userLogedIn,
+                c_subtipoproducto: subtipo
             });
             if(response && response.status === 200) {
                 updateProducts();
@@ -65,6 +69,7 @@ const LocationAssignmentModal = (props) => {
         product.c_usuarioubicacion = userLogedIn;
         product.d_fechaubicacion = moment();
         product.c_ubicaciondesc = locations.find(location => location.c_ubicacion === ubicacion).c_descripcion;
+        product.c_subtipoproducto = subtipo;
         newListProducts[editProduct.key] = product;
         setProductos(newListProducts);
     }
@@ -76,16 +81,28 @@ const LocationAssignmentModal = (props) => {
         setEditProduct(null);
     }
 
+    const getSubtipos = async (c_tipoproducto) => {
+        try {
+            const response = await getSubtipoProductoByTipo(c_tipoproducto);
+            if ( response && response.status === 200 ) setSubtiposProducto(response.body.data || []);
+            else setSubtiposProducto([]);
+        } catch (e) {
+            setSubtiposProducto([]);
+        }
+    }
+
     useEffect(() => {
         if(editProduct) {
             setNLinea({value: editProduct.n_linea});
             setTipo({value: editProduct.c_tipoproducto_name});
+            setSubtipo(editProduct.c_subtipoproducto || "");
             setDescripcion({value: editProduct.c_descripcionproducto});
             setUnidadMedida({value: editProduct.c_unidadmedida_name});
             setCantidad({value:editProduct.n_cantidad});
-            console.log(editProduct.c_ubicacion);
             if(editProduct.c_ubicacion) setUbicacion(editProduct.c_ubicacion);
             if(editProduct.c_observacionubicacion) setObservacionUbicacion(editProduct.c_observacionubicacion);
+            // Obtener Subtipos
+            getSubtipos(editProduct.c_tipoproducto);
         }
     }, [editProduct])
 
@@ -110,6 +127,17 @@ const LocationAssignmentModal = (props) => {
                     placeholder="Tipos de producto"
                     inputId="tiposId"
                     readOnly={true}
+                    classForm="col-12 col-lg-6"
+                />
+                <ReactSelect
+                    inputId="subtiposId"
+                    labelText="Subtipos de producto"
+                    placeholder="Seleccione un subtipo"
+                    valueSelected={subtipo}
+                    data={subtiposProducto}
+                    handleElementSelected={setSubtipo}
+                    optionField="c_descripcion"
+                    valueField="c_subtipoproducto"
                     classForm="col-12 col-lg-6"
                 />
                 <InputComponent

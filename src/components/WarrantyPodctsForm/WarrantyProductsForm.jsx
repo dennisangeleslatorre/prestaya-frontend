@@ -7,7 +7,7 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 //Contexto
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Servicios
-import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida } from '../../Api/Api'
+import { listTiposProducto, listUnidadesMedida, listAllTiposProducto, listAllUnidadesMedida, listAllSubtiposProducto } from '../../Api/Api'
 import moment from 'moment'
 import LocationAssignmentModal from '../LocationAssignmentModal/LocationAssignmentModal'
 import { listUbicacionesByCodigo } from '../../Api/Api';
@@ -22,7 +22,10 @@ const columns = [
     },{
         title: 'Tipo producto',
         dataIndex: 'c_tipoproducto_name'
-    },,{
+    },{
+        title: 'Subtipo producto',
+        dataIndex: 'c_subtipoproducto_name'
+    },{
         title: 'Unidad Medida',
         dataIndex: 'c_unidadmedida_name'
     },{
@@ -110,6 +113,7 @@ const WarrantyProductsForm = (props) => {
     const [elementSelected, setElementSelected] = useState();
     const [tiposProducto, setTiposProducto] = useState([]);
     const [allTiposProductos, setAllTiposProductos] = useState([]);
+    const [allSubtiposProductos, setAllSubtiposProductos] = useState([]);
     const [unidadesMedidas, setUnidadesMedidas] = useState([]);
     const [allUnidadesMedidas, setAllUnidadesMedidas] = useState([]);
     const [tableDataProducts, setTableDataProducts] = useState([]);
@@ -172,6 +176,11 @@ const WarrantyProductsForm = (props) => {
         if(response && response.status === 200) setAllTiposProductos(response.body.data);
     }
 
+    const getAllListSubstiposProductos = async () => {
+        const response = await listAllSubtiposProducto();
+        if(response && response.status === 200) setAllSubtiposProductos(response.body.data);
+    }
+
     const getUnidadesMedidas = async () => {
         const response = await listUnidadesMedida();
         if(response && response.status === 200) setUnidadesMedidas(response.body.data);
@@ -187,6 +196,7 @@ const WarrantyProductsForm = (props) => {
         await getUnidadesMedidas();
         await getTiposProducto();
         await getAllListTiposProductos();
+        await getAllListSubstiposProductos();
         await getAllListUnidadesMedidas();
     }, [])
 
@@ -256,6 +266,9 @@ const WarrantyProductsForm = (props) => {
             let aux = item;
             aux.key = index;
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
+            aux.c_subtipoproducto_name = allSubtiposProductos.find(
+                subtipo => subtipo.c_tipoproducto === item.c_tipoproducto && subtipo.c_subtipoproducto === item.c_subtipoproducto
+            )?.c_descripcion;
             aux.c_unidadmedida_name = allUnidadesMedidas.find(unidad => unidad.c_unidadmedida === item.c_unidadmedida).c_descripcion;
             aux.index = index+1;
             aux.n_cantidad = Number(item.n_cantidad).toFixed(0);
