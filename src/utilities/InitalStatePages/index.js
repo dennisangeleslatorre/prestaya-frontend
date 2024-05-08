@@ -83,6 +83,10 @@ import FormCajaChicaUsuarioxDiaMov from '../../containers/FlujoCaja/FormCajaChic
 import FormMovimientoCUxConfirmar from '../../containers/FlujoCaja/FormMovimientoCUxConfirmar'
 import TransaccionFormView from '../../containers/TransaccionTienda/TransaccionFormView'
 import TicketVentaTienda from '../../containers/TransaccionTienda/TicketVentaTienda'
+//FLUJO CAJA TIENDA
+import BusquedaFlujoCajaTienda from '../../containers/FlujoCajaTienda/BusquedaFlujoCajaTienda'
+import FormCajaTienda from '../../containers/FlujoCajaTienda/FormCajaTienda'
+import FormCajaTiendaDiaMovimientos from '../../containers/FlujoCajaTienda/FormCajaTiendaDiaMovimientos'
 //UBICACION
 import Ubicaciones from '../../containers/Ubicaciones/Ubicaciones'
 import UbicacionForm from '../../containers/Ubicaciones/UbicacionForm'
@@ -586,6 +590,31 @@ export default{
             path: '/movimientosCUxConfirmar',
             exact: true,
             name: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR'
+        },{
+            component: BusquedaFlujoCajaTienda,
+            path: '/flujocajatienda',
+            exact: true,
+            name: 'FLUJO CAJA TIENDA'
+        },{
+            component: FormCajaTienda,
+            path: '/nuevaCajaTienda/:companycode',
+            exact: true,
+            name: 'NUEVA CAJA TIENDA'
+        },{
+            component: FormCajaTienda,
+            path: '/actualizarCajaTienda/:companycode/:nrocorrelativo',
+            exact: true,
+            name: '"MODIFICAR CAJA TIENDA'
+        },{
+            component: FormCajaTiendaDiaMovimientos,
+            path: '/nuevaCajaTiendaDiaMovimientos/:companycode',
+            exact: true,
+            name: 'NUEVA CAJA TIENDA DIA MOVIMIENTO'
+        },{
+            component: FormCajaTiendaDiaMovimientos,
+            path: '/actualizarCajaTiendaDiaMovimientos/:companycode',
+            exact: true,
+            name: 'MODIFICAR CAJA TIENDA DIA MOVIMIENTO'
         },{
             component: Reportes,
             path: '/reportes',

@@ -250,9 +250,9 @@ const estadosCajaUsuario = [
 
 const BusquedaFlujoCaja = () => {
     let history = useHistory();
-     //Contexto
-     const { getUserData } = useContext(UserContext);
-     const userLogedIn = getUserData().c_codigousuario;
+    //Contexto
+    const { getUserData } = useContext(UserContext);
+    const userLogedIn = getUserData().c_codigousuario;
     const { setParamsForFilterFlujoCaja, getParamsForFilterFlujoCaja } = useContext(FiltersContext);
     const { setFlujoCaja, setDetalles, setEliminarDetalles, setEliminarMovimientos } = useContext(CajaContext);
     const { getPagesKeysForUser } = useContext(PagesContext);

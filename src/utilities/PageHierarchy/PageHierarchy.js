@@ -216,6 +216,37 @@ const pagesArray = [
                         key: 'MOVIMIENTOS CAJA USUARIO POR CONFIRMAR'
                     }
                 ]
+            },{
+                title: 'FLUJO DE CAJA TIENDA',
+                value: 'FLUJO DE CAJA TIENDA',
+                key: 'FLUJO DE CAJA TIENDA',
+                children: [
+                    {
+                        title: 'FLUJO CAJA TIENDA',
+                        value: 'FLUJO CAJA TIENDA',
+                        key: 'FLUJO CAJA TIENDA'
+                    },{
+                        title: 'NUEVO FLUJO CAJA TIENDA',
+                        value: 'NUEVO FLUJO CAJA TIENDA',
+                        key: 'NUEVO FLUJO CAJA TIENDA'
+                    },{
+                        title: 'MODIFICAR FLUJO CAJA TIENDA',
+                        value: 'MODIFICAR FLUJO CAJA TIENDA',
+                        key: 'MODIFICAR FLUJO CAJA TIENDA'
+                    },{
+                        title: 'USUARIO ACCESO TOTAL CAJA TIENDA',
+                        value: 'USUARIO ACCESO TOTAL CAJA TIENDA',
+                        key: 'USUARIO ACCESO TOTAL CAJA TIENDA'
+                    },{
+                        title: 'USUARIO PUEDE REALIZAR INGRESOS CAJA TIENDA',
+                        value: 'USUARIO PUEDE REALIZAR INGRESOS CAJA TIENDA',
+                        key: 'USUARIO PUEDE REALIZAR INGRESOS CAJA TIENDA'
+                    },{
+                        title: 'USUARIO PUEDE REALIZAR SALIDAS CAJA TIENDA',
+                        value: 'USUARIO PUEDE REALIZAR SALIDAS CAJA TIENDA',
+                        key: 'USUARIO PUEDE REALIZAR SALIDAS CAJA TIENDA'
+                    }
+                ]
             }
         ]
     },{

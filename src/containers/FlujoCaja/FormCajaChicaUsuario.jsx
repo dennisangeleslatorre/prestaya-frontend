@@ -1,5 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Space, Button } from 'antd'
+import { useHistory, useParams, useLocation } from 'react-router'
+import { debounce } from 'lodash';
+import moment from 'moment'
 //Componentes
 import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
@@ -11,17 +14,14 @@ import ResponseModal from '../../components/Modal/ResponseModal'
 import Loading from '../../components/Modal/LoadingModal'
 import SearchComponentTable from '../../components/SearchComponentTable/SearchComponentTable'
 import FlujoCajaClonarDetalleModal from '../../components/FlujoCajaUsuarioModal/FlujoCajaClonarDetalleModal'
+import HeaderForm from '../../components/HeaderForm/HeaderForm'
+import InputComponent from '../../components/InputComponent/InputComponent'
 //Context
 import UserContext from '../../context/UserContext/UserContext'
 import CajaContext from '../../context/CajaContext/CajaContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
 //Librerias
-import { useHistory, useParams, useLocation } from 'react-router'
 import { listCompanias, listAgencias, listUsers, registerFlujoCaja, getFlujoCajaByCodigo, updateFlujoCaja, listTipoMovimientoCaja } from '../../Api/Api'
-import moment from 'moment'
-import HeaderForm from '../../components/HeaderForm/HeaderForm'
-import InputComponent from '../../components/InputComponent/InputComponent'
-import { debounce } from 'lodash';
 
 const monedas = [
   {value:"L" , name:"LOCAL" }, {value:"E" , name:"EXTERIOR" }
@@ -541,7 +541,7 @@ const FormCajaChicaUsuario = () => {
             setFechaModiciacion(moment(data.general.d_ultimafechamodificacion).format('DD/MM/yyyy HH:mm:ss'));
             setFlagSaldoxDia(data.general.c_flagsaldoxdia);
             setMontoMaximo({value: Number(data.general.n_montomaximofc).toFixed(2)});
-        setFlagRestrinMonto(data.general.c_flagrestringexmtomax)
+            setFlagRestrinMonto(data.general.c_flagrestringexmtomax)
         } else {
             prepareNotificationDanger("Error", response.message);
         }

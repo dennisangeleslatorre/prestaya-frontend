@@ -106,6 +106,16 @@ const Login = (props) => {
                 user.a_paginas.push("MODIFICAR CAJA C. U. X DÍA MOVIMIENTOS");
                 user.a_paginas.push("ELIMINAR CAJA C. U. X DÍA MOVIMIENTOS");
             }
+            if(user.a_paginas.includes("NUEVO FLUJO CAJA TIENDA")) {
+                user.a_paginas.push("NUEVA CAJA TIENDA");
+                user.a_paginas.push("NUEVA CAJA TIENDA DIA MOVIMIENTO");
+            }
+            if(user.a_paginas.includes("MODIFICAR FLUJO CAJA TIENDA")) {
+                user.a_paginas.push("MODIFICAR CAJA TIENDA");
+                user.a_paginas.push("ELIMINAR CAJA TIENDA");
+                user.a_paginas.push("MODIFICAR CAJA TIENDA DIA MOVIMIENTO");
+                user.a_paginas.push("ELIMINAR CAJA TIENDA DIA MOVIMIENTO");
+            }
             const keys = [...user.a_paginas, ...user.reportes];
             handleSetData(keys, user);
         }

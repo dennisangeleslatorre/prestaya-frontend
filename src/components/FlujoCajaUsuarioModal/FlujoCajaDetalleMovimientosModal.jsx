@@ -161,11 +161,13 @@ const FlujoCajaDetalleMovimientosModal = (props) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const getDataService = async () => {
+        await setIsLoading(true);
         const response = await getFlujoCajaMovimientosByCodigo({c_compania, n_correlativo, d_fechamov});
         if(response && response.status === 200 && response.body.data) {
             setDataFlujoCajaMovimientoTable(response.body.data);
         } else
             setDataFlujoCajaMovimientoTable([]);
+        setIsLoading(false);
     }
 
     const setDataFlujoCajaMovimientoTable = (movimientosService) => {

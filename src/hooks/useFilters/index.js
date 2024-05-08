@@ -13,6 +13,10 @@ const useFilters = () => {
         window.localStorage.setItem('paramsFlujoCaja', JSON.stringify(value));
     }
 
+    const setParamsForFilterFlujoCajaTienda = value => {
+        window.localStorage.setItem('paramsFlujoCajaTienda', JSON.stringify(value));
+    }
+
     const setParamsForFilterProducto = value => {
         window.localStorage.setItem('paramsProducto', JSON.stringify(value));
     }
@@ -39,6 +43,12 @@ const useFilters = () => {
         return filters ;
     };
 
+    const getParamsForFilterFlujoCajaTienda = () => {
+        let filters = window.localStorage.getItem('paramsFlujoCajaTienda');
+        filters = JSON.parse(filters);
+        return filters ;
+    };
+
     const getParamsForFilterProducto = () => {
         let filters = window.localStorage.getItem('paramsProducto');
         filters = JSON.parse(filters);
@@ -55,11 +65,13 @@ const useFilters = () => {
         setParamsForFilterPrestamo,
         setParamsForFilterCliente,
         setParamsForFilterFlujoCaja,
+        setParamsForFilterFlujoCajaTienda,
         setParamsForFilterProducto,
         setParamsForFilterTransaccion,
         getParamsForFilterPrestamo,
         getParamsForFilterCliente,
         getParamsForFilterFlujoCaja,
+        getParamsForFilterFlujoCajaTienda,
         getParamsForFilterProducto,
         getParamsForFilterTransaccion
     }

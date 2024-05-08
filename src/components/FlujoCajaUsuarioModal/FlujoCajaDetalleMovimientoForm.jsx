@@ -68,8 +68,6 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
     }
 
     const validateFlagListaAdmin = () => {
-        console.log("usuarioAccesoTotalCajaPermiso", usuarioAccesoTotalCajaPermiso);
-        console.log("flagListaAdmin", flagListaAdmin);
         if(flagListaAdmin === "N") return true;
         else if(flagListaAdmin === "S" && usuarioAccesoTotalCajaPermiso) return true;
         return false;
@@ -79,7 +77,7 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
         if(flagAgencia === "N" && otraAgencia) {
             return "El movimiento no requiere agencia";
         } else if(flagAgencia === "S" && !otraAgencia) {
-            return "El movimiento rquiere agencia";
+            return "El movimiento requiere agencia";
         } else if(flagAgencia === "S" && otraAgencia && tipoCaja !== "B") {
             return "La agencia de origen debe ser de tipo bóveda";
         }
@@ -88,7 +86,6 @@ const FlujoCajaDetalleMovimientoForm = (props) => {
 
     const validateMonto = () => {
         if(flagSinMonto === "N") {
-            console.log(montoxMov.value);
             if(!isNaN(montoxMov.value) && Number(montoxMov.value) > 0) {
                 return "OK";
             }

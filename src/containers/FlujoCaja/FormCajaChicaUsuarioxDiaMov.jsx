@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Table, Space, Button, Tooltip } from 'antd'
+import { useHistory, useLocation } from 'react-router'
+import moment from 'moment'
 //Componentes
 import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import InputComponentView from '../../components/InputComponent/InputComponentView'
@@ -13,10 +15,8 @@ import Loading from '../../components/Modal/LoadingModal'
 //Context
 import CajaContext from '../../context/CajaContext/CajaContext'
 import PagesContext from '../../context/PagesContext/PagesContext'
-//Librerias
-import { useHistory, useLocation } from 'react-router'
+//Funciones
 import { listTipoMovimientoCaja, listAgencias } from '../../Api/Api'
-import moment from 'moment'
 import { separator } from '../../utilities/Functions/FormatNumber';
 
 const columns = [
