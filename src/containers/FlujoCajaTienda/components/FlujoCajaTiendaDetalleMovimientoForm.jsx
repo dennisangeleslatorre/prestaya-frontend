@@ -24,18 +24,13 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
   const realizaSalidasPermiso = userPermisssions.includes(
     "USUARIO PUEDE REALIZAR SALIDAS CAJA"
   );
-  const usuarioAccesoTotalCajaPermiso = userPermisssions.includes(
-    "USUARIO ACCESO TOTAL CAJA TIENDA"
-  );
   const [correlativo, setCorrelativo] = useState("");
   const [tipoMovimiento, setTipoMovimiento] = useState("");
-  const [flagTransaccion, setFlagTransaccion] = useState("S");
   const [usuarioMov, setUsuarioMov] = useState("");
   const [observaciones, setObservaciones] = useState("");
   const [montoxMov, setMontoxMov] = useState({ value: "0.0" });
   const [esPermitido, setEsPermitido] = useState(false);
   const [usuarios, setUsuarios] = useState([]);
-  const [agencias, setAgencias] = useState([]);
   const [notification, setNotification] = useState({
     title: "Hubo un problema",
     type: "alert-danger",
@@ -150,13 +145,12 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
       const tipoMov = tiposMovimientos.find(
         (tipo) => tipo.c_tipomovimientoctd === tipoMovimiento
       );
-      setFlagTransaccion(tipoMov.c_flagtransacciontienda);
       if (
         (tipoMov.c_clasetipomov === "I" && realizaIngresosPermiso) ||
         (tipoMov.c_clasetipomov === "S" && realizaSalidasPermiso)
-      ) {
+      )
         setEsPermitido(true);
-      } else setEsPermitido(false);
+      else setEsPermitido(false);
     }
   }, [tipoMovimiento]);
 
