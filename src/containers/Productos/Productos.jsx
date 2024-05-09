@@ -235,7 +235,7 @@ const Productos = () => {
     const findProductoByCode = async () => {
         setIsLoading(true);
         if(codigoProducto) {
-            const response = await getProductoDinamico({ c_compania:compania, c_agencia:agencia, c_item:codigoProducto });
+            const response = await getProductoDinamico({ c_compania:compania, c_agencia:agencia, c_item:codigoProducto, c_codigousuario: userLogedIn });
             if(response && response.status === 200 && response.body.data) {
                 setNombreProducto(response.body.data[0].c_descripcionproducto);
             } else {
@@ -432,6 +432,7 @@ const Productos = () => {
             setProductoObtained={setProductoSeleccionado}
             compania={compania}
             agencia={agencia}
+            userLogedIn={userLogedIn}
         />
         <StockProductModal
             isOpen={openStockModal}
