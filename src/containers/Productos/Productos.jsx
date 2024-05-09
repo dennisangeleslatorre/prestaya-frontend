@@ -432,6 +432,7 @@ const Productos = () => {
             setProductoObtained={setProductoSeleccionado}
             compania={compania}
             agencia={agencia}
+            userLogedIn={userLogedIn}
         />
         <StockProductModal
             isOpen={openStockModal}

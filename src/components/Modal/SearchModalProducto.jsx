@@ -6,7 +6,7 @@ import Spinner from '../Spinner/Spinner'
 import { getProductoDinamico } from '../../Api/Api';
 
 const SearchModalProducto = (props) => {
-    const {isOpen, onClose, setProductoObtained, compania, agencia} = props;
+    const {isOpen, onClose, setProductoObtained, compania, agencia, userLogedIn} = props;
     const [filterProducto, setFilterProducto] = useState("");
     const [tableData, setTableData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +24,8 @@ const SearchModalProducto = (props) => {
         let data = {
           c_compania:compania,
           c_agencia:agencia,
-          c_descripcionproducto: filterProducto
+          c_descripcionproducto: filterProducto,
+          c_codigousuario: userLogedIn
         };
         const response = await getProductoDinamico(data);
         if(response && response.status === 200 && response.body && response.body.data) getProductosToTable(response.body.data);
