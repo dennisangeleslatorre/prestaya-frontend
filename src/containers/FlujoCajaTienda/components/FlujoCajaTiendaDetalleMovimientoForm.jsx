@@ -1,4 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import Modal from "../../../components/Modal/ModalNotification";
+import ReactSelect from '../../../components/ReactSelect/ReactSelect';
+import TextareaComponent from '../../../components/TextareaComponent/TextareaComponent';
+import InputComponent from '../../../components/InputComponent/InputComponent';
+import InputComponentView from '../../../components/InputComponent/InputComponentView';
+import Alert from '../../../components/Alert/Alert';
+import CajaTiendaContext from "../../../context/CajaTiendaContext/CajaTiendaContext";
+import PagesContext from "../../../context/PagesContext/PagesContext";
+import { listUsers } from '../../../Api/Api';
 
 const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
   const {
@@ -9,7 +18,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
     movimientos = [],
   } = props;
   const { movimientoSeleccionado, setMovimientoSeleccionado } =
-    useContext(CajaContext);
+    useContext(CajaTiendaContext);
   const { getPagesKeysForUser } = useContext(PagesContext);
   const userPermisssions = getPagesKeysForUser().filter((item) => {
     return (
@@ -19,10 +28,10 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
     );
   });
   const realizaIngresosPermiso = userPermisssions.includes(
-    "USUARIO PUEDE REALIZAR INGRESOS CAJA"
+    "USUARIO PUEDE REALIZAR INGRESOS CAJA TIENDA"
   );
   const realizaSalidasPermiso = userPermisssions.includes(
-    "USUARIO PUEDE REALIZAR SALIDAS CAJA"
+    "USUARIO PUEDE REALIZAR SALIDAS CAJA TIENDA"
   );
   const [correlativo, setCorrelativo] = useState("");
   const [tipoMovimiento, setTipoMovimiento] = useState("");
@@ -53,7 +62,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
     if (validatDatos()) {
       if (!isNaN(montoxMov.value) && Number(montoxMov.value) > 0) {
         if (esPermitido) {
-          fn();
+           fn();
         } else {
           setNotification({
             title: "Hubo un problema",
@@ -95,7 +104,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
   };
 
   const handleAddMovimiento = async () => {
-    validarCondiciones(agregarMovimiento());
+    validarCondiciones(agregarMovimiento);
   };
 
   const actualizarMovimiento = () => {
@@ -117,7 +126,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
   };
 
   const handleUpdateMovimiento = async () => {
-    validatDatos(actualizarMovimiento());
+    validatDatos(actualizarMovimiento);
   };
 
   const getUsuarios = async () => {

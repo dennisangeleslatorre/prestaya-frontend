@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Table, Space, Button, Tooltip } from "antd";
+import { Table, Space, Button } from "antd";
 import moment from "moment";
 import { useHistory, useLocation } from "react-router";
 //Componentes
@@ -329,7 +329,7 @@ const FormCajaTiendaDiaMovimientos = () => {
       let aux = item;
       aux.key = index+1;
       const tipoMov = tiposMovimientos.find(tipo => tipo.c_tipomovimientoctd === item.c_tipomovimientoctd)
-      aux.c_tipomovimientoctd_desc = tipoMov.c_descricpion;
+      aux.c_tipomovimientoctd_desc = tipoMov?.c_descricpion;
       aux.n_secuencia = item.n_secuencia;
       aux.n_montoxdiamov_format = item.n_montoxdiamov ? separator(Number(item.n_montoxdiamov).toFixed(2)) : "";
       aux.c_flagtransaccion_format = item.c_flagtransaccion === "S" ? "SI" : "NO";
@@ -345,8 +345,8 @@ const FormCajaTiendaDiaMovimientos = () => {
   }, [movimientos, tiposMovimientos, tiposDocumentos]);
 
   const getData = useCallback(() => {
-    setCompania(flujoCajaTienda.general.companiaName);
-    setNroCorrelativo(flujoCajaTienda.general.n_correlativo);
+    setCompania(flujoCajaTienda.general.companiaName || "");
+    setNroCorrelativo(flujoCajaTienda.general.n_correlativo || "");
     detalleSeleccionado.general.d_fechamov && setFechaMov({value: detalleSeleccionado.general.d_fechamov});
     detalleSeleccionado.general.c_estado && setEstado(detalleSeleccionado.general.c_estado);
     detalleSeleccionado.general.c_observaciones && setObservaciones(detalleSeleccionado.general.c_observaciones);

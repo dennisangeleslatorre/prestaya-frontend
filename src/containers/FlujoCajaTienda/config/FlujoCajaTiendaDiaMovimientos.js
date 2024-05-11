@@ -1,3 +1,5 @@
+import { Tooltip } from "antd";
+
 export const columns = [
   {
     title: "#",
