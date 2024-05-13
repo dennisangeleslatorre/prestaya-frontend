@@ -3,7 +3,7 @@ import Spinner from "../../../components/Spinner/Spinner";
 import { Table, Tooltip } from "antd";
 import moment from "moment";
 import Modal from "../../../components/Modal/ModalNotification";
-import {} from "../../../Api/Api";
+import { getFlujoCajaTiendaDiaDinamico } from "../../../Api/Api";
 
 const columns = [
   {
@@ -75,11 +75,18 @@ const FlujoCajaDetalleModal = (props) => {
 
   const getDataService = async () => {
     await setIsLoading(true);
-    // const response = await getFlujoCajaDiasByCodigo({c_compania, n_correlativo});
-    // if(response && response.status === 200 && response.body.data) {
-    //     setDataFlujoCajaDetalleTable(response.body.data);
-    // } else
-    //     setDataFlujoCajaDetalleTable([]);
+    try {
+      const response = await getFlujoCajaTiendaDiaDinamico({
+        c_compania,
+        n_correlativo,
+      });
+      if (response && response.status === 200 && response.body.data) {
+        setDataFlujoCajaDetalleTable(response.body.data);
+      } else setDataFlujoCajaDetalleTable([]);
+    } catch (error) {
+      console.log("[ERROR]", error)
+      setDataFlujoCajaDetalleTable([]);
+    }
     setIsLoading(false);
   };
 

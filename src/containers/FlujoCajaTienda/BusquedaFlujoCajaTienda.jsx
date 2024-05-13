@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Table, Space, Button, Tooltip } from "antd";
+import { Table, Space, Button } from "antd";
 import { useHistory } from "react-router";
 import moment from "moment";
 // Componentes
@@ -19,6 +19,7 @@ import {
   listCompanias,
   listAgenciesByUserAndCompany,
   listUsers,
+  getFlujoCajaTiendaDinamico,
 } from "../../Api/Api";
 import { separator } from "../../utilities/Functions/FormatNumber";
 import {
@@ -46,10 +47,7 @@ const BusquedaFlujoCajaTienda = () => {
   } = useContext(CajaTiendaContext);
   const { getPagesKeysForUser } = useContext(PagesContext);
   const userPermisssions = getPagesKeysForUser().filter((item) => {
-    return (
-      item === "NUEVA CAJA TIENDA" ||
-      item === "MODIFICAR CAJA TIENDA"
-    );
+    return item === "NUEVA CAJA TIENDA" || item === "MODIFICAR CAJA TIENDA";
   });
   const registerPermission = userPermisssions.includes("NUEVA CAJA TIENDA");
   const updatePermission = userPermisssions.includes("MODIFICAR CAJA TIENDA");
@@ -140,13 +138,18 @@ const BusquedaFlujoCajaTienda = () => {
     let parametros = parametrosIniciales
       ? parametrosIniciales
       : prepareBodyToSearch();
-    // const response = await getFlujoCajaDinamico(parametros);
-    // if(response && response.status === 200 ) {
-    //     setDataFlujoCajaTable(response.body.data);
-    //     setParamsForFilterFlujoCajaTienda(parametros);
-    // } else {
-    //     setDataFlujoCajaTable([]);
-    // }
+    const response = await getFlujoCajaTiendaDinamico(parametros);
+    if (response && response.status === 200) {
+      setDataFlujoCajaTable(response.body.data);
+      setParamsForFilterFlujoCajaTienda(parametros);
+    } else {
+      setDataFlujoCajaTable([]);
+      setResponseData({
+        title: "Aviso",
+        message: "Error al cosnumir el servicio",
+      });
+      setOpenResponseModal(true);
+    }
     setElementSelected([]);
     setSelectedRowKeys([]);
     setIsLoading(false);
@@ -208,28 +211,28 @@ const BusquedaFlujoCajaTienda = () => {
       let aux = {};
       aux.key = `${item.c_compania}-${item.n_correlativo}`;
       aux.c_compania = item.c_compania;
-      aux.c_companiadesc = item.c_companiadesc;
+      aux.c_nombrecompania = item.c_nombrecompania;
       aux.n_correlativo = item.n_correlativo;
-      aux.c_agenciadesc = item.c_agenciadesc;
+      aux.c_nombreagencia = item.c_nombreagencia;
       aux.c_tipofctienda = item.c_tipofctienda === "B" ? "BOVEDA" : "PERSONAL";
       aux.c_usuariofctienda = item.c_usuariofctienda;
-      aux.d_fechaInicioMov = item.d_fechaInicioMov
-        ? moment(item.d_fechaInicioMov).local().format("DD/MM/yyyy")
+      aux.d_fechainiciomov = item.d_fechainiciomov
+        ? moment(item.d_fechainiciomov).local().format("DD/MM/yyyy")
         : "";
-      aux.d_fechaFinMov = item.d_fechaFinMov
-        ? moment(item.d_fechaFinMov).local().format("DD/MM/yyyy")
+      aux.d_fechafinmov = item.d_fechafinmov
+        ? moment(item.d_fechafinmov).local().format("DD/MM/yyyy")
         : "";
       aux.c_estado = item.c_estado === "A" ? "ACTIVO" : "INACTIVO";
       aux.c_monedafctienda =
         item.c_monedafctienda === "L" ? "LOCAL" : "EXTRANJERO";
-      aux.n_montoingresos = item.n_montoingresos
-        ? separator(Number(item.n_montoingresos).toFixed(2))
+      aux.n_montoingresos = item.montos_ingreso
+        ? separator(Number(item.montos_ingreso).toFixed(2))
         : "0.00";
-      aux.n_montosalidas = item.n_montosalidas
-        ? separator(Number(item.n_montosalidas).toFixed(2))
+      aux.n_montosalidas = item.montos_salida
+        ? separator(Number(item.montos_salida).toFixed(2))
         : "0.00";
       aux.n_saldo = separator(
-        Number(item.n_montoingresos - item.n_montosalidas).toFixed(2)
+        Number((item.montos_ingreso || 0) - (item.montos_salida || 0)).toFixed(2)
       );
       aux.c_observaciones = item.c_observaciones;
       aux.c_usuarioregistro = item.c_usuarioregistro;
@@ -298,10 +301,10 @@ const BusquedaFlujoCajaTienda = () => {
         });
         setEnabledFechaRegistro(false);
       }
-      if (parametros.d_fechaInicioMov && parametros.d_fechaFinMov) {
+      if (parametros.d_fechainiciomov && parametros.d_fechafinmov) {
         setFechaRegistro({
-          fechaInicio: parametros.d_fechaInicioMov,
-          fechaFin: parametros.d_fechaFinMov,
+          fechaInicio: parametros.d_fechainiciomov,
+          fechaFin: parametros.d_fechafinmov,
           isValid: true,
         });
         setEnabledFechaRegistro(false);

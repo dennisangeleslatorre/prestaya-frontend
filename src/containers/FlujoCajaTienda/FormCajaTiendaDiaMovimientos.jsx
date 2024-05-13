@@ -73,14 +73,14 @@ const FormCajaTiendaDiaMovimientos = () => {
 
   //Validaciones
   const validDate = () => {
-    let fechaInicio = moment(flujoCajaTienda.general.d_fechaInicioMov);
-    let fechaFin = moment(flujoCajaTienda.general.d_fechaFinMov);
+    let fechaInicio = moment(flujoCajaTienda.general.d_fechainiciomov);
+    let fechaFin = moment(flujoCajaTienda.general.d_fechafinmov);
     let fechaMovMoment = moment(fechaMov.value);
     return fechaMovMoment.isBetween(fechaInicio, fechaFin, "days", "[]");
   };
   const showMessageValidationDate = () => {
-    let fechaInicio = moment(flujoCajaTienda.general.d_fechaInicioMov);
-    let fechaFin = moment(flujoCajaTienda.general.d_fechaFinMov);
+    let fechaInicio = moment(flujoCajaTienda.general.d_fechainiciomov);
+    let fechaFin = moment(flujoCajaTienda.general.d_fechafinmov);
     if (fechaMov.value) {
       if (!validDate())
         return (
@@ -495,8 +495,8 @@ const FormCajaTiendaDiaMovimientos = () => {
               </>}
             </Space>
           </div>
-          <div className="row">
-            <div className="col" style={{ overflow: 'scroll' }}>
+          <div className="row" style={{ overflow: 'scroll' }}>
+            <div className="col">
               <Table
                 classForm
                 rowSelection={{

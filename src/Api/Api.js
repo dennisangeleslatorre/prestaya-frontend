@@ -320,7 +320,7 @@ export const deleteTipoMovimientoCaja = async (c_tipoproducto) => {
     const response = await consumer(url, 'post', {});
     return response;
 };
-// Tipo movimienton caja tienda
+// Tipo movimiento caja tienda
 export const listTipoMovimientoCajaTienda = async () => {
     console.log('---API--- : listTipoMovimientoCajaTienda');
     const url = `${port}/tipomovimientocajatienda/list`;
@@ -1044,6 +1044,43 @@ export const confirmarMovimiento = async (body) => {
 export const getCajaUsuarioByAgenciaAndUsuario = async (body) => {
     console.log('---API--- : getCajaUsuarioByAgenciaAndUsuario');
     const url = `${port}/flujocaja/getCajaUsuarioByAgenciaAndUsuario`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+//Flujo Caja Tienda
+export const registerFlujoTienda = async (body) => {
+    console.log('---API--- : registerFlujoTienda');
+    const url = `${port}/flujocajatienda/registerFlujoTienda`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const updateFlujoCajaTienda = async (body) => {
+    console.log('---API--- : updateFlujoCajaTienda');
+    const url = `${port}/flujocajatienda/update`;
+    const response = await consumer(url, 'put', body);
+    return response;
+};
+export const getFlujoCajaTiendaByCodigo = async (body) => {
+    console.log('---API--- : getFlujoCajaTiendaByCodigo');
+    const url = `${port}/flujocajatienda/getFlujoCajaByCodigo`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaTiendaDinamico = async (body) => {
+    console.log('---API--- : getFlujoCajaTiendaDinamico');
+    const url = `${port}/flujocajatienda/getFlujoCajaTiendaDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaTiendaDiaDinamico = async (body) => {
+    console.log('---API--- : getFlujoCajaTiendaDiaDinamico');
+    const url = `${port}/flujocajatienda/getFlujoCajaTiendaDiaDinamico`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getFlujoCajaTiendaDiaMovDinamico = async (body) => {
+    console.log('---API--- : getFlujoCajaTiendaDiaMovDinamico');
+    const url = `${port}/flujocajatienda/getFlujoCajaTiendaDiaMovDinamico`;
     const response = await consumer(url, 'post', body);
     return response;
 };

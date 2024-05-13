@@ -116,8 +116,6 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
       c_usuariomovimiento: usuarioMov,
       c_observaciones: observaciones,
       n_montoxdiamov: montoxMov.value ? montoxMov.value : 0.0,
-      c_flagxconfirmar: flagConfirmar,
-      c_agenciaotra: otraAgencia,
       is_updated: true,
     };
     movimientosAux[Number(movimientoSeleccionado.general.key) - 1] = movimiento;
@@ -126,7 +124,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
   };
 
   const handleUpdateMovimiento = async () => {
-    validatDatos(actualizarMovimiento);
+    validarCondiciones(actualizarMovimiento);
   };
 
   const getUsuarios = async () => {
@@ -196,7 +194,7 @@ const FlujoCajaTiendaDetalleMovimientoForm = (props) => {
         <ReactSelect
           labelText="Tipos"
           defaultValue="Seleccione un tipo"
-          data={tiposMovimientos}
+          data={[...tiposMovimientos].filter(tm => tm.c_flagtransacciontienda !== 'S')}
           inputId="tipoId"
           valueField="c_tipomovimientoctd"
           optionField="c_descricpion"

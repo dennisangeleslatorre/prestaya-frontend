@@ -23,8 +23,8 @@ import {
   listCompanias,
   listAgencias,
   listUsers,
-  // registerFlujoCaja,
-  // getFlujoCajaByCodigo,
+  registerFlujoTienda,
+  getFlujoCajaTiendaByCodigo,
   // updateFlujoCaja,
   listTipoMovimientoCajaTienda,
 } from "../../Api/Api";
@@ -54,8 +54,8 @@ const FormCajaTienda = () => {
   const { getUserData } = useContext(UserContext);
   const userLogedIn = getUserData().c_codigousuario;
   const { getPagesKeysForUser } = useContext(PagesContext);
-  const userPermisssions = getPagesKeysForUser().filter((item)=>{
-      return item === "USUARIO ACCESO TOTAL CAJA TIENDA"
+  const userPermisssions = getPagesKeysForUser().filter((item) => {
+    return item === "USUARIO ACCESO TOTAL CAJA TIENDA";
   });
   const usuarioAccesoTotalCajaPermiso = userPermisssions.includes(
     "USUARIO ACCESO TOTAL CAJA TIENDA"
@@ -71,7 +71,7 @@ const FormCajaTienda = () => {
   const [agencia, setAgencia] = useState("");
   const [moneda, setMoneda] = useState("L");
   const [estado, setEstado] = useState("A");
-  const [tipoCajaUsuario, setTipoCajaUsuario] = useState("P");
+  const [tipoCajaUsuario, setTipoCajaUsuario] = useState("B");
   const [usuarioCajaChica, setUsuarioCajaChica] = useState(userLogedIn);
   const [fechaMovimiento, setFechaMovimiento] = useState({
     fechaInicio: "",
@@ -141,8 +141,8 @@ const FormCajaTienda = () => {
   };
 
   const validateDetailDateRange = () => {
-    let fechaInicio = moment(flujoCajaForm.general.d_fechaInicioMov);
-    let fechaFin = moment(flujoCajaForm.general.d_fechaFinMov);
+    let fechaInicio = moment(flujoCajaForm.general.d_fechainiciomov);
+    let fechaFin = moment(flujoCajaForm.general.d_fechafinmov);
     let areValidDates = true;
     detalles.forEach((item) => {
       const fechaDetalle = moment(item.general.d_fechamov);
@@ -168,11 +168,29 @@ const FormCajaTienda = () => {
     };
   };
 
-  // const prepareNewDetailsToSend = (nuevosDetalles) => {
-  //   return [...nuevosDetalles].map(detalle => `'${detalle.general.d_fechamov}','${detalle.general.c_estado}','${detalle.general.c_observaciones}','${userLogedIn}','${userLogedIn}','${detalle.general.n_montomaximofc}','${detalle.general.c_flagrestringexmtomax}'??${detalle.movimientos.map(movimiento => `'${movimiento.d_fechamov}','${movimiento.c_tipomovimientoctd}',${movimiento.c_usuariomovimiento ? "'"+movimiento.c_usuariomovimiento+"'" : null },'${movimiento.c_observaciones}','${movimiento.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${movimiento.c_flagxconfirmar}',${movimiento.c_agenciaotra ? "'"+movimiento.c_agenciaotra+"'" : null }`)
-  //   .reduce((acc,cv)=>`${acc}//${cv}`)}`)
-  //   .reduce((acc,cv)=>`${acc}||${cv}`);
-  // }
+  const prepareNewDetailsToSend = (nuevosDetalles) => {
+    return nuevosDetalles.map((detalle) => {
+      const nuevoDetalle = {
+        d_fechamov: detalle.general.d_fechamov,
+        c_estado: detalle.general.c_estado,
+        c_observaciones: detalle.general.c_observaciones,
+      };
+      nuevoDetalle.listdetallediamov = detalle.movimientos.map((mov) => {
+        const nuevoMovimiento = {
+          c_tipomovimientoctd: mov.c_tipomovimientoctd,
+          c_observaciones: mov.c_observaciones,
+          n_montoxdiamov: Number(mov.n_montoxdiamov),
+          c_flagtransaccion: mov.c_flagtransaccion
+            ? mov.c_flagtransaccion
+            : "N",
+        };
+        if (mov.c_usuariomovimiento)
+          nuevoMovimiento.c_usuariomovimiento = mov.c_usuariomovimiento;
+        return nuevoMovimiento;
+      });
+      return nuevoDetalle;
+    });
+  };
 
   // const prepareUpdateDetailsToSend = (updateDetails) => {
   //     const updatedDetails = [...updateDetails].filter(detalle => detalle.general.is_updated === true);
@@ -229,18 +247,18 @@ const FormCajaTienda = () => {
       c_agencia: flujoCajaForm.general.c_agencia,
       c_tipofctienda: flujoCajaForm.general.c_tipofctienda,
       c_usuariofctienda: flujoCajaForm.general.c_usuariofctienda,
-      d_fechaInicioMov: flujoCajaForm.general.d_fechaInicioMov,
-      d_fechaFinMov: flujoCajaForm.general.d_fechaFinMov,
+      d_fechainiciomov: flujoCajaForm.general.d_fechainiciomov,
+      d_fechafinmov: flujoCajaForm.general.d_fechafinmov,
       c_monedafctienda: flujoCajaForm.general.c_monedafctienda,
       c_estado: flujoCajaForm.general.c_estado,
       c_observaciones: flujoCajaForm.general.c_observaciones,
-      c_ultimousuario: userLogedIn,
     };
   };
 
   const actualizarFC = debounce(async () => {
     const flujoCajaToSend = prepararDatosGenerales();
     flujoCajaToSend.n_correlativo = nrocorrelativo;
+    flujoCajaToSend.c_ultimousuario = userLogedIn;
     // const { newDetails, updateDetails } = getUpdateAndNewDetails();
     // const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
     // const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
@@ -290,9 +308,12 @@ const FormCajaTienda = () => {
 
   const registrarFC = debounce(async () => {
     const flujoCajaToSend = prepararDatosGenerales();
-    // const detailsToSend = prepareNewDetailsToSend(detalles);
-    // const response = await registerFlujoCaja({flujoCaja:flujoCajaToSend, detalles: detailsToSend});
-    // (response && response.status === 200) ? prepareNotificationSuccess("Se registró con éxito el préstamo") : prepareNotificationDanger("Error al registrar", response.message);
+    flujoCajaToSend.c_usuarioregistro = userLogedIn;
+    flujoCajaToSend.listdetalledia = prepareNewDetailsToSend(detalles);
+    const response = await registerFlujoTienda(flujoCajaToSend);
+    response && response.status === 200
+      ? prepareNotificationSuccess("Se registró con éxito el préstamo")
+      : prepareNotificationDanger("Error al registrar", response.message);
   }, 2000);
 
   const handleRegistrarFlujo = async () => {
@@ -506,8 +527,8 @@ const FormCajaTienda = () => {
     setTipoCajaUsuario(data.general.c_tipofctienda);
     setUsuarioCajaChica(data.general.c_usuariofctienda);
     setFechaMovimiento({
-      fechaInicio: data.general.d_fechaInicioMov,
-      fechaFin: flujoCajaTienda.general.d_fechaFinMov,
+      fechaInicio: data.general.d_fechainiciomov,
+      fechaFin: data.general.d_fechafinmov,
       isValid: true,
     });
     setMoneda(data.general.c_monedafctienda);
@@ -529,7 +550,7 @@ const FormCajaTienda = () => {
 
   //Trae la data registrada de un servicio si es que no tiene
   const getServiceData = async () => {
-    const response = await getFlujoCajaByCodigo({
+    const response = await getFlujoCajaTiendaByCodigo({
       c_compania: companycode,
       n_correlativo: nrocorrelativo,
     });
@@ -546,7 +567,7 @@ const FormCajaTienda = () => {
         ).format("DD/MM/yyyy HH:mm:ss"),
       });
       setDatosGenerales(data);
-
+      setDetalles(data.detalles);
       setUsuarioRegistro(data.general.c_usuarioregistro);
       setFechaRegistro(
         moment(data.general.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss")
@@ -592,8 +613,8 @@ const FormCajaTienda = () => {
         c_estado: estado,
         c_tipofctienda: tipoCajaUsuario,
         c_usuariofctienda: usuarioCajaChica,
-        d_fechaInicioMov: fechaMovimiento.fechaInicio,
-        d_fechaFinMov: fechaMovimiento.fechaFin,
+        d_fechainiciomov: fechaMovimiento.fechaInicio,
+        d_fechafinmov: fechaMovimiento.fechaFin,
         c_observaciones: observaciones,
         n_correlativo: nrocorrelativo,
       },

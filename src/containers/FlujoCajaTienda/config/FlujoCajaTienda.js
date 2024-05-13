@@ -1,14 +1,16 @@
+import { Tooltip } from "antd"
+
 export const columns = [
     {
         title: 'Compañía',
-        dataIndex: 'c_companiadesc',
+        dataIndex: 'c_nombrecompania',
         ellipsis: {
             showTitle: false,
         },
         width: 140,
-        render: (c_companiadesc, flujoCaja) => (
+        render: (c_nombrecompania, flujoCaja) => (
             <div onClick={flujoCaja.handleMostrarDetalleCajaRow}>
-              {c_companiadesc}
+              {c_nombrecompania}
             </div>
         ),
     },{
@@ -25,14 +27,14 @@ export const columns = [
         ),
     },{
         title: 'Agencia',
-        dataIndex: 'c_agenciadesc',
+        dataIndex: 'c_nombreagencia',
         ellipsis: {
             showTitle: false,
         },
         width: 200,
-        render: (c_agenciadesc, flujoCaja) => (
+        render: (c_nombreagencia, flujoCaja) => (
             <div onClick={flujoCaja.handleMostrarDetalleCajaRow}>
-              {c_agenciadesc}
+              {c_nombreagencia}
             </div>
         ),
     },{
@@ -61,26 +63,26 @@ export const columns = [
         ),
     },{
         title: 'F. Inicio',
-        dataIndex: 'd_fechaInicioMov',
+        dataIndex: 'd_fechainiciomov',
         ellipsis: {
             showTitle: false,
         },
         width: 140,
-        render: (d_fechaInicioMov, flujoCaja) => (
+        render: (d_fechainiciomov, flujoCaja) => (
             <div onClick={flujoCaja.handleMostrarDetalleCajaRow}>
-              {d_fechaInicioMov}
+              {d_fechainiciomov}
             </div>
         ),
     },{
         title: 'F. Fin',
-        dataIndex: 'd_fechaFinMov',
+        dataIndex: 'd_fechafinmov',
         ellipsis: {
             showTitle: false,
         },
         width: 140,
-        render: (d_fechaFinMov, flujoCaja) => (
+        render: (d_fechafinmov, flujoCaja) => (
             <div onClick={flujoCaja.handleMostrarDetalleCajaRow}>
-              {d_fechaFinMov}
+              {d_fechafinmov}
             </div>
         ),
     },{

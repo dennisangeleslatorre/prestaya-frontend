@@ -4,7 +4,7 @@ import { Table, Tooltip } from "antd";
 import moment from "moment";
 import Modal from "../../../components/Modal/ModalNotification";
 import { separator } from "../../../utilities/Functions/FormatNumber";
-import {} from "../../../Api/Api";
+import { getFlujoCajaTiendaDiaMovDinamico } from "../../../Api/Api";
 
 const columns = [
   {
@@ -137,13 +137,21 @@ const FlujoCajaDetalleMovimientosModal = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const getDataService = async () => {
-    await setIsLoading(true);
-    // const response = await getFlujoCajaMovimientosByCodigo({c_compania, n_correlativo, d_fechamov});
-    // if(response && response.status === 200 && response.body.data) {
-    //     setDataFlujoCajaMovimientoTable(response.body.data);
-    // } else
-    //     setDataFlujoCajaMovimientoTable([]);
-    setIsLoading(false);
+    try {
+      await setIsLoading(true);
+      const response = await getFlujoCajaTiendaDiaMovDinamico({
+        c_compania,
+        n_correlativo,
+        d_fechamov,
+      });
+      if (response && response.status === 200 && response.body.data) {
+        setDataFlujoCajaMovimientoTable(response.body.data);
+      } else setDataFlujoCajaMovimientoTable([]);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("[ERROR]", error)
+      setDataFlujoCajaMovimientoTable([]);
+    }
   };
 
   const setDataFlujoCajaMovimientoTable = (movimientosService) => {
@@ -167,7 +175,8 @@ const FlujoCajaDetalleMovimientosModal = (props) => {
         aux.d_ultimafechamodificacion = item.d_ultimafechamodificacion
           ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss")
           : "";
-        aux.c_tipomovimientoctddesc = item.c_tipomovimientoctddesc;
+        aux.c_tipomovimientoctddesc = item.nombremovimiento;
+        aux.c_flagtransaccion = item.c_flagtransaccion === "N" ? "NO" : "SI";
         aux.c_tipodocumento = item.c_tipodocumento || "";
         aux.c_numerodocumento = item.c_numerodocumento || "";
         return aux;

@@ -604,7 +604,7 @@ export default{
             component: FormCajaTienda,
             path: '/actualizarCajaTienda/:companycode/:nrocorrelativo',
             exact: true,
-            name: '"MODIFICAR CAJA TIENDA'
+            name: 'MODIFICAR CAJA TIENDA'
         },{
             component: FormCajaTiendaDiaMovimientos,
             path: '/nuevaCajaTiendaDiaMovimientos/:companycode',
