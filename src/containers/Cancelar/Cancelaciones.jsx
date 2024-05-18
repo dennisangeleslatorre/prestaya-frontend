@@ -6,7 +6,8 @@ import FormCancelaciones from '../../components/FormCancelaciones/FormCancelacio
 import Loading from '../../components/Modal/LoadingModal'
 //Functions
 import { useHistory } from 'react-router'
-import { getPrestamoByCodigoPrestamo, getCancelacionesByCodigoPrestamo, getProductosByPrestamo } from '../../Api/Api'
+import { getPrestamoByCodigoPrestamo, getCancelacionesByCodigoPrestamo } from '../../Api/Api'
+import { getProductosByPrestamo } from '../../Api/Comercial/prestamoProducto.service';
 import ProductosPrestamo from '../../components/ProductosPrestamo/ProductosPrestamo'
 
 const Cancelaciones = (props) => {

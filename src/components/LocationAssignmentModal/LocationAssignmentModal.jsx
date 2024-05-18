@@ -4,7 +4,8 @@ import ReactSelect from '../../components/ReactSelect/ReactSelect'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
-import { updateProductoUbicacion, getSubtipoProductoByTipo } from '../../Api/Api'
+import { getSubtipoProductoByTipo } from '../../Api/Api'
+import { updateProductoUbicacion } from '../../Api/Comercial/prestamoProducto.service'
 import moment from 'moment'
 
 const LocationAssignmentModal = (props) => {
@@ -13,15 +14,10 @@ const LocationAssignmentModal = (props) => {
     const [nLinea, setNLinea] = useState({value:"", isValid:null});
     const [descripcion, setDescripcion] = useState({value:"", isValid:null});
     const [tipo, setTipo] = useState({value: "", isValid:null});
-    const [codigoTipo, setCodigoTipo] = useState("");
     const [subtipo, setSubtipo] = useState("");
     const [subtiposProducto, setSubtiposProducto] = useState([]);
     const [unidadMedida, setUnidadMedida] = useState({value: ""});
     const [cantidad, setCantidad] = useState({value:1, isValid:null});
-    const [pesoBruto, setPesoBruto] = useState({value:"0", isValid:null});
-    const [pesoNeto, setPesoNeto] = useState({value:"0", isValid:null});
-    const [observaciones, setObservaciones] = useState("");
-    const [montoValorTotal, setMontoValorTotal] = useState({value:"", isValid:null});
     const [notification, setNotification] = useState({title:"Hubo un problema", type:"alert-danger", message:"Favor de llenar los campos con valores válidos"});
     const [isAlert, setIsAlert] = useState(false);
     const [ubicacion, setUbicacion] = useState("");

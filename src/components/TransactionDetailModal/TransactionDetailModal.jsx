@@ -3,7 +3,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import TextareaComponent from '../../components/TextareaComponent/TextareaComponent'
 import Modal from '../Modal/ModalNotification'
 import Alert from '../Alert/Alert'
-import { getProductoDinamico} from '../../Api/Api';
+import { getProductoDinamico } from '../../Api/Comercial/producto.service'
 import SearcherComponent from '../SearcherComponent/SearcherComponent'
 import SearchModalProducto from '../Modal/SearchModalProducto'
 

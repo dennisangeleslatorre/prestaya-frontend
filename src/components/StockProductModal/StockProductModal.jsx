@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Modal from '../Modal/ModalNotification'
 import Table from '../Table/Table'
 import Spinner from '../Spinner/Spinner'
-import { getProductoStockDinamico } from '../../Api/Api';
+import { getProductoStockDinamico } from '../../Api/Comercial/producto.service'
 import moment from 'moment';
 
 const StockProductModal = (props) => {

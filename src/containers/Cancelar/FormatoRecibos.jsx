@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import FormContainer from '../../components/FormContainer/FormContainer';
 import FormDataPrestamo from '../../components/FormDataPrestamo/FormDataPrestamo';
 import { useParams, useHistory } from 'react-router';
-import { getPrestamoByCodigoPrestamoParaTicket, getCancelacionesByNLinea, getProductosByPrestamo } from '../../Api/Api';
+import { getPrestamoByCodigoPrestamoParaTicket, getCancelacionesByNLinea } from '../../Api/Api';
+import { getProductosByPrestamo } from '../../Api/Comercial/prestamoProducto.service';
 import TicketPdfComponent from '../../components/TicketPdfComponent/TicketPdfComponent';
 import Loading from '../../components/Modal/LoadingModal';
 import { PDFViewer, usePDF } from '@react-pdf/renderer';

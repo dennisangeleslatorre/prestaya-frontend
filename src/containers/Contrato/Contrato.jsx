@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { PDFViewer  } from "@react-pdf/renderer"
 import ContratoPDFComponent from '../../components/ContratoPDFComponent/ContratoPDFComponent'
 import Loading from '../../components/Modal/LoadingModal'
-import { obtenerDatosFormatoPrestamo, getProductosByFormato, listParametrosByCompania, getCompaniaToFormato } from '../../Api/Api'
+import { obtenerDatosFormatoPrestamo, listParametrosByCompania, getCompaniaToFormato } from '../../Api/Api'
+import { getProductosByFormato } from '../../Api/Comercial/prestamoProducto.service'
 import { Link } from 'react-router-dom'
 
 const Contrato = (props) => {

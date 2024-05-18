@@ -25,7 +25,7 @@ import {
   listUsers,
   registerFlujoTienda,
   getFlujoCajaTiendaByCodigo,
-  // updateFlujoCaja,
+  updateFlujoTienda,
   listTipoMovimientoCajaTienda,
 } from "../../Api/Api";
 //Enums
@@ -192,32 +192,80 @@ const FormCajaTienda = () => {
     });
   };
 
-  // const prepareUpdateDetailsToSend = (updateDetails) => {
-  //     const updatedDetails = [...updateDetails].filter(detalle => detalle.general.is_updated === true);
-  //     if(updatedDetails.length > 0) {
-  //         return updatedDetails.map( detalle => {
-  //             let detalleFormat = `'${moment(detalle.general.d_fechamov).format("yyyy-MM-DD HH:mm:ss")}','${detalle.general.c_estado}','${detalle.general.c_observaciones}','${detalle.general.n_montomaximofc}','${detalle.general.c_flagrestringexmtomax}'`;
-  //             let movimientosDetail = detalle.movimientos;
-  //             const nuevosMovimientos = movimientosDetail.filter(movimiento => !movimiento.d_fecharegistro);
-  //             let newMovimientos = nuevosMovimientos.length > 0 ?
-  //             nuevosMovimientos.map(mov => `'${mov.d_fechamov}','${mov.c_tipomovimientoctd}',${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null },'${mov.c_observaciones}','${mov.n_montoxdiamov}','${userLogedIn}','${userLogedIn}','${mov.c_flagxconfirmar}',${mov.c_agenciaotra ? "'"+mov.c_agenciaotra+"'" : null }`).reduce((acc, cv) => `${acc}//${cv}`)
-  //             : "'-'";
-  //             const actualizarMovimientos = movimientosDetail.filter(movimiento => movimiento.d_fecharegistro && movimiento.is_updated === true);
-  //             let updateMovimientos = actualizarMovimientos.length > 0 ? actualizarMovimientos.map(mov => `'${mov.n_secuencia}';;'${mov.c_tipomovimientoctd}';;${mov.c_usuariomovimiento ? "'"+mov.c_usuariomovimiento+"'" : null };;'${mov.c_observaciones}';;'${mov.n_montoxdiamov}';;'${mov.c_flagxconfirmar}';;'${userLogedIn}';;${mov.c_agenciaotra ? "'"+mov.c_agenciaotra+"'" : null }`).reduce((acc, cv) => `${acc}//${cv}`)
-  //             : "'-'";
-  //             return `${detalleFormat}??${newMovimientos}??${updateMovimientos}`
-  //         }).reduce((acc,cv)=>`${acc}||${cv}`);
-  //     }
-  //     return '';
-  // }
+  const prepareUpdateDetailsToSend = (updateDetails) => {
+    const updatedDetails = [...updateDetails].filter(
+      (detalle) => detalle.general.is_updated === true
+    );
+    if (updatedDetails.length > 0) {
+      return updatedDetails.map((detalle) => {
+        let detailToUpdate = {
+          d_fechamov: moment(detalle.general.d_fechamov).format("yyyy-MM-DD"),
+          c_estado: detalle.general.c_estado,
+          c_observaciones: detalle.general.c_observaciones,
+        };
+        const movimientosDetail = detalle.movimientos;
+        const nuevosMovimientos = movimientosDetail.filter(
+          (movimiento) => !movimiento.d_fecharegistro
+        );
+        const newMovimientosFormateado =
+          nuevosMovimientos.length > 0
+            ? nuevosMovimientos.map((mov) => {
+                let newMov = {
+                  c_tipomovimientoctd: mov.c_tipomovimientoctd,
+                  c_observaciones: mov.c_observaciones,
+                  n_montoxdiamov: Number(mov.n_montoxdiamov),
+                  c_flagtransaccion: mov.c_flagtransaccion
+                    ? mov.c_flagtransaccion
+                    : "N",
+                };
+                if (mov.c_usuariomovimiento)
+                  newMov.c_usuariomovimiento = mov.c_usuariomovimiento;
+                return newMov;
+              })
+            : [];
+        detailToUpdate.listdetallediamovinsert = newMovimientosFormateado;
 
-  // const prepareDeleteDetailsToSend = (removeDetails) => {
-  //   return [...removeDetails].map(detalle => `'${moment(detalle.d_fechamov).format("yyyy-MM-DD HH:mm:ss")}'`).reduce((acc, cv) => `${acc}//${cv}`);
-  // }
+        const actualizarMovimientos = movimientosDetail.filter(
+          (movimiento) =>
+            movimiento.d_fecharegistro && movimiento.is_updated === true
+        );
+        let updateMovimientos =
+          actualizarMovimientos.length > 0
+            ? actualizarMovimientos.map((mov) => {
+                let updateMov = {
+                  n_secuencia: mov.n_secuencia,
+                  c_tipomovimientoctd: mov.c_tipomovimientoctd,
+                  c_usuariomovimiento: mov.c_usuariomovimiento,
+                  c_observaciones: mov.c_observaciones,
+                  n_montoxdiamov: Number(mov.n_montoxdiamov),
+                  c_flagtransaccion: mov.c_flagtransaccion,
+                };
+                if (mov.c_tipodocumento)
+                  updateMov.c_tipodocumento = mov.c_tipodocumento;
+                if (mov.c_numerodocumento)
+                  updateMov.c_numerodocumento = mov.c_numerodocumento;
+                return updateMov;
+              })
+            : [];
+        detailToUpdate.listdetallediamovupdt = updateMovimientos;
+        return detailToUpdate;
+      });
+    }
+    return [];
+  };
 
-  // const prepareDeleteMovimientosToSend = () => {
-  //   return [...eliminarMovimientos].map(mov => `'${moment(mov.d_fechamov).format("yyyy-MM-DD HH:mm:ss")}','${mov.n_secuencia}'`).reduce((acc, cv) => `${acc}//${cv}`);
-  // }
+  const prepareDeleteDetailsToSend = (removeDetails) => {
+    return [...removeDetails].map((detalle) => ({
+      d_fechamov: moment(detalle.d_fechamov).format("yyyy-MM-DD"),
+    }));
+  };
+
+  const prepareDeleteMovimientosToSend = () => {
+    return [...eliminarMovimientos].map((mov) => ({
+      d_fechamov: moment(mov.d_fechamov).format("yyyy-MM-DD"),
+      n_secuencia: mov.n_secuencia,
+    }));
+  };
 
   const validateSaldo = () => {
     let validSaldo = true;
@@ -257,15 +305,30 @@ const FormCajaTienda = () => {
 
   const actualizarFC = debounce(async () => {
     const flujoCajaToSend = prepararDatosGenerales();
-    flujoCajaToSend.n_correlativo = nrocorrelativo;
+    flujoCajaToSend.n_correlativo = Number(nrocorrelativo);
     flujoCajaToSend.c_ultimousuario = userLogedIn;
-    // const { newDetails, updateDetails } = getUpdateAndNewDetails();
-    // const nuevosDetallesToSend = newDetails.length > 0 ?  prepareNewDetailsToSend(newDetails) : "";
-    // const actualizarDetallesToSend = updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : "";
-    // const eliminarDetallesToSend = eliminarDetalles.length > 0 ? prepareDeleteDetailsToSend(eliminarDetalles) :"";
-    // const eliminarMovimientosToSend = eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : "";
-    // const response = await updateFlujoCaja({flujoCaja:flujoCajaToSend});
-    // (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el flujo de caja") : prepareNotificationDanger("Error al actualizar", response.message);
+    const { newDetails, updateDetails } = getUpdateAndNewDetails();
+    const nuevosDetallesToSend =
+      newDetails.length > 0 ? prepareNewDetailsToSend(newDetails) : [];
+    flujoCajaToSend.nuevosDetalles = nuevosDetallesToSend;
+    console.log("nuevosDetallesToSend", nuevosDetallesToSend);
+    const actualizarDetallesToSend =
+      updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : [];
+    flujoCajaToSend.actualizarDetalles = actualizarDetallesToSend;
+    console.log("actualizarDetallesToSend", actualizarDetallesToSend);
+    const eliminarDetallesToSend =
+      eliminarDetalles.length > 0
+        ? prepareDeleteDetailsToSend(eliminarDetalles)
+        : null;
+    flujoCajaToSend.eliminarDetalles = eliminarDetallesToSend;
+    console.log("eliminarDetalles", eliminarDetalles);
+    const eliminarMovimientosToSend =
+      eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : null;
+    flujoCajaToSend.eliminarMovimientos = eliminarMovimientosToSend;
+    console.log("eliminarMovimientos", eliminarMovimientos);
+    console.log("flujoCajaToSend", flujoCajaToSend);
+    const response = await updateFlujoTienda(flujoCajaToSend);
+    (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el flujo de caja") : prepareNotificationDanger("Error al actualizar", response.message);
   }, 2000);
 
   const handleActualizarFlujo = () => {

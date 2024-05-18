@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { PDFViewer  } from "@react-pdf/renderer"
 import FormatoActaEntregaPDF from '../../components/FormatoActaEntregaPDF/FormatoActaEntregaPDF'
 import Loading from '../../components/Modal/LoadingModal'
-import { getProductosByFormato, obtenerDatosActaEntrega } from '../../Api/Api'
+import { obtenerDatosActaEntrega } from '../../Api/Api'
+import { getProductosByFormato } from '../../Api/Comercial/prestamoProducto.service'
 import { Link } from 'react-router-dom'
 
 const FormatoActaEntrega = (props) => {

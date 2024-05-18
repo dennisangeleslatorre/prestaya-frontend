@@ -3,7 +3,7 @@ import Modal from './ModalNotification'
 import SearcherComponent from '../SearcherComponent/SearcherComponent'
 import Table from '../Table/Table'
 import Spinner from '../Spinner/Spinner'
-import { getProductoDinamico } from '../../Api/Api';
+import { getProductoDinamico } from '../../Api/Comercial/producto.service'
 
 const SearchModalProducto = (props) => {
     const {isOpen, onClose, setProductoObtained, compania, agencia, userLogedIn} = props;
@@ -23,7 +23,7 @@ const SearchModalProducto = (props) => {
         await setIsLoading(true);
         let data = {
           c_compania:compania,
-          c_agencia:agencia,
+          c_agencia: agencia !== "T" ? agencia : null,
           c_descripcionproducto: filterProducto,
           c_codigousuario: userLogedIn
         };

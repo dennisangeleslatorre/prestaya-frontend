@@ -22,8 +22,9 @@ import UserContext from '../../context/UserContext/UserContext'
 import { useLocation, useHistory } from 'react-router'
 import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartamentos, listAllProvincias, listAllDistritos, listAgencias,
         getClienteByCodigoCliente, registerPrestamo, updatePrestamo, listParametrosByCompania, validateTipos, validateUnidades, getPrestamoByCodigoPrestamo,
-        getProductosByPrestamo, anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers,
-        getAgenciaByCodigoAgencia, getValidaSufijoProducto } from '../../Api/Api'
+        anularPrestamo, cambiarEstadoRemate, updtVigentePrestamo, cambiarEstadoEntregar, validarFechaRemate, listUsers,
+        getAgenciaByCodigoAgencia, getValidaSufijoProducto } from '../../Api/Api';
+import { getProductosByPrestamo } from '../../Api/Comercial/prestamoProducto.service';
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
 

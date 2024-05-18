@@ -1,7 +1,7 @@
 import axios from 'axios';
 const port = process.env.REACT_APP_API_BASE_URL;
 
-const consumer = async (url, method, body) => {
+export const consumer = async (url, method, body) => {
     const attributes  = {
         method: method,
         url: url,
@@ -917,25 +917,6 @@ export const getValidarMontoMaximoConfirMov = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-//Productos
-export const getProductosByPrestamo = async (body) => {
-    console.log('---API--- : getProductosByPrestamo');
-    const url = `${port}/prestamoproducto/getProductosByPrestamo`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const getProductosByFormato = async (body) => {
-    console.log('---API--- : getProductosByFormato');
-    const url = `${port}/prestamoproducto/getProductosByFormato`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const updateProductoUbicacion = async (body) => {
-    console.log('---API--- : updateProductoUbicacion');
-    const url = `${port}/prestamoproducto/updateProductoUbicacion`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
 
 //Reportes
 export const getReportesByPerfil = async (body) => {
@@ -1054,9 +1035,9 @@ export const registerFlujoTienda = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-export const updateFlujoCajaTienda = async (body) => {
-    console.log('---API--- : updateFlujoCajaTienda');
-    const url = `${port}/flujocajatienda/update`;
+export const updateFlujoTienda = async (body) => {
+    console.log('---API--- : updateFlujoTienda');
+    const url = `${port}/flujocajatienda/updateFlujoTienda`;
     const response = await consumer(url, 'put', body);
     return response;
 };
@@ -1081,19 +1062,6 @@ export const getFlujoCajaTiendaDiaDinamico = async (body) => {
 export const getFlujoCajaTiendaDiaMovDinamico = async (body) => {
     console.log('---API--- : getFlujoCajaTiendaDiaMovDinamico');
     const url = `${port}/flujocajatienda/getFlujoCajaTiendaDiaMovDinamico`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-//PRODUCTOS
-export const getProductoDinamico = async (body) => {
-    console.log('---API--- : getProductoDinamico');
-    const url = `${port}/producto/getProductoDinamico`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const getProductoStockDinamico = async (body) => {
-    console.log('---API--- : getProductoStockDinamico');
-    const url = `${port}/producto/getProductoStockDinamico`;
     const response = await consumer(url, 'post', body);
     return response;
 };

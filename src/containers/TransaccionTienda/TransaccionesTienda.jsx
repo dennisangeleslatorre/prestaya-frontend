@@ -18,8 +18,9 @@ import UserContext from '../../context/UserContext/UserContext'
 import FiltersContext from '../../context/FiltersContext/FiltersContext'
 //Servicios
 import { useHistory } from 'react-router'
-import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getProductoDinamico,
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente,
     getTransaccionDinamico, updateTransaccionAnular } from '../../Api/Api';
+import { getProductoDinamico } from '../../Api/Comercial/producto.service';
 //Librerias
 import moment from 'moment';
 import { Button, Space, Table, Tooltip } from 'antd';

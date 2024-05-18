@@ -12,7 +12,8 @@ import SelectComponent from '../../components/SelectComponent/SelectComponent'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import PeriodoRange from '../../components/PeriodoRange/PeriodoRange'
 import LoadingModal from '../../components/Modal/LoadingModal';
-import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getProductoDinamico, getReporteTransaccion } from '../../Api/Api';
+import { listAllCompanias, listAgenciesByUserAndCompany, getClienteByCodigoCliente, getReporteTransaccion } from '../../Api/Api';
+import { getProductoDinamico } from '../../Api/Comercial/producto.service'
 import moment from 'moment';
 import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
 import UserContext from '../../context/UserContext/UserContext'

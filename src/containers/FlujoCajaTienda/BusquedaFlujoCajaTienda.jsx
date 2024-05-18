@@ -100,7 +100,7 @@ const BusquedaFlujoCajaTienda = () => {
     },
   };
   //Funciones de selecion
-  const handleSeleccionarCompania = (value) => {
+  const handleSelectCompania = (value) => {
     setCompania(value);
     //Deberia buscar las agencias de la compañía
     getAgenciasByCompany(value);
@@ -126,14 +126,14 @@ const BusquedaFlujoCajaTienda = () => {
     return body;
   };
 
-  const onHandleClickBuscar = async () => {
+  const onHandleClickSearch = async () => {
     await setIsLoading(true);
-    await onHandleBuscarFlujosCaja();
+    await onHandleSearchFlujoCaja();
     setIsLoading(false);
   };
 
   //Funciones de los botones
-  const onHandleBuscarFlujosCaja = async (parametrosIniciales) => {
+  const onHandleSearchFlujoCaja = async (parametrosIniciales) => {
     await setIsLoading(true);
     let parametros = parametrosIniciales
       ? parametrosIniciales
@@ -155,7 +155,7 @@ const BusquedaFlujoCajaTienda = () => {
     setIsLoading(false);
   };
 
-  const handleSelectNuevo = () => {
+  const handleSelectNew = () => {
     if (compania) {
       setFlujoCajaTienda({ general: {}, firstArrival: true });
       setDetalles([]);
@@ -173,7 +173,7 @@ const BusquedaFlujoCajaTienda = () => {
     setOpenResponseModal(true);
   };
 
-  const handleSelectActualizar = () => {
+  const handleSelectUpdate = () => {
     if (elementSelected[0]) {
       setFlujoCajaTienda({ general: {}, firstArrival: true });
       history.push(
@@ -255,7 +255,7 @@ const BusquedaFlujoCajaTienda = () => {
     const response = await listCompanias();
     if (response && response.status === 200) {
       setCompanias(response.body.data);
-      handleSeleccionarCompania(
+      handleSelectCompania(
         response.body.data ? response.body.data[0].c_compania : ""
       );
     }
@@ -283,7 +283,7 @@ const BusquedaFlujoCajaTienda = () => {
   const getLastSearch = async () => {
     const parametros = getParamsForFilterFlujoCajaTienda();
     if (parametros && Object.keys(parametros).length !== 0) {
-      await onHandleBuscarFlujosCaja(parametros);
+      await onHandleSearchFlujoCaja(parametros);
       if (parametros.c_compania) {
         setCompania(parametros.c_compania);
       }
@@ -338,7 +338,7 @@ const BusquedaFlujoCajaTienda = () => {
                       placeholder="Seleccione un compañía"
                       valueSelected={compania}
                       data={companias}
-                      handleElementSelected={handleSeleccionarCompania}
+                      handleElementSelected={handleSelectCompania}
                       optionField="c_descripcion"
                       valueField="c_compania"
                       classForm="col-12 col-md-6"
@@ -422,7 +422,7 @@ const BusquedaFlujoCajaTienda = () => {
                   </div>
                   <div className="col-12 col-md-12 mt-3 mb-3 text-center">
                     <button
-                      onClick={onHandleClickBuscar}
+                      onClick={onHandleClickSearch}
                       className="btn btn-light"
                       style={{ width: "200px" }}
                     >
@@ -434,10 +434,10 @@ const BusquedaFlujoCajaTienda = () => {
                   <div className="col">
                     <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
                       {registerPermission && (
-                        <Button onClick={handleSelectNuevo}>NUEVO</Button>
+                        <Button onClick={handleSelectNew}>NUEVO</Button>
                       )}
                       {updatePermission && (
-                        <Button onClick={handleSelectActualizar}>
+                        <Button onClick={handleSelectUpdate}>
                           MODIFICAR
                         </Button>
                       )}
