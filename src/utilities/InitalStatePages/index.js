@@ -57,7 +57,9 @@ import PrestamoForm from '../../containers/Prestamo/PrestamoForm'
 import TicketVentaTercero from '../../containers/Prestamo/TicketVentaTercero'
 //Transaccion
 import TransaccionesTienda from '../../containers/TransaccionTienda/TransaccionesTienda'
-import TransaccionForm from '../../containers/TransaccionTienda/TransaccionForm'
+import TransaccionSalidaForm from '../../containers/TransaccionTienda/TransaccionSalidaForm'
+import TransaccionIngresoForm from '../../containers/TransaccionTienda/TransaccionIngresoForm'
+import FormTransaccionTiendaPorConfirmar from '../../containers/TransaccionTienda/FormTransaccionTiendaPorConfirmar'
 //PRODUCTOS
 import Productos from '../../containers/Productos/Productos'
 //FORMATO PRÉSTAMO
@@ -516,15 +518,25 @@ export default{
             exact: true,
             name: 'TRANSACCIONES TIENDA'
         },{
-            component: TransaccionForm,
-            path: '/nuevaTransaccion/:compania/:agencia',
+            component: TransaccionSalidaForm,
+            path: '/nuevaTransaccionSalida/:compania/:agencia',
             exact: true,
-            name: 'NUEVA TRANSACCIÓN'
+            name: 'NUEVA TRANSACCIÓN SALIDA'
+        },{
+            component: TransaccionIngresoForm,
+            path: '/nuevaTransaccionIngreso/:compania/:agencia',
+            exact: true,
+            name: 'NUEVA TRANSACCIÓN INGRESO'
         },{
             component: TransaccionFormView,
             path: '/visualizarTransaccion/:compania/:agencia/:tipodocumento/:numerodocumento',
             exact: true,
             name: 'VISUALIZAR TRANSACCIÓN'
+        },{
+            component: FormTransaccionTiendaPorConfirmar,
+            path: '/trannsaccionesPorConfirmar',
+            exact: true,
+            name: 'TRANSACCIONES POR CONFIRMAR'
         },{
             component: TicketVentaTienda,
             path: '/ticketVentaTienda/:id',

@@ -17,10 +17,15 @@ import WrapperForm from "./components/WrapperForm";
 import CajaTiendaContext from "../../context/CajaTiendaContext/CajaTiendaContext";
 import PagesContext from "../../context/PagesContext/PagesContext";
 //Funciones
-import { listTipoMovimientoCajaTienda, listAgencias, listTiposDocumento } from "../../Api/Api";
+import { listTipoMovimientoCajaTienda } from "../../Api/Api";
 import { separator } from "../../utilities/Functions/FormatNumber";
 import { columns, estadosCajaTiendaDia } from "./config/FlujoCajaTiendaDiaMovimientos";
 import FlujoCajaTiendaDetalleMovimientoForm from "./components/FlujoCajaTiendaDetalleMovimientoForm";
+
+const documentTypeDictionary = {
+  "NI": "Nota de Ingreso",
+  "NS": "Nota de Salida"
+}
 
 const FormCajaTiendaDiaMovimientos = () => {
   let history = useHistory();
@@ -59,11 +64,7 @@ const FormCajaTiendaDiaMovimientos = () => {
   const [openResponseModal, setOpenResponseModal] = useState(false);
   const [openMovimientoModal, setOpenMovimientoModal] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  const [openAlertConfirmationModal, setOpenAlertConfirmationModal] =
-    useState(false);
   const [tiposMovimientos, setTiposMovimientos] = useState([]);
-  const [agencias, setAgencias] = useState([]);
-  const [tiposDocumentos, setTiposDocumentos] = useState([]);
   const [movimientos, setMovimientos] = useState([]);
   const [elementSelectedRows, setElementSelectedRows] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -286,20 +287,6 @@ const FormCajaTiendaDiaMovimientos = () => {
     setMovimientos(movimientosAux);
   };
 
-  const getAgencias = async () => {
-    const response = await listAgencias({
-      c_compania: flujoCajaTienda.general.c_compania,
-    });
-    if (
-      response &&
-      response.status === 200 &&
-      response.body?.data &&
-      response.body.data.length > 0
-    ) {
-      setAgencias(response.body.data);
-    }
-  };
-
   const getTiposMovimientoCaja = async () => {
     const response = await listTipoMovimientoCajaTienda();
     if (response && response.status === 200) {
@@ -316,13 +303,6 @@ const FormCajaTiendaDiaMovimientos = () => {
     }
   };
 
-  const getTiposDocumentos = async () => {
-    const response = await listTiposDocumento();
-    if (response && response.status === 200) {
-      setTiposDocumentos(response.body.data);
-    }
-  }
-
   const refreshList = useCallback(() => {
     let saldoAux = 0;
     const tableData = JSON.parse(JSON.stringify(movimientos)).map((item, index) => {
@@ -335,14 +315,13 @@ const FormCajaTiendaDiaMovimientos = () => {
       aux.c_flagtransaccion_format = item.c_flagtransaccion === "S" ? "SI" : "NO";
       aux.d_fecharegistro_format = item.d_fecharegistro ? moment(item.d_fecharegistro).format("DD/MM/yyyy HH:mm:ss") : "";
       aux.d_ultimafechamodificacion_format = item.d_ultimafechamodificacion ? moment(item.d_ultimafechamodificacion).format("DD/MM/yyyy HH:mm:ss") : "";
-      const tipoDocumento = tiposDocumentos.find(tipo => tipo.c_tipodocumento === item.c_tipodocumento);
-      aux.c_tipodocumento_desc = tipoDocumento?.c_descricpion;
+      aux.c_tipodocumento_desc = documentTypeDictionary[item.c_tipodocumento] ? documentTypeDictionary[item.c_tipodocumento] : "";
       saldoAux = saldoAux + Number(item.n_montoxdiamov ?  ( Number(item.n_montoxdiamov) * (tipoMov.c_clasetipomov === "I" ? 1 : -1) ) : 0);
       return aux;
     });
     setMovimientosCajaTabla(tableData);
     setSaldoDia(Number(saldoAux).toFixed(2));
-  }, [movimientos, tiposMovimientos, tiposDocumentos]);
+  }, [movimientos, tiposMovimientos]);
 
   const getData = useCallback(() => {
     setCompania(flujoCajaTienda.general.companiaName || "");
@@ -360,16 +339,14 @@ const FormCajaTiendaDiaMovimientos = () => {
   }, [flujoCajaTienda, detalleSeleccionado]);
 
   useEffect(() => {
-    if(tiposMovimientos.length > 0 && tiposDocumentos.length > 0) {
+    if(tiposMovimientos.length > 0) {
         refreshList();
     }
-  }, [tiposMovimientos, movimientos, tiposDocumentos])
+  }, [tiposMovimientos, movimientos])
 
   useEffect(async () => {
       await setIsLoading(true);
-      await getAgencias();
       await getTiposMovimientoCaja();
-      await getTiposDocumentos();
       await getData();
       setIsLoading(false);
   },[])

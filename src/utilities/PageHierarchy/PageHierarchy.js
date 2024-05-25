@@ -149,9 +149,13 @@ const pagesArray = [
                         value: 'TRANSACCIONES TIENDA',
                         key: 'TRANSACCIONES TIENDA'
                     },{
-                        title: 'NUEVA TRANSACCIÓN',
-                        value: 'NUEVA TRANSACCIÓN',
-                        key: 'NUEVA TRANSACCIÓN'
+                        title: 'NUEVA TRANSACCIÓN SALIDA',
+                        value: 'NUEVA TRANSACCIÓN SALIDA',
+                        key: 'NUEVA TRANSACCIÓN SALIDA'
+                    },{
+                        title: 'NUEVA TRANSACCIÓN INGRESO',
+                        value: 'NUEVA TRANSACCIÓN INGRESO',
+                        key: 'NUEVA TRANSACCIÓN INGRESO'
                     },{
                         title: 'VISUALIZAR TRANSACCIÓN',
                         value: 'VISUALIZAR TRANSACCIÓN',
@@ -164,6 +168,15 @@ const pagesArray = [
                         title: 'RECIBO VENTA TIENDA',
                         value: 'RECIBO VENTA TIENDA',
                         key: 'RECIBO VENTA TIENDA'
+                    },
+                    {
+                        title: 'USUARIO ACCESO TOTAL TRANSACCIÓN',
+                        value: 'USUARIO ACCESO TOTAL TRANSACCIÓN',
+                        key: 'USUARIO ACCESO TOTAL TRANSACCIÓN'
+                    },{
+                        title: 'TRANSACCIONES POR CONFIRMAR',
+                        value: 'TRANSACCIONES POR CONFIRMAR',
+                        key: 'TRANSACCIONES POR CONFIRMAR'
                     }
                 ]
             },{

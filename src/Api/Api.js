@@ -357,6 +357,12 @@ export const deleteTipoMovimientoCajaTienda = async (c_tipomovimientoctd) => {
     const response = await consumer(url, 'post', {});
     return response;
 };
+export const getTipoMovimientoCajaTiendaParaTransacciones = async (body) => {
+    console.log('---API--- : getTipoMovimientoCajaTiendaParaTransacciones');
+    const url = `${port}/tipomovimientocajatienda/getTipoMovimientoCajaTiendaParaTransacciones`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Compania
 export const listCompanias = async () => {
     console.log('---API--- : listCompanias');
@@ -1066,36 +1072,6 @@ export const getFlujoCajaTiendaDiaMovDinamico = async (body) => {
     return response;
 };
 //TRANSACCION
-export const getTransaccionDinamico = async (body) => {
-    console.log('---API--- : getTransaccionDinamico');
-    const url = `${port}/transaccion/getTransaccionDinamico`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const getTransaccionDetalle = async (body) => {
-    console.log('---API--- : getTransaccionDetalle');
-    const url = `${port}/transaccion/getTransaccionDetalle`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const getTransaccionCabecera = async (body) => {
-    console.log('---API--- : getTransaccionCabecera');
-    const url = `${port}/transaccion/getTransaccionCabecera`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const registerTransaccion = async (body) => {
-    console.log('---API--- : registerTransaccion');
-    const url = `${port}/transaccion/registerTransaccion`;
-    const response = await consumer(url, 'post', body);
-    return response;
-};
-export const updateTransaccionAnular = async (body) => {
-    console.log('---API--- : updateTransaccionAnular');
-    const url = `${port}/transaccion/updateTransaccionAnular`;
-    const response = await consumer(url, 'put', body);
-    return response;
-};
 export const getReporteTransaccion = async (body) => {
     console.log('---API--- : getReporteTransaccion');
     const url = `${port}/transaccion/getReporteTransaccion`;

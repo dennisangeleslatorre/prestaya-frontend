@@ -382,7 +382,7 @@ const FormCajaTienda = () => {
   const handleRegistrarFlujo = async () => {
     setDisabledButton(true);
     setIsLoading(true);
-    if (flujoCajaForm.general.c_usuariofctienda === userLogedIn) {
+    if (flujoCajaForm.general.c_usuariofctienda === userLogedIn || usuarioAccesoTotalCajaPermiso) {
       if (validateGeneralData() && detalles && detalles.length > 0) {
         if (validateDetailDateRange()) {
           const isValidoSaldo = validateSaldo();
@@ -480,31 +480,6 @@ const FormCajaTienda = () => {
       prepareNotificationDanger("Aviso", "Selecciona un item de la tabla.");
     }
   };
-
-  // const handleSelectClonar = () => {
-  //   if (selectedRowKeys.length > 0) {
-  //     setFlujoCajaTienda(flujoCajaForm);
-  //     const detalleAux = detalles[Number(selectedRowKeys[0]) - 1];
-  //     let validDelete = true;
-  //     detalleAux.movimientos.forEach((item) => {
-  //       if (item.c_flagtransaccion === "S") validDelete = false;
-  //     });
-  //     if (validDelete) {
-  //       setDetalleSeleccionado({
-  //         ...detalleAux,
-  //         index: Number(selectedRowKeys[0]) - 1,
-  //       });
-  //       setOpenClonarModal(true);
-  //     } else {
-  //       prepareNotificationDanger(
-  //         "Aviso",
-  //         "No puedes clonar un dia con un movimiento generado en el flujo de transacciones."
-  //       );
-  //     }
-  //   } else {
-  //     prepareNotificationDanger("Aviso", "Selecciona un item de la tabla.");
-  //   }
-  // };
 
   const handleEliminar = () => {
     setOpenConfirmationModal(false);

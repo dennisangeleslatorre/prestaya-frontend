@@ -20,3 +20,9 @@ export const getProductoStockDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getProductoDinamicoConPrecio = async (body) => {
+    console.log('---API--- : getProductoDinamicoConPrecio');
+    const url = `${port}/producto/getProductoDinamicoConPrecio`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};

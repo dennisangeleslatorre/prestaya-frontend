@@ -232,7 +232,9 @@ const BusquedaFlujoCajaTienda = () => {
         ? separator(Number(item.montos_salida).toFixed(2))
         : "0.00";
       aux.n_saldo = separator(
-        Number((item.montos_ingreso || 0) - (item.montos_salida || 0)).toFixed(2)
+        Number((item.montos_ingreso || 0) - (item.montos_salida || 0)).toFixed(
+          2
+        )
       );
       aux.c_observaciones = item.c_observaciones;
       aux.c_usuarioregistro = item.c_usuarioregistro;
@@ -437,9 +439,7 @@ const BusquedaFlujoCajaTienda = () => {
                         <Button onClick={handleSelectNew}>NUEVO</Button>
                       )}
                       {updatePermission && (
-                        <Button onClick={handleSelectUpdate}>
-                          MODIFICAR
-                        </Button>
+                        <Button onClick={handleSelectUpdate}>MODIFICAR</Button>
                       )}
                     </Space>
                   </div>

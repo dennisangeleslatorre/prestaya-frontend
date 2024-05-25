@@ -5,7 +5,7 @@ import { PDFViewer, usePDF } from '@react-pdf/renderer';
 import Spinner from '../../components/Spinner/Spinner';
 import FormContainer from '../../components/FormContainer/FormContainer';
 import TicketVentaTiendaPdfComponent from '../../components/TicketVentaTiendaPdfComponent/TicketVentaTiendaPdfComponent';
-import { getTransaccionCabecera, getTransaccionDetalle } from '../../Api/Api';
+import { getTransaccionCabecera, getTransaccionDetalle } from '../../Api/Comercial/transacciones.service';
 import ResponseModal from '../../components/Modal/ResponseModal';
 
 const TicketVentaTienda = () => {
