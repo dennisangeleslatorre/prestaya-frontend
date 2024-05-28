@@ -183,6 +183,8 @@ const TransaccionSalidaForm = () => {
       c_usuariooperacion: usuarioTransaccion,
       c_usuariofctienda: usuariofcTienda,
       c_tipomovimientoctd: tipoMovimiento,
+      c_agenciarelacionado: agenciaDestino,
+      c_usuariofctiendarelacionado: usuarioFCDestino,
       detalles: getDetalles(detallesAux),
     };
     return data;
@@ -493,7 +495,7 @@ const TransaccionSalidaForm = () => {
             disabledElement={!agenciaDestino}
           />
           <SelectComponent
-            labelText="Tipo Movimiento Flujo"
+            labelText="Tipo Movimiento Caja"
             defaultValue="Seleccione un tipo"
             items={tiposMovimientos}
             selectId="tipoMovimientoId"

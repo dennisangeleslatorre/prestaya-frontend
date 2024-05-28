@@ -141,7 +141,7 @@ export const transactionStatuses = [
 
 export const transactionTypes = [
   { value: "NI", option: "Nota de ingreso" },
-  { value: "NS", option: "Nota de salido" },
+  { value: "NS", option: "Nota de salida" },
 ];
 
 export const listColumns = [

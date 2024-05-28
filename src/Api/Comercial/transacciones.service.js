@@ -55,3 +55,9 @@ export const postConfirmarTransaccionProductoSalida = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 }
+export const postConfirmarTransaccionProductoSalidaOtraAgencia = async (body) => {
+    console.log('---API--- : postConfirmarTransaccionProductoSalidaOtraAgencia');
+    const url = `${port}/transaccion/postConfirmarTransaccionProductoSalidaOtraAgencia`;
+    const response = await consumer(url, 'post', body);
+    return response;
+}

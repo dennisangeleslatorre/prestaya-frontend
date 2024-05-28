@@ -60,6 +60,8 @@ import TransaccionesTienda from '../../containers/TransaccionTienda/Transaccione
 import TransaccionSalidaForm from '../../containers/TransaccionTienda/TransaccionSalidaForm'
 import TransaccionIngresoForm from '../../containers/TransaccionTienda/TransaccionIngresoForm'
 import FormTransaccionTiendaPorConfirmar from '../../containers/TransaccionTienda/FormTransaccionTiendaPorConfirmar'
+import ProofOfDeliveryOfTopNote from '../../containers/TransaccionTienda/ProofOfDeliveryOfTopNote'
+import ProofOfSaleTopNote from '../../containers/TransaccionTienda/ProofOfSaleTopNote'
 //PRODUCTOS
 import Productos from '../../containers/Productos/Productos'
 //FORMATO PRÉSTAMO
@@ -537,6 +539,16 @@ export default{
             path: '/trannsaccionesPorConfirmar',
             exact: true,
             name: 'TRANSACCIONES POR CONFIRMAR'
+        },{
+            component: ProofOfDeliveryOfTopNote,
+            path: '/contanciaEntregaNotaSalida/:c_compania/:c_agencia/:c_tipodocumento/:c_numerodocumento',
+            exact: true,
+            name: 'CONSTANCIA DE ENTREGA PARA NS'
+        },{
+            component: ProofOfSaleTopNote,
+            path: '/constanciaVentaNotaSalida/:c_compania/:c_agencia/:c_tipodocumento/:c_numerodocumento',
+            exact: true,
+            name: 'CONSTANCIA DE VENTA PARA NS'
         },{
             component: TicketVentaTienda,
             path: '/ticketVentaTienda/:id',

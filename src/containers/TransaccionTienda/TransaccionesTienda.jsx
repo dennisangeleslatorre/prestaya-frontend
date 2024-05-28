@@ -32,7 +32,11 @@ import {
 import moment from "moment";
 import { Button, Space, Table } from "antd";
 import { formatPeriodo } from "../../utilities/Functions/FormatPeriodo";
-import { transactionStatuses, transactionTypes, listColumns } from "./configData";
+import {
+  transactionStatuses,
+  transactionTypes,
+  listColumns,
+} from "./configData";
 
 const TransaccionesTienda = () => {
   //Navegacion
@@ -90,15 +94,29 @@ const TransaccionesTienda = () => {
       item === "ANULAR TRANSACCIÓN" ||
       item === "RECIBO VENTA TIENDA" ||
       item === "VISUALIZAR TRANSACCIÓN" ||
-      item === "TRANSACCIONES POR CONFIRMAR"
+      item === "TRANSACCIONES POR CONFIRMAR" ||
+      item === "CONSTANCIA DE ENTREGA PARA NS" ||
+      item === "CONSTANCIA DE VENTA PARA NS"
     );
   });
-  const outputPermission = userPermisssions.includes("NUEVA TRANSACCIÓN SALIDA");
-  const inputPermission = userPermisssions.includes("NUEVA TRANSACCIÓN INGRESO");
+  const outputPermission = userPermisssions.includes(
+    "NUEVA TRANSACCIÓN SALIDA"
+  );
+  const inputPermission = userPermisssions.includes(
+    "NUEVA TRANSACCIÓN INGRESO"
+  );
   const cancelPermission = userPermisssions.includes("ANULAR TRANSACCIÓN");
   const ticetPermission = userPermisssions.includes("RECIBO VENTA TIENDA");
   const viewPermission = userPermisssions.includes("VISUALIZAR TRANSACCIÓN");
-  const confirmPermission = userPermisssions.includes("TRANSACCIONES POR CONFIRMAR");
+  const confirmPermission = userPermisssions.includes(
+    "TRANSACCIONES POR CONFIRMAR"
+  );
+  const proofOfSaleTopNote = userPermisssions.includes(
+    "CONSTANCIA DE ENTREGA PARA NS"
+  );
+  const proofOfDeliveryOfTopNote = userPermisssions.includes(
+    "CONSTANCIA DE VENTA PARA NS"
+  );
   //Contexto
   const { setParamsForFilterTransaccion, getParamsForFilterTransaccion } =
     useContext(FiltersContext);
@@ -259,7 +277,7 @@ const TransaccionesTienda = () => {
     setIsLoading(false);
   };
 
-  const clickRegistrarTransaccion = (route = 'nuevaTransaccionSalida') => {
+  const clickRegistrarTransaccion = (route = "nuevaTransaccionSalida") => {
     if (agencia !== "T") {
       history.push(`/${route}/${compania}/${agencia}`);
     } else {
@@ -290,12 +308,9 @@ const TransaccionesTienda = () => {
     }
   };
 
-  const handleClickGoToPrintTicket = () => {
+  const validateSelectionOfTopNote = (url) => {
     if (elementSelected.length > 0) {
-      if (elementSelected[0].c_tipodocumento === "NS")
-        history.push(
-          `/ticketVentaTienda/${elementSelected[0].c_compania}-${elementSelected[0].c_agencia}-${elementSelected[0].c_tipodocumento}-${elementSelected[0].c_numerodocumento}`
-        );
+      if (elementSelected[0].c_tipodocumento === "NS") history.push(url);
       else {
         setResponseData({
           title: "Aviso",
@@ -310,6 +325,24 @@ const TransaccionesTienda = () => {
       });
       setOpenResponseModal(true);
     }
+  };
+
+  const handleClickGoToPrintTicket = () => {
+    validateSelectionOfTopNote(
+      `/ticketVentaTienda/${elementSelected[0]?.c_compania}-${elementSelected[0]?.c_agencia}-${elementSelected[0]?.c_tipodocumento}-${elementSelected[0]?.c_numerodocumento}`
+    );
+  };
+
+  const handleClickGoToPrintProofOfdelivery = () => {
+    validateSelectionOfTopNote(
+      `/contanciaEntregaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`
+    );
+  };
+
+  const handleClickGoToPrintProofOfSale = () => {
+    validateSelectionOfTopNote(
+      `/constanciaVentaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`
+    );
   };
 
   const handleAnular = async () => {
@@ -391,7 +424,6 @@ const TransaccionesTienda = () => {
 
   const getLastSearch = async () => {
     const parametros = getParamsForFilterTransaccion();
-    console.log("parametros obtenidos", parametros);
     if (parametros && Object.keys(parametros).length !== 0) {
       await onHandleSearch(parametros);
       if (parametros.c_compania) setCompania(parametros.c_compania);
@@ -571,10 +603,22 @@ const TransaccionesTienda = () => {
         <div className="col-12">
           <Space size={[10, 3]} wrap style={{ marginBottom: 16 }}>
             {outputPermission && (
-              <Button onClick={() => clickRegistrarTransaccion('nuevaTransaccionSalida')}>NUEVA SALIDA</Button>
+              <Button
+                onClick={() =>
+                  clickRegistrarTransaccion("nuevaTransaccionSalida")
+                }
+              >
+                NUEVA SALIDA
+              </Button>
             )}
             {inputPermission && (
-              <Button onClick={() => clickRegistrarTransaccion('nuevaTransaccionIngreso')}>NUEVO INGRESO</Button>
+              <Button
+                onClick={() =>
+                  clickRegistrarTransaccion("nuevaTransaccionIngreso")
+                }
+              >
+                NUEVO INGRESO
+              </Button>
             )}
             {cancelPermission && (
               <Button onClick={clickAnularTransaccion}>ANULAR</Button>
@@ -584,13 +628,23 @@ const TransaccionesTienda = () => {
                 RECIBO VENTA TIENDA
               </Button>
             )}
-            {
-              confirmPermission && (
-                <Button onClick={() =>  history.push('/trannsaccionesPorConfirmar')}>
-                  CONFIRMAR TRANSACCONES
-                </Button>
-              )
-            }
+            {confirmPermission && (
+              <Button
+                onClick={() => history.push("/trannsaccionesPorConfirmar")}
+              >
+                CONFIRMAR TRANSACCONES
+              </Button>
+            )}
+            {proofOfDeliveryOfTopNote && (
+              <Button onClick={handleClickGoToPrintProofOfdelivery}>
+                CONSTANCIA DE ENTREGA (NS)
+              </Button>
+            )}
+            {proofOfSaleTopNote && (
+              <Button onClick={handleClickGoToPrintProofOfSale}>
+                CONSTANCIA DE VENTA (NS)
+              </Button>
+            )}
           </Space>
         </div>
         <div className="col-12" style={{ overflow: "scroll" }}>

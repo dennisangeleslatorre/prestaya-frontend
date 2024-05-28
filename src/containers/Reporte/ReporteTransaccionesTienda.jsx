@@ -27,7 +27,7 @@ const estados = [
     { name: 'ANULADO', value: 'AN' }
 ]
 
-const tipos = [{value:"NI", option:"Nota de ingreso"}, {value:"NS", option:"Nota de salido"}, {value:"TO", option:"Todos"}]
+const tipos = [{value:"NI", option:"Nota de ingreso"}, {value:"NS", option:"Nota de salida"}, {value:"TO", option:"Todos"}]
 
 const columnsExportExcel = [
     {

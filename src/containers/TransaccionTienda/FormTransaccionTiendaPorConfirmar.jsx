@@ -16,7 +16,11 @@ import { debounce } from "lodash";
 //Context
 import UserContext from "../../context/UserContext/UserContext";
 import PagesContext from "../../context/PagesContext/PagesContext";
-import { getTransaccionesPorConfirmar, postConfirmarTransaccionProductoSalida } from "../../Api/Comercial/transacciones.service";
+import {
+  getTransaccionesPorConfirmar,
+  postConfirmarTransaccionProductoSalida,
+  postConfirmarTransaccionProductoSalidaOtraAgencia,
+} from "../../Api/Comercial/transacciones.service";
 import { confirmTransactionsFormColumns } from "./configData";
 
 const FormTransaccionTiendaPorConfirmar = () => {
@@ -27,7 +31,8 @@ const FormTransaccionTiendaPorConfirmar = () => {
   const [originAgency, setOriginAgency] = useState("T");
   const [relatedAgency, setRelatedAgency] = useState("T");
   const [userCashFlowStore, setUserCashFlowStore] = useState("T");
-  const [userCashFlowStoreDestinantion, setUserCashFlowStoreDestinantion] = useState("T");
+  const [userCashFlowStoreDestinantion, setUserCashFlowStoreDestinantion] =
+    useState("T");
   const [isLoading, setIsLoading] = useState(false);
   const [responseData, setResponseData] = useState({});
   const [openResponseModal, setOpenResponseModal] = useState(false);
@@ -83,9 +88,34 @@ const FormTransaccionTiendaPorConfirmar = () => {
     return body;
   };
 
+  const showSuccesMessage = async (response) => {
+    if (
+      response &&
+      response.status === 200 &&
+      response.body.message === "OK"
+    ) {
+      await refresListTable();
+      setResponseData({
+        title: "Operación exitosa",
+        message: "Se confirmo con éxito.",
+      });
+    } else {
+      setResponseData({
+        title: "Error al confirmar",
+        message: response.body.message,
+      });
+    }
+    setOpenResponseModal(true);
+    setTimeout(() => {
+      setDisabledButton(false);
+      setIsLoading(false);
+      setOpen(false);
+    }, 2000);
+  }
+
   const handleConfirmTransaction = async () => {
     try {
-      setOpen(false);
+      await setIsLoading(true);
       setDisabledButton(true);
       const selectedTransaction = transactions.find(
         (item) =>
@@ -94,24 +124,25 @@ const FormTransaccionTiendaPorConfirmar = () => {
           item.c_tipodocumento === elementSelected[0].c_tipodocumento &&
           item.c_numerodocumento === elementSelected[0].c_numerodocumento
       );
-      const body = prepareBody(selectedTransaction);
-      const response = await postConfirmarTransaccionProductoSalida(body);
-      if (response && response.status === 200 && response.body.message === 'OK') {
-        await refresListTable();
-        setResponseData({ title: 'Operación exitosa', message: 'Se confirmo con éxito.' });
+      const body = prepareBodyToConfirm(selectedTransaction);
+      if (
+        selectedTransaction.c_agenciarelacionado &&
+        selectedTransaction.c_usuariofctiendarelacionado
+      ) {
+        const response = await postConfirmarTransaccionProductoSalidaOtraAgencia(
+          body
+        );
+        await showSuccesMessage(response);
       } else {
-        setResponseData({ title: 'Error al confirmar', message: response.body.message });
+        const response = await postConfirmarTransaccionProductoSalida(body);
+        await showSuccesMessage(response)
       }
-      setOpenResponseModal(true);
-      setTimeout(() => {
-        setDisabledButton(false);
-      }, 2000);
-      setIsLoading(false);
     } catch (error) {
+      prepareNotification("Aviso", "Ocurrio un error al confirmar la transacción");
       setDisabledButton(false);
       setIsLoading(false);
     }
-  }
+  };
 
   const onHandleClickSearch = async () => {
     await setIsLoading(true);
@@ -153,7 +184,7 @@ const FormTransaccionTiendaPorConfirmar = () => {
     }
   };
 
-  const prepareBody = (transacctionData) => {
+  const prepareBodyToConfirm = (transacctionData) => {
     return {
       c_compania: transacctionData.c_compania,
       c_agencia: transacctionData.c_agencia,
@@ -162,9 +193,11 @@ const FormTransaccionTiendaPorConfirmar = () => {
       n_montototal: transacctionData.n_montototal,
       c_usuariooperacion: transacctionData.c_usuariooperacion,
       c_usuariofctienda: transacctionData.c_usuariofctienda,
-      d_fechadocumento: moment(transacctionData.d_fechadocumento).format("yyyy-MM-DD"),
+      d_fechadocumento: moment(transacctionData.d_fechadocumento).format(
+        "yyyy-MM-DD"
+      ),
       c_usuarioconfirmado: userLogedIn,
-      c_ultimousuario: userLogedIn
+      c_ultimousuario: userLogedIn,
     };
   };
 

@@ -177,7 +177,15 @@ const pagesArray = [
                         title: 'TRANSACCIONES POR CONFIRMAR',
                         value: 'TRANSACCIONES POR CONFIRMAR',
                         key: 'TRANSACCIONES POR CONFIRMAR'
-                    }
+                    },{
+                        title: 'CONSTANCIA DE ENTREGA PARA NS',
+                        value: 'CONSTANCIA DE ENTREGA PARA NS',
+                        key: 'CONSTANCIA DE ENTREGA PARA NS'
+                    },{
+                        title: 'CONSTANCIA DE VENTA PARA NS',
+                        value: 'CONSTANCIA DE VENTA PARA NS',
+                        key: 'CONSTANCIA DE VENTA PARA NS'
+                    },
                 ]
             },{
                 title: 'PRODUCTO',
