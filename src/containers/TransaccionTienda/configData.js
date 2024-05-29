@@ -140,6 +140,7 @@ export const transactionStatuses = [
 ];
 
 export const transactionTypes = [
+  { value: "TO", option: "Todos" },
   { value: "NI", option: "Nota de ingreso" },
   { value: "NS", option: "Nota de salida" },
 ];

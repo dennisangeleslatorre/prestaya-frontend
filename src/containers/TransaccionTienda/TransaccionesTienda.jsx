@@ -26,7 +26,7 @@ import {
 import { getProductoDinamico } from "../../Api/Comercial/producto.service";
 import {
   getTransaccionDinamico,
-  updateTransaccionAnular,
+  postAnularTransaccion,
 } from "../../Api/Comercial/transacciones.service";
 //Librerias
 import moment from "moment";
@@ -291,13 +291,14 @@ const TransaccionesTienda = () => {
 
   const clickAnularTransaccion = () => {
     if (elementSelected.length > 0) {
-      if (elementSelected[0].c_tipodocumento === "NS") setOpen(true);
-      else {
+      if (elementSelected[0].c_tipodocumento === 'NI' && elementSelected[0].c_numerodocumentorel) {
         setResponseData({
           title: "Aviso",
-          message: "Tienes que seleccionar una nota de salida",
+          message: "No puedes anular una nota de ingreso que es generada por un nota de salida desde otra agencia",
         });
         setOpenResponseModal(true);
+      } else {
+        setOpen(true);
       }
     } else {
       setResponseData({
@@ -347,12 +348,16 @@ const TransaccionesTienda = () => {
 
   const handleAnular = async () => {
     if (elementSelected.length > 0) {
-      const response = await updateTransaccionAnular({
+      const response = await postAnularTransaccion({
         c_compania: elementSelected[0].c_compania,
         c_agencia: elementSelected[0].c_agencia,
         c_tipodocumento: elementSelected[0].c_tipodocumento,
         c_numerodocumento: elementSelected[0].c_numerodocumento,
-        c_ultimousuario: userLogedIn,
+        d_fechadocumento: moment(elementSelected[0].d_fechadocumento).format("yyyy-MM-DD"),
+        c_usuariofctienda: elementSelected[0].c_usuariofctienda,
+        c_observacionesanulacion: 'Anular',
+        c_usuarioanulacion: userLogedIn,
+        c_ultimousuario:  userLogedIn,
       });
       if (response.status === 200 && response.body.message === "OK") {
         onHandleSearch();

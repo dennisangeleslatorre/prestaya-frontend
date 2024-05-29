@@ -37,10 +37,10 @@ export const postTransaccionProductoIngreso = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
-export const updateTransaccionAnular = async (body) => {
-    console.log('---API--- : updateTransaccionAnular');
-    const url = `${port}/transaccion/updateTransaccionAnular`;
-    const response = await consumer(url, 'put', body);
+export const postAnularTransaccion = async (body) => {
+    console.log('---API--- : postAnularTransaccion');
+    const url = `${port}/transaccion/postAnularTransaccion`;
+    const response = await consumer(url, 'post', body);
     return response;
 };
 export const getTransaccionesPorConfirmar = async (body) => {

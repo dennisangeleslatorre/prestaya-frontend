@@ -86,10 +86,7 @@ const TransaccionIngresoForm = () => {
   // Listas
   const [locations, setLocations] = useState([]);
   const [unidadesMedidas, setUnidadesMedidas] = useState([]);
-  // const [allUnidadesMedidas, setAllUnidadesMedidas] = useState([]);
   const [tiposProducto, setTiposProducto] = useState([]);
-  // const [allTiposProductos, setAllTiposProductos] = useState([]);
-  // const [allSubtiposProductos, setAllSubtiposProductos] = useState([]);
 
   const { compania, agencia } = useParams();
   let history = useHistory();
@@ -384,7 +381,7 @@ const TransaccionIngresoForm = () => {
           />
           <InputComponentView
             label="Tipo Doc"
-            state={"Nota Salida"}
+            state={"Nota Ingreso"}
             setState={() => {}}
             type="text"
             placeholder="Tipo Doc"
