@@ -12,7 +12,6 @@ import { separator } from "../../utilities/Functions/FormatNumber";
 import { useHistory } from "react-router";
 import ConfirmationModal from "../../components/Modal/ConfirmationModal";
 import ResponseModal from "../../components/Modal/ResponseModal";
-import { debounce } from "lodash";
 //Context
 import UserContext from "../../context/UserContext/UserContext";
 import PagesContext from "../../context/PagesContext/PagesContext";
@@ -54,10 +53,10 @@ const FormTransaccionTiendaPorConfirmar = () => {
   const userLogedIn = getUserData().c_codigousuario;
   const { getPagesKeysForUser } = useContext(PagesContext);
   const userPermisssions = getPagesKeysForUser().filter((item) => {
-    return item === "USUARIO ACCESO TOTAL CAJA TIENDA";
+    return item === "USUARIO ACCESO TOTAL TRANSACCIÓN";
   });
   const userAccessTotalCashPermission = userPermisssions.includes(
-    "USUARIO ACCESO TOTAL CAJA TIENDA"
+    "USUARIO ACCESO TOTAL TRANSACCIÓN"
   );
   //Atributos de la tabla
   const rowSelection = {

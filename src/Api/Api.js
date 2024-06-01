@@ -1071,6 +1071,12 @@ export const getFlujoCajaTiendaDiaMovDinamico = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getUsuariosCajaActiva = async (body) => {
+    console.log('---API--- : getUsuariosCajaActiva');
+    const url = `${port}/flujocajatienda/getUsuariosCajaActiva`;
+    const response = await consumer(url, 'post', body);
+    return response;
+}
 //TRANSACCION
 export const getReporteTransaccion = async (body) => {
     console.log('---API--- : getReporteTransaccion');

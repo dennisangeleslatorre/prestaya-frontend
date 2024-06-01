@@ -23,6 +23,7 @@ import {
   getClienteByCodigoCliente,
   getAgenciaAndCompaniaByCodigo,
   listUsers,
+  getUsuariosCajaActiva,
   getTipoMovimientoCajaTiendaParaTransacciones,
   listTiposProducto, listUnidadesMedida, listUbicacionesByCodigo
 } from "../../Api/Api";
@@ -78,6 +79,7 @@ const TransaccionIngresoForm = () => {
   const [dataTableDetalles, setDataTableDetalles] = useState([]);
   const [detalles, setDetalles] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [usuariosCajaActiva, setUsuariosCajaActiva] = useState([]);
   const [usuarioOperacion, setUsuarioOperacion] = useState(userLogedIn);
   const [usuariofcTienda, setUsuariofcTienda] = useState(userLogedIn);
   const [tiposMovimientos, setTiposMovimientos] = useState([]);
@@ -275,6 +277,11 @@ const TransaccionIngresoForm = () => {
     if (response && response.status === 200) setUsuarios(response.body.data);
   };
 
+  const getUsuariosCajaActivaPorAgencia = async () => {
+    const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia: agencia });
+    if (response && response.status === 200) setUsuariosCajaActiva(response.body.data);
+  }
+
   const getTiposMovimientos = async () => {
     const response = await getTipoMovimientoCajaTiendaParaTransacciones({
         c_clasetipomov: 'S',
@@ -337,6 +344,7 @@ const TransaccionIngresoForm = () => {
     await setIsLoading(true);
     await getAgenciaInfo();
     await getUsuarios();
+    await getUsuariosCajaActivaPorAgencia();
     await getTiposMovimientos();
     await getTiposProducto();
     await getUnidadesMedidas();
@@ -416,7 +424,7 @@ const TransaccionIngresoForm = () => {
             labelText="Usuario Caja"
             placeholder="Seleccione un Usuario"
             valueSelected={usuariofcTienda}
-            data={usuarios}
+            data={usuariosCajaActiva}
             handleElementSelected={setUsuariofcTienda}
             optionField="c_nombres"
             valueField="c_codigousuario"

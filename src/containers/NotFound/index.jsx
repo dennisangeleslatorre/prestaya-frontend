@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react'
-
+import { useHistory } from 'react-router'
 import './NotFoundStyles.css';
 import useWindowsDimensions from '../../hooks/useWindowDimension'
 
 const NotFound = () => {
+    let history = useHistory();
     const { height, width } = useWindowsDimensions();
+
+    const gotoHome = () => {
+        history.push('/inicio');
+    }
 
     useEffect( () => {
         if( width > 900 ){
@@ -89,7 +94,7 @@ const NotFound = () => {
                             <div className="error__title">404</div>
                             <div className="error__subtitle">Hmmm...</div>
                             <div className="error__description">It looks like one of the  developers fell asleep</div>
-                            <button className="error__button error__button--active">Home</button>
+                            <button onClick={gotoHome} className="error__button error__button--active">Home</button>
                         </div>
                     </div>
                     {

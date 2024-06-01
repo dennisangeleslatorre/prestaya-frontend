@@ -640,7 +640,7 @@ const TransaccionesTienda = () => {
                 CONFIRMAR TRANSACCONES
               </Button>
             )}
-            {proofOfDeliveryOfTopNote && (
+            {/* {proofOfDeliveryOfTopNote && (
               <Button onClick={handleClickGoToPrintProofOfdelivery}>
                 CONSTANCIA DE ENTREGA (NS)
               </Button>
@@ -649,7 +649,7 @@ const TransaccionesTienda = () => {
               <Button onClick={handleClickGoToPrintProofOfSale}>
                 CONSTANCIA DE VENTA (NS)
               </Button>
-            )}
+            )} */}
           </Space>
         </div>
         <div className="col-12" style={{ overflow: "scroll" }}>

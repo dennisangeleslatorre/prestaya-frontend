@@ -72,6 +72,8 @@ const Productos = () => {
   };
 
   const onHandleSearch = async (parametrosIniciales) => {
+    setElementSelected([]);
+    setSelectedRowKeys([]);
     let parametros = parametrosIniciales
       ? parametrosIniciales
       : prepareBodyToSearch();

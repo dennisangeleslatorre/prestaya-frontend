@@ -24,7 +24,8 @@ import {
   getAgenciaAndCompaniaByCodigo,
   listUsers,
   listAgencias,
-  getTipoMovimientoCajaTiendaParaTransacciones
+  getTipoMovimientoCajaTiendaParaTransacciones,
+  getUsuariosCajaActiva
 } from "../../Api/Api";
 import {
   postTransaccionProductoSalida,
@@ -78,6 +79,8 @@ const TransaccionSalidaForm = () => {
   const [dataTableDetalles, setDataTableDetalles] = useState([]);
   const [detalles, setDetalles] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [usuariosCajaAgencia, setUsuariosCajaAgencia] = useState([]);
+  const [usuariosCajaAgenciaRelacionada, setUsuariosCajaAgenciaRelacionada] = useState([]);
   const [usuarioTransaccion, setUsuarioTransaccion] = useState(userLogedIn);
   const [usuariofcTienda, setUsuariofcTienda] = useState(userLogedIn);
   const [agenciaDestino, setAgenciaDestino] = useState("");
@@ -161,10 +164,10 @@ const TransaccionSalidaForm = () => {
       aux.n_precio = Number(item.n_precio);
       aux.n_montototal = Number(item.n_cantidad) * Number(item.n_precio);
       aux.c_observacionesdet = item.c_observaciones;
-      aux.n_preciobasehist = Number(item.n_preciobasehist).toFixed(2);
-      aux.n_porcremate = Number(item.n_porcremate).toFixed(2);
-      aux.n_porcrematehist = Number(item.n_porcrematehist).toFixed(2);
-      aux.c_prestamoitem = item.c_prestamoitem || null
+      aux.n_preciobasehist = Number(item.n_preciobasehist || 0).toFixed(2);
+      aux.n_porcremate = Number(item.n_porcremate || 0).toFixed(2);
+      aux.n_porcrematehist = Number(item.n_porcrematehist || 0).toFixed(2);
+      if (item.c_prestamoitem) aux.c_prestamoitem = item.c_prestamoitem;
       return aux;
     });
   };
@@ -236,9 +239,13 @@ const TransaccionSalidaForm = () => {
     },
   };
 
-  const handleChangeRelatedAgency = (value) => {
-    setAgenciaDestino(value);
-    if (!value) setUsuarioFCDestino("");
+  const handleChangeRelatedAgency = async (c_agencia) => {
+    setIsLoading(true);
+    setAgenciaDestino(c_agencia);
+    setUsuarioFCDestino("");
+    const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia });
+    if (response && response.status === 200) setUsuariosCajaAgenciaRelacionada(response.body.data);
+    setIsLoading(false);
   }
 
   const deleteDetalleTransaccion = () => {
@@ -281,6 +288,11 @@ const TransaccionSalidaForm = () => {
     const response = await listUsers();
     if (response && response.status === 200) setUsuarios(response.body.data);
   };
+
+  const getUsuariosCajaActivaPorAgencia = async () => {
+    const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia: agencia });
+    if (response && response.status === 200) setUsuariosCajaAgencia(response.body.data);
+  }
 
   const getAgenciasByCompany = async () => {
     const response = await listAgencias({ c_compania: compania });
@@ -335,6 +347,7 @@ const TransaccionSalidaForm = () => {
     await setIsLoading(true);
     await getAgenciaInfo();
     await getUsuarios();
+    await getUsuariosCajaActivaPorAgencia();
     await getAgenciasByCompany();
     await getTiposMovimientos();
     setIsLoading(false);
@@ -412,7 +425,7 @@ const TransaccionSalidaForm = () => {
             labelText="Usuario Caja"
             placeholder="Seleccione un Usuario"
             valueSelected={usuariofcTienda}
-            data={usuarios}
+            data={usuariosCajaAgencia}
             handleElementSelected={setUsuariofcTienda}
             optionField="c_nombres"
             valueField="c_codigousuario"
@@ -486,7 +499,7 @@ const TransaccionSalidaForm = () => {
             labelText="Usuario Caja Relacionado"
             placeholder="Seleccione un Usuario"
             valueSelected={usuarioFCDestino}
-            data={usuarios}
+            data={usuariosCajaAgenciaRelacionada}
             handleElementSelected={setUsuarioFCDestino}
             optionField="c_nombres"
             valueField="c_codigousuario"

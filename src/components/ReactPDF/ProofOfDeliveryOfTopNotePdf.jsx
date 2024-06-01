@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: "Roboto",
     fontWeight: "semibold",
-},
+  },
   //bottom
   signatures__container: {
     position: 'absolute',

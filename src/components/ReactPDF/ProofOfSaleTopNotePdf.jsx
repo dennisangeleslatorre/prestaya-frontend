@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
+    marginTop: "0.25cm",
   },
   body__container: {
     width: "100%",
@@ -82,6 +83,32 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     marginTop: "0.5cm",
+  },
+  // Table
+  table__container: {
+    marginTop: "0.5cm",
+    width: "100%",
+    display: "flex",
+  },
+  table__row__container: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  table__column__container: {
+    width: "1cm",
+    minHeight: "0.7cm",
+    display: "flex",
+    justifyContent: "center",
+    borderWidth: "1px",
+    margin: "0px",
+  },
+  table__text__header: {
+    fontSize: '0.3cm',
+    textAlign: 'center',
+    fontFamily: "Roboto",
+    fontWeight: "semibold",
   },
   //bottom
   signatures__container: {
@@ -118,39 +145,108 @@ const ProofOfSaleTopNotePdf = () => (
         <Text style={styles.title__text}>CONSTANCIA DE VENTA</Text>
       </View>
       <View style={styles.row__header__container}>
-        <Text style={styles.header__text}>
+        <Text style={[styles.header__text, { marginVertical: '0.25cm' }]}>
           CONSTE POR EL PRESENTE DOCUMENTO LA VENTA QUE SE REALIZA SEGÚN LAS
           SIGUIENTES CONDICIONES:
         </Text>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>Agencia : </Text>
+          <Text style={styles.header__text__bold}>Agencia                  :  </Text>
           <Text style={styles.header__text}>Agenciasadhfsjdfhds</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>NUMERO DOC. : </Text>
+          <Text style={styles.header__text__bold}>NUMERO DOC.      :  </Text>
           <Text style={styles.header__text}>0000000001</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>FECHA : </Text>
+          <Text style={styles.header__text__bold}>FECHA                    :  </Text>
           <Text style={styles.header__text}>18/15/2014</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>Cliente : </Text>
+          <Text style={styles.header__text__bold}>Cliente                    :  </Text>
           <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>N° DOCUMENTO : </Text>
+          <Text style={styles.header__text__bold}>N° DOCUMENTO   :  </Text>
           <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>DOMICILIO : </Text>
+          <Text style={styles.header__text__bold}>DOMICILIO             :  </Text>
           <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
         </View>
         <View style={styles.row__header__container__text}>
-          <Text style={styles.header__text__bold}>VENDEDOR : </Text>
+          <Text style={styles.header__text__bold}>VENDEDOR             :  </Text>
           <Text style={styles.header__text}>NOMBRE USUARIO OPERACIÓN</Text>
         </View>
       </View>
+
+      <View style={styles.body__container}>
+        <View style={styles.body__section}>
+          <View style={styles.table__container}>
+            {/*Begin :: Hedaer Table*/}
+            <View style={styles.table__row__container}>
+              <View style={[styles.table__column__container, {width: '1cm'}]}>
+                <Text style={[styles.table__text__header]}>NRO</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '4cm'}]}>
+                <Text style={styles.table__text__header}>PRODUCTO</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '4cm'}]}>
+                <Text style={styles.table__text__header}>DESCRICPION</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '3.0cm'}]}>
+                <Text style={styles.table__text__header}>UND</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '1cm'}]}>
+                <Text style={styles.table__text__header}>CANT.</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>PRECIO</Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>S/. MONTO T.</Text>
+              </View>
+            </View>
+            {/*End :: Hedaer Table*/}
+            {/*Begin :: Body Table*/}
+            <View style={styles.table__row__container}>
+              <View style={[styles.table__column__container, {width: '1cm'}]}>
+                <Text style={[styles.table__text__header]}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '4cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '4cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '3.0cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '1cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+            </View>
+            {/*End :: Body Table*/}
+            {/*Begin :: Total*/}
+            <View style={styles.table__row__container}>
+              <View style={[{width: '13cm'}]}></View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+              <View style={[styles.table__column__container, {width: '2.5cm'}]}>
+                <Text style={styles.table__text__header}>  </Text>
+              </View>
+            </View>
+            {/*Begin :: Total*/}
+          </View>
+        </View>
+      </View>
+      {/*Begin :: signature container*/}
       <View style={styles.signatures__container}>
         <View style={styles.signature__container}>
           <Text style={styles.signature__text}>VENDEDOR</Text>
@@ -159,6 +255,7 @@ const ProofOfSaleTopNotePdf = () => (
           <Text style={styles.signature__text}>CLIENTE</Text>
         </View>
       </View>
+      {/*End :: signature container*/}
     </Page>
   </Document>
 );

@@ -4,7 +4,7 @@ import { Table,} from 'antd'
 import ResponseModal from '../../components/Modal/ResponseModal'
 import AuctionProductsModal from '../AuctionProductsModal/AuctionProductsModal'
 //Servicios
-import { listAllTiposProducto, listAllUnidadesMedida, getClienteByCodigoCliente, obtenerSaldoPrestamo } from '../../Api/Api'
+import { listAllTiposProducto, listAllUnidadesMedida, getClienteByCodigoCliente, obtenerSaldoPrestamo, getUsuariosCajaActiva, getTipoMovimientoCajaTiendaParaTransacciones } from '../../Api/Api'
 import moment from 'moment'
 import SearchModalCliente from '../Modal/SearchModalCliente'
 import InputComponentView from '../InputComponent/InputComponentView'
@@ -40,7 +40,7 @@ const columns = [
         title: 'Tipo producto',
         dataIndex: 'c_tipoproducto_name',
         width: 200,
-         ellipsis: {
+        ellipsis: {
             showTitle: true,
         },
         render: (field, item) => (
@@ -48,7 +48,19 @@ const columns = [
               {field}
             </div>
         ),
-    },,{
+    },{
+        title: 'Subtipo producto',
+        dataIndex: 'c_subtipoproducto_name',
+        width: 200,
+        ellipsis: {
+            showTitle: true,
+        },
+        render: (field, item) => (
+            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+              {field}
+            </div>
+        ),
+    },{
         title: 'Unidad Medida',
         dataIndex: 'c_unidadmedida_name',
         width: 140,
@@ -204,13 +216,37 @@ const columns = [
               {field}
             </div>
         ),
+    },{
+        title: 'Movimiento flujo tienda',
+        dataIndex: 'tipomovimiento_desc',
+        width: 180,
+         ellipsis: {
+            showTitle: false,
+        },
+        render: (field, item) => (
+            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+              {field}
+            </div>
+        ),
+    },{
+        title: 'Usuario Caja Tienda',
+        dataIndex: 'c_usuariofctienda',
+        width: 180,
+         ellipsis: {
+            showTitle: false,
+        },
+        render: (field, item) => (
+            <div className='w-100' style={{minHeight: "29px"}} onClick={item.handleMostrarDetalleProductoRow}>
+              {field}
+            </div>
+        ),
     }
 ]
 
 const tiposVentas =[{value: "C", option:"Tercero"}, {value: "A", option:"Tienda"}];
 
 const AuctionProductsForm = (props) => {
-    const { productos=[], setProductos, compania, setIsLoading, elementId } = props;
+    const { productos=[], setProductos, compania, setIsLoading, elementId, agencia } = props;
     const [tableDataProducts, setTableDataProducts] = useState([]);
     const [nIndex, setNIndex] = useState(0);
     const [productSelected, setProductSelected] = useState(null);
@@ -226,11 +262,12 @@ const AuctionProductsForm = (props) => {
     //Listas
     const [allTiposProductos, setAllTiposProductos] = useState([]);
     const [allUnidadesMedidas, setAllUnidadesMedidas] = useState([]);
+    const [usuariosCajaTiendaActiva, setUsuariosCajaTiendaActiva] = useState([]);
+    const [tiposMovimientos, setTiposMovimientos] = useState([]);
     const [openModal, setOpenModal] = useState(false);
 
     const getDataTable = () => {
         const listProducts = [...productos].map((item, index) => {
-            console.log("item", item)
             let aux = {...item};
             aux.key = index;
             aux.c_tipoproducto_name = allTiposProductos.find(tipo => tipo.c_tipoproducto === item.c_tipoproducto).c_descripcion;
@@ -246,13 +283,13 @@ const AuctionProductsForm = (props) => {
             aux.handleMostrarDetalleProductoRow = () => handleShowDetalleProducto(index, item);
             aux.c_tipoventa_option = item.c_tipoventa ? tiposVentas.find(t => t.value === item.c_tipoventa).option : "";
             aux.c_tipoventa = item.c_tipoventa ?  item.c_tipoventa : "";
+            aux.tipomovimiento_desc = tiposMovimientos.find(t => t.c_tipomovimientoctd === item.c_tipomovimientoctd)?.c_descricpion || item.c_tipomovimientoctd;
             return aux;
         });
         setTableDataProducts(listProducts);
     }
 
     const handleShowDetalleProducto = (index, producto) => {
-        console.log("Producto", producto);
         setNIndex(index);
         setOpenModal(true);
         setProductSelected(producto);
@@ -337,6 +374,20 @@ const AuctionProductsForm = (props) => {
         }
     }
 
+    const getUsuariosCajaActivaPorAgencia = async () => {
+        const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia: agencia });
+        if (response && response.status === 200) setUsuariosCajaTiendaActiva(response.body.data);
+      }
+
+    const getTiposMovimientos = async () => {
+        const response = await getTipoMovimientoCajaTiendaParaTransacciones({
+            c_clasetipomov: 'S',
+            c_flagtransacciontienda: 'S'
+        });
+        if (response && response.status === 200 && response.body.data)
+          setTiposMovimientos(response.body.data)
+      };
+
     /*REMATE*/
     useEffect(() => {
         if(clienteSeleccionadoRemate) {
@@ -348,9 +399,14 @@ const AuctionProductsForm = (props) => {
         }
     }, [clienteSeleccionadoRemate])
 
+    useEffect(() => {
+      if (compania, agencia) getUsuariosCajaActivaPorAgencia();
+    }, [compania, agencia])
+
     useEffect(async () => {
         await getAllListTiposProductos();
         await getAllListUnidadesMedidas();
+        await getTiposMovimientos();
         await getSaldo();
     }, [])
 
@@ -409,6 +465,8 @@ const AuctionProductsForm = (props) => {
                 setProductSelected={setProductSelected}
                 productSelected={productSelected}
                 saldoCapital={saldoCapital}
+                tiposMovimientos={tiposMovimientos}
+                usuariosCajaTiendaActiva={usuariosCajaTiendaActiva}
             />
             <SearchModalCliente
                 isOpen={openSearchModalRemate}

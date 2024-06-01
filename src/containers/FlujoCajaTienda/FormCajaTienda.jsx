@@ -311,22 +311,17 @@ const FormCajaTienda = () => {
     const nuevosDetallesToSend =
       newDetails.length > 0 ? prepareNewDetailsToSend(newDetails) : [];
     flujoCajaToSend.nuevosDetalles = nuevosDetallesToSend;
-    console.log("nuevosDetallesToSend", nuevosDetallesToSend);
     const actualizarDetallesToSend =
       updateDetails.length > 0 ? prepareUpdateDetailsToSend(updateDetails) : [];
     flujoCajaToSend.actualizarDetalles = actualizarDetallesToSend;
-    console.log("actualizarDetallesToSend", actualizarDetallesToSend);
     const eliminarDetallesToSend =
       eliminarDetalles.length > 0
         ? prepareDeleteDetailsToSend(eliminarDetalles)
         : null;
     flujoCajaToSend.eliminarDetalles = eliminarDetallesToSend;
-    console.log("eliminarDetalles", eliminarDetalles);
     const eliminarMovimientosToSend =
       eliminarMovimientos.length > 0 ? prepareDeleteMovimientosToSend() : null;
     flujoCajaToSend.eliminarMovimientos = eliminarMovimientosToSend;
-    console.log("eliminarMovimientos", eliminarMovimientos);
-    console.log("flujoCajaToSend", flujoCajaToSend);
     const response = await updateFlujoTienda(flujoCajaToSend);
     (response && response.status === 200) ? prepareNotificationSuccess("Se actualizó con éxito el flujo de caja") : prepareNotificationDanger("Error al actualizar", response.message);
   }, 2000);
@@ -334,7 +329,7 @@ const FormCajaTienda = () => {
   const handleActualizarFlujo = () => {
     setDisabledButton(true);
     setIsLoading(true);
-    if (flujoCajaForm.general.c_usuariofctienda === userLogedIn) {
+    if (flujoCajaForm.general.c_usuariofctienda === userLogedIn || usuarioAccesoTotalCajaPermiso) {
       if (validateGeneralData() && detalles && detalles.length > 0) {
         if (validateDetailDateRange()) {
           const isValidoSaldo = validateSaldo();
@@ -361,7 +356,7 @@ const FormCajaTienda = () => {
     } else {
       prepareNotificationDanger(
         "Aviso",
-        "El usuario no tiene permisos para crear una caja para un usuario diferente."
+        "El usuario no tiene permisos para actualizar una caja para un usuario diferente."
       );
     }
     setTimeout(() => {

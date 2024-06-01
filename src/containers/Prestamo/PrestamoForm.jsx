@@ -27,6 +27,7 @@ import { listAllCompanias, listAllTiposDocumento, listAllPaises, listAllDepartam
 import { getProductosByPrestamo } from '../../Api/Comercial/prestamoProducto.service';
 import { addDaysToDate } from '../../utilities/Functions/AddDaysToDate';
 import moment from 'moment'
+import { message } from 'antd'
 
 const estados = [
     { name: 'PENDIENTE', value: 'PE' },
@@ -376,9 +377,40 @@ const PrestamoForm = (props) => {
         let isValid = true;
         productos.forEach(producto => {
             if( !producto.n_cliente || !producto.c_tipoventa || !producto.n_montocap || !producto.n_montoint
-                || !producto.n_montototal || !producto.c_observacionesventa) isValid = false;
+                || !producto.n_montototal || !producto.c_observacionesventa || !producto.c_subtipoproducto) isValid = false;
         })
         return isValid;
+    }
+
+    const validateStoreSaleProducts = () => {
+        const clientData = {};
+        const productsForSaleStore = productos.filter(p => p.c_tipoventa === 'A');
+        productsForSaleStore.forEach(producto => {
+            if ( !producto.c_tipomovimientoctd || !producto.c_usuariofctienda ) {
+                return {
+                    valid: false,
+                    message: 'Los productos con venta a tienda deben tener un tipo de movimiento y un usuario flujo caja tienda asignado'
+                };
+            }
+            const clientKey = producto.n_cliente;
+            if (clientData[clientKey]) {
+                if (
+                    clientData[clientKey].c_usuariofctienda !== producto.c_usuariofctienda ||
+                    clientData[clientKey].c_tipomovimientoctd !== producto.c_tipomovimientoctd
+                  ) {
+                    return {
+                        valid: false,
+                        message: 'Los campos usuario flujo caja tienda y tipo de movimiento deben ser iguales para el mismo cliente'
+                    }
+                  }
+            } else {
+                clientData[clientKey] = {
+                  c_usuariofctienda: producto.c_usuariofctienda,
+                  c_tipomovimientoctd: producto.c_tipomovimientoctd
+                };
+              }
+        })
+        return {valid: true, message: 'OK'};
     }
 
     const validaTipoVenta = () => {
@@ -407,9 +439,36 @@ const PrestamoForm = (props) => {
             productoAux.n_cantidad = Number(item.n_cantidad);
             productoAux.n_precio = Number(item.n_montototal) / Number(item.n_cantidad);
             productoAux.c_nombrescompleto = item.c_nombrescompleto;
+            productoAux.c_subtipoproducto = item.c_subtipoproducto;
+            productoAux.n_porcremate = Number(item.n_porcremate);
+            productoAux.n_porcrematehist = Number(item.n_porcrematehist);
+            if (item.c_tipoventa === 'A') {
+                productoAux.c_tipomovimientoctd = item.c_tipomovimientoctd;
+                productoAux.c_usuariofctienda = item.c_usuariofctienda;
+            }
             return productoAux;
         })
         return aux;
+    }
+
+    const prepareValidationForStoreSale = () => {
+        const result = [];
+        const sumMap = {};
+        const productsForSaleStore = productos.filter(p => p.c_tipoventa === 'A');
+        productsForSaleStore.forEach(item => {
+            const key = `${item.c_compania}-${item.c_usuariofctienda}`;
+            const montototal = parseFloat(item.n_montototal);
+            if (sumMap[key]) {
+            sumMap[key] += montototal;
+            } else {
+            sumMap[key] = montototal;
+            }
+        });
+        for (const key in sumMap) {
+            const [c_compania, c_usuariofctienda] = key.split('-');
+            result.push({ c_compania, c_usuariofctienda, c_agencia: agencia, montototal: Number(sumMap[key].toFixed(2)) });
+        }
+        return result;
     }
 
     const handleRemate = async () => {
@@ -424,20 +483,26 @@ const PrestamoForm = (props) => {
             }
             if(validaSufijo) {
                 if(validateProductos()) {
-                    const data = {
-                        c_compania: c_compania,
-                        c_prestamo: c_prestamo,
-                        c_usuarioRemate: userLogedIn,
-                        d_fechaRemate: fechaRemate.value,
-                        c_observacionesremate: observacionesRemate,
-                        c_moneda: moneda,
-                        productos: prepareProductsToRemate()
+                    const { valid, message } = validateStoreSaleProducts();
+                    if (valid) {
+                        const data = {
+                            c_compania: c_compania,
+                            c_prestamo: c_prestamo,
+                            c_usuarioRemate: userLogedIn,
+                            d_fechaRemate: fechaRemate.value,
+                            c_observacionesremate: observacionesRemate,
+                            c_moneda: moneda,
+                            productos: prepareProductsToRemate(),
+                            productosValidacion: prepareValidationForStoreSale()
+                        }
+                        setIsAlert(false);
+                        const response = await cambiarEstadoRemate(data);
+                        (response && response.status === 200) ?
+                            prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate")
+                            : prepareNotificationDanger("Error al actualizar", response.message);
+                    } else {
+                        prepareNotificationDanger("Error", message);
                     }
-                    setIsAlert(false);
-                    const response = await cambiarEstadoRemate(data);
-                    (response && response.status === 200) ?
-                        prepareNotificationSuccess("Se actualizó con éxito el préstamo a Remate")
-                        : prepareNotificationDanger("Error al actualizar", response.message);
                 } else {
                     prepareNotificationDanger("Error", "Los campos de los productos de remate no estan llenos.");
                 }
@@ -471,14 +536,18 @@ const PrestamoForm = (props) => {
 
     const validaRemate = async () => {
         let message = 'Ocurrio algo';
-        const [c_compania, c_prestamo] = elementId.split('-');
-        const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
-        if(response.status !== 200) {
-            message = response.message ? response.message : message;
-            setOpenEjecutaRemate(true);
-            setAttributesEjecutaRemate({title:"Aviso", message:message});
+        if (fechaRemate.value && observacionesRemate) {
+            const [c_compania, c_prestamo] = elementId.split('-');
+            const response = await validarFechaRemate({c_compania: c_compania, c_prestamo: c_prestamo, d_fechaRemate: fechaRemate.value});
+            if(response.status !== 200) {
+                message = response.message ? response.message : message;
+                setOpenEjecutaRemate(true);
+                setAttributesEjecutaRemate({title:"Aviso", message:message});
+            } else {
+                handleRemate();
+            }
         } else {
-            handleRemate();
+            prepareNotificationDanger("Error campos incompletos", "Favor de llenar los campos del formulario con valores válidos")
         }
         setOpen(false);
     }
@@ -1120,6 +1189,7 @@ const PrestamoForm = (props) => {
                             compania={compania}
                             setIsLoading={setIsLoading}
                             elementId={elementId}
+                            agencia={agencia}
                         />
                     }
                     {/*Fin remate*/}

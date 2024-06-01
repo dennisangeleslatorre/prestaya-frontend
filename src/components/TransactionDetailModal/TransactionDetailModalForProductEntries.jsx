@@ -26,7 +26,7 @@ const TransactionDetailModalForProductEntries = (props) => {
   const [nombreProducto, setNombreProducto] = useState("");
   const [unidadMedida, setUnidadMedida] = useState("");
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  const [esNuevoProducto, setEsNuevoProducto] = useState(false);
+  const [esNuevoProducto, setEsNuevoProducto] = useState(true);
   const [openSearchModalProducto, setOpenSearchModalProducto] = useState(false);
   const [notification, setNotification] = useState({
     title: "Hubo un problema",
@@ -129,7 +129,7 @@ const TransactionDetailModalForProductEntries = (props) => {
     setUnidadMedida("");
     setMontoTotal({ value: "0.0", isValid: null });
     setPrecio({ value: "0.0", isValid: null });
-    setEsNuevoProducto(false);
+    setEsNuevoProducto(true);
     setDescripcionProducto({value:""});
     setSubtipo("");
     setSubtiposProducto([]);
@@ -167,7 +167,6 @@ const TransactionDetailModalForProductEntries = (props) => {
   };
 
   const findProductoByCode = async () => {
-    //setIsLoading(true);
     if (codigoProducto) {
       const response = await getProductoDinamicoConPrecio({
         c_compania: compania,
