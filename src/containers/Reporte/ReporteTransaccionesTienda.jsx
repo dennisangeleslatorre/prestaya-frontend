@@ -17,6 +17,7 @@ import { getProductoDinamico } from '../../Api/Comercial/producto.service'
 import moment from 'moment';
 import { formatPeriodo } from '../../utilities/Functions/FormatPeriodo'
 import UserContext from '../../context/UserContext/UserContext'
+import PagesContext from "../../context/PagesContext/PagesContext";
 //PDF
 import { PDFViewer  } from "@react-pdf/renderer"
 import ReporteTransaccionesPdfComponent from '../../components/ReporteTransaccionesPdfComponent/ReporteTransaccionesPdfComponent'
@@ -91,6 +92,22 @@ const columnsExportExcel = [
         value: row => (row.n_montototal || '')
     },
     {
+        label: 'Usuario operación',
+        value: row => (row.c_usuariooperacion || '')
+    },
+    {
+        label: 'Porcentaje G.',
+        value: row => (row.n_porcremate || '')
+    },
+    {
+        label: 'Precio histórico',
+        value: row => (row.n_preciobasehist || '')
+    },
+    {
+        label: 'Porcentaje histórico',
+        value: row => ( row.n_porcrematehist || '')
+    },
+    {
         label: 'Observaciones Det.',
         value: row => (row.c_observacionesdet || '')
     }
@@ -129,6 +146,13 @@ const ReporteTransaccionesTienda = () => {
     const [openSearchModal, setOpenSearchModal] = useState(false);
     const [openSearchModalProducto, setOpenSearchModalProducto] = useState(false);
     const [isLoading , setIsLoading ] = useState(false);
+    const { getPagesKeysForUser } = useContext(PagesContext);
+    const userPermisssions = getPagesKeysForUser().filter((item) => {
+        return (item === "VER HISTÓRICO");
+    });
+    const usuarioAccesoVerHistorico = userPermisssions.includes(
+        "VER HISTÓRICO"
+      );
 
     const findClienteByCode = async () => {
         setIsLoading(true);
@@ -225,8 +249,19 @@ const ReporteTransaccionesTienda = () => {
         if(response && response.status === 200 && response.body.data) {
             const data = response.body.data;
             const dataHeadPdf = prepareHeadPdf();
-            setDataReportToTable(data)
-            prepareDataToPdf(data, dataHeadPdf);
+            if (!usuarioAccesoVerHistorico) {
+                const newData = data.map(item => {
+                    const newItem = {...item};
+                    newItem.n_porcrematehist = "";
+                    newItem.n_preciobasehist = "";
+                    return newItem;
+                })
+                setDataReportToTable(newData)
+                prepareDataToPdf(newData, dataHeadPdf);
+            } else {
+                setDataReportToTable(data)
+                prepareDataToPdf(data, dataHeadPdf);
+            }
         }
         else {
             setElementPdf(null);
