@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   },
   title__text: {
     fontSize: "0.8cm",
+    textDecoration: "underline"
   },
   row__header__container: {
     marginTop: "0.5cm",
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const ProofOfSaleTopNotePdf = () => (
+const ProofOfSaleTopNotePdf = ({ cabecera, detalles }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.title__container}>
@@ -151,31 +152,33 @@ const ProofOfSaleTopNotePdf = () => (
         </Text>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>Agencia                  :  </Text>
-          <Text style={styles.header__text}>Agenciasadhfsjdfhds</Text>
+          <Text style={styles.header__text}>{cabecera.agencia_desc}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>NUMERO DOC.      :  </Text>
-          <Text style={styles.header__text}>0000000001</Text>
+          <Text style={styles.header__text}>{cabecera.c_numerodocumento}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>FECHA                    :  </Text>
-          <Text style={styles.header__text}>18/15/2014</Text>
+          <Text style={styles.header__text}>{cabecera.d_fechadocumento
+              ? moment(cabecera.d_fechadocumento).format("DD/MM/yyyy")
+              : ""}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>Cliente                    :  </Text>
-          <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
+          <Text style={styles.header__text}>({cabecera.n_cliente}) {cabecera.c_nombrescompleto}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>N° DOCUMENTO   :  </Text>
-          <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
+          <Text style={styles.header__text}>{cabecera.cliente_numerodocumento}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>DOMICILIO             :  </Text>
-          <Text style={styles.header__text}>(id) Jose alberto o coadasj</Text>
+          <Text style={styles.header__text}>{cabecera.cliente_direccion} - {cabecera.cliente_distrito}</Text>
         </View>
         <View style={styles.row__header__container__text}>
           <Text style={styles.header__text__bold}>VENDEDOR             :  </Text>
-          <Text style={styles.header__text}>NOMBRE USUARIO OPERACIÓN</Text>
+          <Text style={styles.header__text}>{cabecera.usuario_operacion_nombres}</Text>
         </View>
       </View>
 
@@ -208,38 +211,42 @@ const ProofOfSaleTopNotePdf = () => (
             </View>
             {/*End :: Hedaer Table*/}
             {/*Begin :: Body Table*/}
-            <View style={styles.table__row__container}>
+            {detalles.map((detalle, index) => (
+              <View style={styles.table__row__container}>
               <View style={[styles.table__column__container, {width: '1cm'}]}>
-                <Text style={[styles.table__text__header]}>  </Text>
+                <Text style={[styles.table__text__header]}> {index + 1} </Text>
               </View>
               <View style={[styles.table__column__container, {width: '4cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}> {detalle.c_item} </Text>
               </View>
               <View style={[styles.table__column__container, {width: '4cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}>{detalle.c_descripcionproducto} </Text>
               </View>
               <View style={[styles.table__column__container, {width: '3.0cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}> {detalle.c_unidadmedida} </Text>
               </View>
               <View style={[styles.table__column__container, {width: '1cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}>{Number(detalle.n_cantidad).toFixed(2)} </Text>
               </View>
               <View style={[styles.table__column__container, {width: '2.5cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}>{separator(Number(detalle.n_precio).toFixed(2))}</Text>
               </View>
               <View style={[styles.table__column__container, {width: '2.5cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}>{separator(Number(detalle.n_montototal).toFixed(2))}</Text>
               </View>
             </View>
+            ))}
             {/*End :: Body Table*/}
             {/*Begin :: Total*/}
             <View style={styles.table__row__container}>
               <View style={[{width: '13cm'}]}></View>
               <View style={[styles.table__column__container, {width: '2.5cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}> S/. TOTAL: </Text>
               </View>
               <View style={[styles.table__column__container, {width: '2.5cm'}]}>
-                <Text style={styles.table__text__header}>  </Text>
+                <Text style={styles.table__text__header}>
+                  {separator(Number(cabecera.n_montototal).toFixed(2))}
+                </Text>
               </View>
             </View>
             {/*Begin :: Total*/}

@@ -9,16 +9,33 @@ import SearchModalProductToTransaction from "../Modal/SearchModalProductToTransa
 import UserContext from "../../context/UserContext/UserContext";
 
 const TransactionDetailModal = (props) => {
-  const { isOpen, onClose, detalles, setDetalles, compania, agencia } = props;
+  const {
+    isOpen,
+    onClose,
+    detalles,
+    setDetalles,
+    compania,
+    agencia,
+    usuarioAccesoIngresarPrecioMenor,
+    usuarioAccesoVerHistorico,
+  } = props;
   //Usuario
   const { getUserData } = useContext(UserContext);
   const userLogedIn = getUserData().c_codigousuario;
   //Producto
   const [cantidad, setCantidad] = useState({ value: 1, isValid: null });
   const [precio, setPrecio] = useState({ value: "0.0", isValid: null });
-  const [precioBaseHistorico, setPrecioBaseHistorico] = useState({ value: "0.0", isValid: null });
-  const [porcentajeRemate, setPorcentajeRemate] = useState({ value: "0.0", isValid: null });
-  const [porcentajeBaseHistoricoRemate, setPorcentajeHistoricoRemate] = useState({ value: "0.0", isValid: null });
+  const [precioSugerido, setPrecioSugerido] = useState(0);
+  const [precioBaseHistorico, setPrecioBaseHistorico] = useState({
+    value: "0.0",
+    isValid: null,
+  });
+  const [porcentajeRemate, setPorcentajeRemate] = useState({
+    value: "0.0",
+    isValid: null,
+  });
+  const [porcentajeBaseHistoricoRemate, setPorcentajeHistoricoRemate] =
+    useState({ value: "0.0", isValid: null });
   const [montoTotal, setMontoTotal] = useState({ value: "0.0", isValid: null });
   const [observaciones, setObservaciones] = useState("");
   const [codigoProducto, setCodigoProducto] = useState("");
@@ -49,26 +66,42 @@ const TransactionDetailModal = (props) => {
     return detalles.find((producto) => producto.c_item === codigoProducto);
   };
 
+  const validateSetLowerPriceThanHistorical = () => {
+    if (!usuarioAccesoIngresarPrecioMenor) {
+      if (Number(precio.value) < Number(precioSugerido)) return false;
+    }
+    return true;
+  };
+
   const handleAdDetalle = () => {
     if (validateForm()) {
       if (!validateRepeatedProduct()) {
-        setDetalles([
-          ...detalles,
-          {
-            c_item: codigoProducto,
-            c_descripcionproducto: nombreProducto,
-            c_unidadmedida: unidadMedida,
-            n_cantidad: Number(cantidad.value).toFixed(2),
-            n_precio: Number(precio.value).toFixed(2),
-            n_montototal: Number(montoTotal.value).toFixed(2),
-            c_observaciones: observaciones,
-            n_preciobasehist: precioBaseHistorico.value,
-            n_porcremate: porcentajeRemate.value,
-            n_porcrematehist: porcentajeBaseHistoricoRemate.value,
-            c_prestamoitem: productoSeleccionado.c_prestamo
-          },
-        ]);
-        handleClose();
+        if (validateSetLowerPriceThanHistorical()) {
+          setDetalles([
+            ...detalles,
+            {
+              c_item: codigoProducto,
+              c_descripcionproducto: nombreProducto,
+              c_unidadmedida: unidadMedida,
+              n_cantidad: Number(cantidad.value).toFixed(2),
+              n_precio: Number(precio.value).toFixed(2),
+              n_montototal: Number(montoTotal.value).toFixed(2),
+              c_observaciones: observaciones,
+              n_preciobasehist: precioBaseHistorico.value,
+              n_porcremate: porcentajeRemate.value,
+              n_porcrematehist: porcentajeBaseHistoricoRemate.value,
+              c_prestamoitem: productoSeleccionado.c_prestamo
+            },
+          ]);
+          handleClose();
+        } else {
+          setNotification({
+            title: "Hubo un problema",
+            type: "alert-danger",
+            message: `El precio no puede ser menor que el precio sugerido ${precioSugerido}`,
+          });
+          setIsAlert(true);
+        }
       } else {
         setNotification({
           title: "Hubo un problema",
@@ -113,7 +146,12 @@ const TransactionDetailModal = (props) => {
         c_item: codigoProducto,
         c_codigousuario: userLogedIn,
       });
-      if (response && response.status === 200 && response.body.data && response.body.data[0]) {
+      if (
+        response &&
+        response.status === 200 &&
+        response.body.data &&
+        response.body.data[0]
+      ) {
         setProductoSeleccionado(response.body.data[0]);
       } else {
         setCodigoProducto("");
@@ -133,18 +171,27 @@ const TransactionDetailModal = (props) => {
 
   const calcularPrecio = () => {
     // Primero se inicializa la variable con el precio original
-    let precioCalculado =  productoSeleccionado.n_precio;
+    let precioCalculado = productoSeleccionado.n_precio;
     if (productoSeleccionado.n_porcvtatienda)
-      precioCalculado = ((100 + Number(productoSeleccionado.n_porcvtatienda)) / 100) * precioCalculado;
-    setPrecio({value: Number(precioCalculado).toFixed(2), isValid: true});
-    setPorcentajeRemate({value: Number(productoSeleccionado.n_porcvtatienda).toFixed(2)});
-  }
+      precioCalculado =
+        ((100 + Number(productoSeleccionado.n_porcvtatienda)) / 100) *
+        precioCalculado;
+    setPrecioSugerido(Number(precioCalculado));
+    setPrecio({ value: Number(precioCalculado).toFixed(2), isValid: true });
+    setPorcentajeRemate({
+      value: Number(productoSeleccionado.n_porcvtatienda).toFixed(2),
+    });
+  };
 
   const handleChangePrice = (newPrice) => {
     setPrecio(newPrice);
-    const nuevoPorcentaje = ((newPrice.value - productoSeleccionado.n_precio) / productoSeleccionado.n_precio) * 100;
-    setPorcentajeRemate({value: Number(nuevoPorcentaje).toFixed(2)});
-  }
+    const nuevoPorcentaje = productoSeleccionado
+      ? ((newPrice.value - productoSeleccionado.n_precio) /
+          productoSeleccionado.n_precio) *
+        100
+      : 0;
+    setPorcentajeRemate({ value: Number(nuevoPorcentaje).toFixed(2) });
+  };
 
   useEffect(() => {
     if (Number(cantidad.value) > 0 && Number(precio.value) > 0) {
@@ -173,8 +220,12 @@ const TransactionDetailModal = (props) => {
       setCodigoProducto(productoSeleccionado.c_item);
       setNombreProducto(productoSeleccionado.c_descripcionproducto);
       setUnidadMedida(productoSeleccionado.c_unidadmedida);
-      setPrecioBaseHistorico({value: Number(productoSeleccionado.n_precio).toFixed(2)});
-      setPorcentajeHistoricoRemate({value: Number(productoSeleccionado.n_porcvtatienda).toFixed(2)});
+      setPrecioBaseHistorico({
+        value: Number(productoSeleccionado.n_precio).toFixed(2),
+      });
+      setPorcentajeHistoricoRemate({
+        value: Number(productoSeleccionado.n_porcvtatienda).toFixed(2),
+      });
       calcularPrecio();
     }
   }, [productoSeleccionado]);
@@ -232,26 +283,30 @@ const TransactionDetailModal = (props) => {
             classForm="col-12 col-lg-6"
             readOnly={true}
           />
-          <InputComponent
-            label="Precio historico"
-            state={precioBaseHistorico}
-            setState={() => {}}
-            type="number"
-            placeholder="Precio"
-            inputId="precioId"
-            classForm="col-12 col-lg-6"
-            readOnly={true}
-          />
-          <InputComponent
-            label="Porc. Histórico"
-            state={porcentajeBaseHistoricoRemate}
-            setState={() => {}}
-            type="number"
-            placeholder="Porcentaje"
-            inputId="precioId"
-            classForm="col-12 col-lg-6"
-            readOnly={true}
-          />
+          {usuarioAccesoVerHistorico && (
+            <>
+              <InputComponent
+                label="Precio historico"
+                state={precioBaseHistorico}
+                setState={() => {}}
+                type="number"
+                placeholder="Precio"
+                inputId="precioId"
+                classForm="col-12 col-lg-6"
+                readOnly={true}
+              />
+              <InputComponent
+                label="Porc. Histórico"
+                state={porcentajeBaseHistoricoRemate}
+                setState={() => {}}
+                type="number"
+                placeholder="Porcentaje"
+                inputId="precioId"
+                classForm="col-12 col-lg-6"
+                readOnly={true}
+              />
+            </>
+          )}
           <InputComponent
             label="Porcentaje Actual"
             state={porcentajeRemate}

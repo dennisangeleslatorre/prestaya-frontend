@@ -185,6 +185,14 @@ const pagesArray = [
                         title: 'CONSTANCIA DE VENTA PARA NS',
                         value: 'CONSTANCIA DE VENTA PARA NS',
                         key: 'CONSTANCIA DE VENTA PARA NS'
+                    },{
+                        title: 'VER HISTÓRICO',
+                        value: 'VER HISTÓRICO',
+                        key: 'VER HISTÓRICO'
+                    },{
+                        title: 'INGRESAR MENOR PRECIO',
+                        value: 'INGRESAR MENOR PRECIO',
+                        key: 'INGRESAR MENOR PRECIO'
                     },
                 ]
             },{

@@ -309,9 +309,24 @@ const TransaccionesTienda = () => {
     }
   };
 
-  const validateSelectionOfTopNote = (url) => {
+  const validateSelectionOfTopNote = (url, requiresConfirmation = 'N') => {
     if (elementSelected.length > 0) {
-      if (elementSelected[0].c_tipodocumento === "NS") history.push(url);
+      if (elementSelected[0].c_tipodocumento === "NS") {
+        if (requiresConfirmation === 'N') {
+          history.push(url);
+        } else {
+          if(elementSelected[0].c_flagconfirmado === 'S') {
+            history.push(url);
+          }
+          else {
+            setResponseData({
+              title: "Aviso",
+              message: "La transacción requiere confirmación.",
+            });
+            setOpenResponseModal(true);
+          }
+        }
+      }
       else {
         setResponseData({
           title: "Aviso",
@@ -336,13 +351,15 @@ const TransaccionesTienda = () => {
 
   const handleClickGoToPrintProofOfdelivery = () => {
     validateSelectionOfTopNote(
-      `/contanciaEntregaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`
+      `/contanciaEntregaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`,
+      elementSelected[0]?.validatransaccionconfirmada
     );
   };
 
   const handleClickGoToPrintProofOfSale = () => {
     validateSelectionOfTopNote(
-      `/constanciaVentaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`
+      `/constanciaVentaNotaSalida/${elementSelected[0]?.c_compania}/${elementSelected[0]?.c_agencia}/${elementSelected[0]?.c_tipodocumento}/${elementSelected[0]?.c_numerodocumento}`,
+      elementSelected[0]?.validatransaccionconfirmada
     );
   };
 
@@ -640,7 +657,7 @@ const TransaccionesTienda = () => {
                 CONFIRMAR TRANSACCONES
               </Button>
             )}
-            {/* {proofOfDeliveryOfTopNote && (
+            {proofOfDeliveryOfTopNote && (
               <Button onClick={handleClickGoToPrintProofOfdelivery}>
                 CONSTANCIA DE ENTREGA (NS)
               </Button>
@@ -649,7 +666,7 @@ const TransaccionesTienda = () => {
               <Button onClick={handleClickGoToPrintProofOfSale}>
                 CONSTANCIA DE VENTA (NS)
               </Button>
-            )} */}
+            )}
           </Space>
         </div>
         <div className="col-12" style={{ overflow: "scroll" }}>

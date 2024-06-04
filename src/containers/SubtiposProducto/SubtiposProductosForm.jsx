@@ -108,8 +108,8 @@ const SubtiposProductosForm = (props) => {
       !tipoProducto ||
       !descripcion.isValid ||
       !subtipoProducto.isValid ||
-      Number(porRemate.value) <= 0 ||
-      Number(porTienda.value) <= 0
+      Number(porRemate.value) < 0 ||
+      Number(porTienda.value) < 0
     )
       return false;
     return true;

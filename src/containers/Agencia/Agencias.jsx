@@ -78,6 +78,7 @@ const Agencias = () => {
         {name:'flagvalidacu', label: 'Flag Valida U.', sortVar:1 },
         {name:'c_sufijoprestamo', label: 'Sufijo Prestamo', sortVar:0 },
         {name:'c_sufijoproducto', label: 'Sufijo Producto', sortVar:0 },
+        {name:'validatransaccionconfirmada', label: 'Flag Valida T. Confirmada', sortVar:0 },
         {name:'c_usuarioregistro', label: 'Usuario registro', sortVar:1, audit:true },
         {name:'d_fecharegistro', label: 'Fecha registro', sortVar:0, audit:true },
         {name:'c_ultimousuario', label: 'Usuario actualización', sortVar:1, audit:true },
@@ -144,6 +145,7 @@ const Agencias = () => {
             aux.flagvalidacu = item.flagvalidacu;
             aux.c_sufijoprestamo = item.c_sufijoprestamo;
             aux.c_sufijoproducto = item.c_sufijoproducto;
+            aux.validatransaccionconfirmada = item.validatransaccionconfirmada;
             const keyCodes = { c_agencia: item.c_agencia, c_compania: item.c_compania }
             aux.actions = (<DropdownButton keyCodes={keyCodes} showDeleteModal={()=>showDeleteModal(keyCodes)}
                 viewPermission={viewPermission} updatePermission={updatePermission} deletePermission={deletePermission} />);

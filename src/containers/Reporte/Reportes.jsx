@@ -47,6 +47,7 @@ const Reportes = () => {
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 4) reporteLink = '/reporteTransaccionesTienda';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 5) reporteLink = '/reportePrestamoDetalladoFechaCancelacion';
                                                 if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 6) reporteLink = '/reporteUbicacionesPrestamos';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 7) reporteLink = '/reporteProductosTienda';
                                                 return (
                                                     <tr key={`CO000001_2_${index}`}>
                                                         <td></td>
@@ -68,7 +69,8 @@ const Reportes = () => {
                                         [...reportes].map((item, index) => {
                                             if(item.c_tiporeporte === "CO000001" && item.n_grupo === 3) {
                                                 let reporteLink = "";
-                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reporteLink = '/reporteFlujoCajaUsuario'
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reporteLink = '/reporteFlujoCajaUsuario';
+                                                if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 2) reporteLink = '/reporteFlujoCajaTienda';
                                                 return (
                                                     <tr key={`CO000001_3_${index}`}>
                                                         <td></td>

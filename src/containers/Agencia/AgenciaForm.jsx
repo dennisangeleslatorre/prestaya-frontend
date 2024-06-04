@@ -21,6 +21,7 @@ const AgenciaForm = (props) => {
     const [estado, setEstado] = useState("A");
     const [companias, setCompanias] = useState([]);
     const [flagCU, setFlagCU] = useState("N");
+    const [flagVTC, setFlagVTC] = useState("S");
     const [sufijoPrestamo, setSufijoPrestamo] = useState({value: ""});
     const [sufijoProducto, setSufijoProducto] = useState({value: ""});
     //Estados del formulario
@@ -76,7 +77,8 @@ const AgenciaForm = (props) => {
             c_agencia: agenciacodigo.value,
             c_descripcion: descripcion.value,
             c_estado: estado,
-            c_flagvalidacju: flagCU
+            c_flagvalidacju: flagCU,
+            validatransaccionconfirmada: flagVTC
         }
         return data;
     }
@@ -125,6 +127,7 @@ const AgenciaForm = (props) => {
             setDescripcion({value:data.c_descripcion, isValid: true});
             setEstado(data.c_estado);
             setFlagCU(data.c_flagvalidacju);
+            setFlagVTC(data.validatransaccionconfirmada);
             setSufijoPrestamo({value:data.c_sufijoprestamo});
             setSufijoProducto({value:data.c_sufijoproducto});
         }else {
@@ -207,6 +210,17 @@ const AgenciaForm = (props) => {
                     optionField="name"
                     valueSelected={flagCU}
                     handleChange={setFlagCU}
+                    disabledElement={readOnlyView}
+                />
+                <SelectComponent
+                    labelText="Flag Valida Transac. Conf."
+                    defaultValue="Seleccione"
+                    items={[{name: "Si", value:"S"}, {name: "No", value:"N"}]}
+                    selectId="estadoId"
+                    valueField="value"
+                    optionField="name"
+                    valueSelected={flagVTC}
+                    handleChange={setFlagVTC}
                     disabledElement={readOnlyView}
                 />
                 <InputComponent

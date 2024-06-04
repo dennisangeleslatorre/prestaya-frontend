@@ -25,11 +25,9 @@ import {
   listUsers,
   listAgencias,
   getTipoMovimientoCajaTiendaParaTransacciones,
-  getUsuariosCajaActiva
+  getUsuariosCajaActiva,
 } from "../../Api/Api";
-import {
-  postTransaccionProductoSalida,
-} from "../../Api/Comercial/transacciones.service";
+import { postTransaccionProductoSalida } from "../../Api/Comercial/transacciones.service";
 import { columnsForm as columns, currencies } from "./configData";
 import ReactSelect from "../../components/ReactSelect/ReactSelect";
 
@@ -39,10 +37,20 @@ const TransaccionSalidaForm = () => {
   const userLogedIn = getUserData()?.c_codigousuario;
   const { getPagesKeysForUser } = useContext(PagesContext);
   const userPermisssions = getPagesKeysForUser().filter((item) => {
-    return item === "USUARIO ACCESO TOTAL TRANSACCIÓN";
+    return (
+      item === "USUARIO ACCESO TOTAL TRANSACCIÓN" ||
+      item === "VER HISTÓRICO" ||
+      item === "INGRESAR MENOR PRECIO"
+    );
   });
   const usuarioAccesoTotalPermiso = userPermisssions.includes(
     "USUARIO ACCESO TOTAL TRANSACCIÓN"
+  );
+  const usuarioAccesoVerHistorico = userPermisssions.includes(
+    "VER HISTÓRICO"
+  );
+  const usuarioAccesoIngresarPrecioMenor = userPermisssions.includes(
+    "INGRESAR MENOR PRECIO"
   );
   //Estados del formulario
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +88,8 @@ const TransaccionSalidaForm = () => {
   const [detalles, setDetalles] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [usuariosCajaAgencia, setUsuariosCajaAgencia] = useState([]);
-  const [usuariosCajaAgenciaRelacionada, setUsuariosCajaAgenciaRelacionada] = useState([]);
+  const [usuariosCajaAgenciaRelacionada, setUsuariosCajaAgenciaRelacionada] =
+    useState([]);
   const [usuarioTransaccion, setUsuarioTransaccion] = useState(userLogedIn);
   const [usuariofcTienda, setUsuariofcTienda] = useState(userLogedIn);
   const [agenciaDestino, setAgenciaDestino] = useState("");
@@ -152,9 +161,13 @@ const TransaccionSalidaForm = () => {
   };
 
   const validateRelatedAgency = () => {
-    if ( (agenciaDestino && !usuarioFCDestino) || (!agenciaDestino && usuarioFCDestino) ) return false;
+    if (
+      (agenciaDestino && !usuarioFCDestino) ||
+      (!agenciaDestino && usuarioFCDestino)
+    )
+      return false;
     return true;
-  }
+  };
 
   const getDetalles = (detalles) => {
     return detalles.map((item) => {
@@ -243,10 +256,14 @@ const TransaccionSalidaForm = () => {
     setIsLoading(true);
     setAgenciaDestino(c_agencia);
     setUsuarioFCDestino("");
-    const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia });
-    if (response && response.status === 200) setUsuariosCajaAgenciaRelacionada(response.body.data);
+    const response = await getUsuariosCajaActiva({
+      c_compania: compania,
+      c_agencia,
+    });
+    if (response && response.status === 200)
+      setUsuariosCajaAgenciaRelacionada(response.body.data);
     setIsLoading(false);
-  }
+  };
 
   const deleteDetalleTransaccion = () => {
     if (elementSelected.length > 0) {
@@ -290,9 +307,13 @@ const TransaccionSalidaForm = () => {
   };
 
   const getUsuariosCajaActivaPorAgencia = async () => {
-    const response = await getUsuariosCajaActiva({ c_compania: compania, c_agencia: agencia });
-    if (response && response.status === 200) setUsuariosCajaAgencia(response.body.data);
-  }
+    const response = await getUsuariosCajaActiva({
+      c_compania: compania,
+      c_agencia: agencia,
+    });
+    if (response && response.status === 200)
+      setUsuariosCajaAgencia(response.body.data);
+  };
 
   const getAgenciasByCompany = async () => {
     const response = await listAgencias({ c_compania: compania });
@@ -304,11 +325,11 @@ const TransaccionSalidaForm = () => {
 
   const getTiposMovimientos = async () => {
     const response = await getTipoMovimientoCajaTiendaParaTransacciones({
-        c_clasetipomov: 'I',
-        c_flagtransacciontienda: 'S'
+      c_clasetipomov: "I",
+      c_flagtransacciontienda: "S",
     });
     if (response && response.status === 200 && response.body.data)
-      setTiposMovimientos(response.body.data)
+      setTiposMovimientos(response.body.data);
   };
 
   const getDataTable = (detalles) => {
@@ -420,7 +441,7 @@ const TransaccionSalidaForm = () => {
             classForm="col-12 col-lg-6"
             disabledElement={!usuarioAccesoTotalPermiso}
           />
-            <ReactSelect
+          <ReactSelect
             inputId="usuarioCajaTiendaId"
             labelText="Usuario Caja"
             placeholder="Seleccione un Usuario"
@@ -604,6 +625,8 @@ const TransaccionSalidaForm = () => {
         setDetalles={setDetalles}
         compania={compania}
         agencia={agencia}
+        usuarioAccesoIngresarPrecioMenor={usuarioAccesoIngresarPrecioMenor}
+        usuarioAccesoVerHistorico={usuarioAccesoVerHistorico}
       />
     </>
   );

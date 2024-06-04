@@ -979,6 +979,18 @@ export const getPrestamosUbicacionProducto = async (body) => {
     const response = await consumer(url, 'post', body);
     return response;
 };
+export const getReporteFlujoTiendaMovimientos = async (body) => {
+    console.log('---API--- : getReporteFlujoTiendaMovimientos');
+    const url = `${port}/reporte/getReporteFlujoTiendaMovimientos`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
+export const getReporteProductoStockTransaccion = async (body) => {
+    console.log('---API--- : getReporteProductoStockTransaccion');
+    const url = `${port}/reporte/getReporteProductoStockTransaccion`;
+    const response = await consumer(url, 'post', body);
+    return response;
+};
 //Flujo Caja
 export const registerFlujoCaja = async (body) => {
     console.log('---API--- : registerFlujoCaja');

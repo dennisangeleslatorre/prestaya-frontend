@@ -76,6 +76,8 @@ const Login = (props) => {
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 5) reportes.push('REPORTE PRESTAMO DETALLADO POR FECHA CANCELACION');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 6) reportes.push('REPORTE UBICACIONES DE PRESTAMOS');
                         if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 1) reportes.push('REPORTE FLUJO DE CAJA USUARIOS');
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 3 && item.n_reporte === 2) reportes.push('REPORTE FLUJO DE CAJA TIENDA');
+                        if(item.c_tiporeporte === 'CO000001' && item.n_grupo === 2 && item.n_reporte === 7) reportes.push('REPORTE PRODUCTOS TIENDA');
                     });
                     if(response2.body.data.length > 0) {
                         reportes.push('REPORTES');

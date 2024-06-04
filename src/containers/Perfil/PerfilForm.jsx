@@ -202,28 +202,18 @@ const PerfilForm = (props) => {
           ],
         },
       ];
-      data
-        .filter(
-          (item) => item.c_tiporeporte === "CO000001" && item.n_grupo === 2
-        )
-        .forEach((report) =>
-          resportListAux[0].children[0].children.push({
-            title: report.c_nombrereporte,
-            value: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
-            key: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
-          })
-        );
-      data
-        .filter(
-          (item) => item.c_tiporeporte === "CO000001" && item.n_grupo === 3
-        )
-        .forEach((report) =>
-          resportListAux[0].children[1].children.push({
-            title: report.c_nombrereporte,
-            value: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
-            key: `${report.c_tiporeporte}-${report.n_grupo}-${report.n_reporte}`,
-          })
-        );
+      data.forEach(item => {
+        const itemToList = {
+          title: item.c_nombrereporte,
+          value: `${item.c_tiporeporte}-${item.n_grupo}-${item.n_reporte}`,
+          key: `${item.c_tiporeporte}-${item.n_grupo}-${item.n_reporte}`,
+        }
+        if ( item.c_tiporeporte === "CO000001" && item.n_grupo === 2 ) {
+          resportListAux[0].children[0].children.push(itemToList);
+        } else if ( item.c_tiporeporte === "CO000001" && item.n_grupo === 3 ) {
+          resportListAux[0].children[1].children.push(itemToList);
+        }
+      })
       setReportsArray(resportListAux);
     }
   };

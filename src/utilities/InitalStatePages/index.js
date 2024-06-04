@@ -94,6 +94,8 @@ import FormCajaTiendaDiaMovimientos from '../../containers/FlujoCajaTienda/FormC
 //UBICACION
 import Ubicaciones from '../../containers/Ubicaciones/Ubicaciones'
 import UbicacionForm from '../../containers/Ubicaciones/UbicacionForm'
+import ReporteFlujoCajaTienda from '../../containers/Reporte/ReporteFlujoCajaTienda'
+import ReporteProductosTienda from '../../containers/Reporte/ReporteProductosTienda'
 
 export default{
     initialPages: [
@@ -679,6 +681,16 @@ export default{
             path: '/reporteUbicacionesPrestamos',
             exact: true,
             name: 'REPORTE UBICACIONES DE PRESTAMOS'
+        },{
+            component: ReporteFlujoCajaTienda,
+            path: '/reporteFlujoCajaTienda',
+            exact: true,
+            name: 'REPORTE FLUJO DE CAJA TIENDA'
+        },{
+            component: ReporteProductosTienda,
+            path: '/reporteProductosTienda',
+            exact: true,
+            name: 'REPORTE PRODUCTOS TIENDA'
         }
     ]
 }

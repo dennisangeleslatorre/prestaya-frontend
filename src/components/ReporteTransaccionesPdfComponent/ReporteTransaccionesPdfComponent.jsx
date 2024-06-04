@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     },
     //header
     table__header__agencia: {
-        width: '1.8cm',
+        width: '1.6cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__periodo: {
-        width: '1.2cm',
+        width: '1.0cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__cliente: {
-        width: '2.0cm',
+        width: '1.80cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__prestamo: {
-        width: '1.90cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__moneda: {
-        width: '1.2cm',
+        width: '1.0cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__observaciones: {
-        width: '2.4cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__producto: {
-        width: '1.9cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__descripcion__producto: {
-        width: '2cm',
+        width: '1.85cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__cantidad: {
-        width: '1.2cm',
+        width: '0.7cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -210,19 +210,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray',
         color: 'white'
     },
-    table__header__observaciones__detalle: {
-        width: '2.4cm',
-        minHeight: '0.7cm',
-        display: 'flex',
-        justifyContent: 'center',
-        borderWidth: '1px',
-        margin: '0px',
-        backgroundColor: 'gray',
-        color: 'white'
-    },
     //body
     table__body__agencia: {
-        width: '1.8cm',
+        width: '1.6cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -254,7 +244,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__periodo: {
-        width: '1.2cm',
+        width: '1.0cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -262,7 +252,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__cliente: {
-        width: '2.0cm',
+        width: '1.80cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -270,7 +260,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__prestamo: {
-        width: '1.90cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -278,7 +268,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__moneda: {
-        width: '1.2cm',
+        width: '1.0cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -286,7 +276,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__observaciones: {
-        width: '2.4cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -302,7 +292,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__producto: {
-        width: '1.9cm',
+        width: '1.65cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -310,7 +300,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__descripcion__producto: {
-        width: '2cm',
+        width: '1.85cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -326,7 +316,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__cantidad: {
-        width: '1.2cm',
+        width: '0.7cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -349,21 +339,13 @@ const styles = StyleSheet.create({
         borderWidth: '1px',
         margin: '0px',
     },
-    table__body__observaciones__detalle: {
-        width: '2.4cm',
-        minHeight: '0.7cm',
-        display: 'flex',
-        justifyContent: 'center',
-        borderWidth: '1px',
-        margin: '0px',
-    },
     //Textos
     table__text__header: {
-        fontSize: '0.3cm',
+        fontSize: '0.25cm',
         textAlign: 'center'
     },
     table__text__body: {
-        fontSize: '0.25cm',
+        fontSize: '0.20cm',
         textAlign: 'center'
     },
 })
@@ -383,7 +365,7 @@ const getHeader = () => (
             <Text style={styles.table__text__header}>Unidad M.</Text>
         </View>
         <View style={styles.table__header__tipo}>
-            <Text style={styles.table__text__header}>Tipo</Text>
+            <Text style={styles.table__text__header}>T</Text>
         </View>
         <View style={styles.table__header__numero_doc}>
             <Text style={styles.table__text__header}>Numero Doc.</Text>
@@ -401,7 +383,7 @@ const getHeader = () => (
             <Text style={styles.table__text__header}># Prestamo</Text>
         </View>
         <View style={styles.table__header__moneda}>
-            <Text style={styles.table__text__header}>Moneda</Text>
+            <Text style={styles.table__text__header}>Mnf.</Text>
         </View>
         <View style={styles.table__header__observaciones}>
             <Text style={styles.table__text__header}>Observaciones Cab.</Text>
@@ -418,7 +400,19 @@ const getHeader = () => (
         <View style={styles.table__header__monto__total}>
             <Text style={styles.table__text__header}>Monto total</Text>
         </View>
-        <View style={styles.table__header__observaciones__detalle}>
+        <View style={styles.table__header__precio}>
+            <Text style={styles.table__text__header}>U. Oper</Text>
+        </View>
+        <View style={styles.table__header__cantidad}>
+            <Text style={styles.table__text__header}>% G.</Text>
+        </View>
+        <View style={styles.table__header__precio}>
+            <Text style={styles.table__text__header}>Precio H.</Text>
+        </View>
+        <View style={styles.table__header__cantidad}>
+            <Text style={styles.table__text__header}>% H.</Text>
+        </View>
+        <View style={styles.table__header__observaciones}>
             <Text style={styles.table__text__header}>Observaciones Det.</Text>
         </View>
     </View>
@@ -483,7 +477,21 @@ const getColumns = (data, key) => {
                         : "0.00" }
                 </Text>
             </View>
-            <View style={styles.table__body__observaciones__detalle}>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>{item.c_usuariooperacion}</Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}>{item.n_porcremate ? Number(item.n_porcremate).toFixed(2) : ""}</Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>
+                    {item.n_preciobasehist ? separator(Number(item.n_preciobasehist).toFixed(2)) : ""}
+                </Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}>{item.n_porcrematehist ? Number(item.n_porcrematehist).toFixed(2) : ""}</Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
                 <Text style={styles.table__text__body}>{item.c_observacionesdet}</Text>
             </View>
         </View>
@@ -545,7 +553,19 @@ const getSumas = (element) => (
                         : "0.00" }
                 </Text>
             </View>
-            <View style={styles.table__body__observaciones__detalle}>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
                 <Text style={styles.table__text__body}></Text>
             </View>
         </View>
@@ -602,7 +622,19 @@ const getSumas = (element) => (
                         : "0.00" }
                 </Text>
             </View>
-            <View style={styles.table__body__observaciones__detalle}>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
                 <Text style={styles.table__text__body}></Text>
             </View>
         </View>
