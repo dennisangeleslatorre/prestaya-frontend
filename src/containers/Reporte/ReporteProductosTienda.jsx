@@ -180,7 +180,7 @@ const columnsTable = [
     title: "F. SALIDA",
     dataIndex: "fechasalida",
     render: (fechasalida) => (
-      <span>{moment(fechasalida).format("DD/MM/yyyy")}</span>
+      <span>{fechasalida ? moment(fechasalida).format("DD/MM/yyyy") : ""}</span>
     ),
     ellipsis: {
       showTitle: false,
