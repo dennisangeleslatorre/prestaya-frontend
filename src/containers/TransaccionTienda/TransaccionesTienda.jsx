@@ -345,7 +345,8 @@ const TransaccionesTienda = () => {
 
   const handleClickGoToPrintTicket = () => {
     validateSelectionOfTopNote(
-      `/ticketVentaTienda/${elementSelected[0]?.c_compania}-${elementSelected[0]?.c_agencia}-${elementSelected[0]?.c_tipodocumento}-${elementSelected[0]?.c_numerodocumento}`
+      `/ticketVentaTienda/${elementSelected[0]?.c_compania}-${elementSelected[0]?.c_agencia}-${elementSelected[0]?.c_tipodocumento}-${elementSelected[0]?.c_numerodocumento}`,
+      elementSelected[0]?.validatransaccionconfirmada
     );
   };
 

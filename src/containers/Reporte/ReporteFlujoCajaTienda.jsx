@@ -16,6 +16,8 @@ import {
 import moment from "moment";
 import UserContext from "../../context/UserContext/UserContext";
 import ReporteFlujoCajaTiendaPdf from "../../components/ReactPDF/ReporteFlujoCajaTiendaPdf";
+import { Radio, Table } from "antd";
+import { separator } from "../../utilities/Functions/FormatNumber";
 
 const columnsExportExcel = [
   {
@@ -68,6 +70,106 @@ const columnsExportExcel = [
   },
 ];
 
+const columnsTable = [
+  {
+    title: "NRO",
+    dataIndex: "n_correlativo",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "FECHA",
+    dataIndex: "fechamov",
+    width: 130,
+    render: (fechamov) => <span>{moment(fechamov).format("DD/MM/yyyy")}</span>,
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "OBSERVACIONES DIA",
+    dataIndex: "observacionesdia",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 400
+  },
+  {
+    title: "ESTADO",
+    dataIndex: "estado",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "SEC.",
+    dataIndex: "sec",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "TIPO MOVIMIENTO",
+    dataIndex: "c_tipomovimientoctd_desc",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 300
+  },
+  {
+    title: "USUARIO MOV.",
+    dataIndex: "c_usuariomovimiento",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 130
+  },
+  {
+    title: "OBSERVACIONES MOV",
+    dataIndex: "observacionesmov",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 500
+  },
+  {
+    title: "MNTO. TOTAL",
+    dataIndex: "montototal",
+    render: (montototal) => (
+      <span>{separator(Number(montototal).toFixed(2))}</span>
+    ),
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 200
+  },
+  {
+    title: "FUENTE",
+    dataIndex: "fuente",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 300
+  },
+  {
+    title: "# DOC TRANSACCION",
+    dataIndex: "doc_transaccion",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 200
+  },
+  {
+    title: "AGENCIA O/D",
+    dataIndex: "agenciadesc",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 300
+  },
+];
+
 const estados = [
   { name: "TODOS", value: "T" },
   { name: "ABIERTO", value: "A" },
@@ -112,6 +214,7 @@ const ReporteFlujoCajaTienda = () => {
   const [tipoMovimiento, setTipoMovimiento] = useState("T");
   const [claseTipoMov, setClaseTipoMov] = useState("T");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPdfGenerated, setIsPdfGenerated] = useState(true);
   //Datos del reporte
   const [elementPdf, setElementPdf] = useState(null);
   const [movimientosFlujoTienda, setMovimientosFlujoTienda] = useState({});
@@ -443,6 +546,20 @@ const ReporteFlujoCajaTienda = () => {
             classForm="col-12 col-md-6"
             marginForm="ml-0"
           />
+          <div className={`form-group col-12 row`}>
+            <label className={`col-12 col-form-label label-input`}>
+              ¿Generar pdf?
+            </label>
+            <div className="col-12">
+              <Radio.Group
+                onChange={(e) => setIsPdfGenerated(e.target.value)}
+                value={isPdfGenerated}
+              >
+                <Radio value={true}>SI</Radio>
+                <Radio value={false}>NO</Radio>
+              </Radio.Group>
+            </div>
+          </div>
         </div>
         <div className="col-12 col-md-12 mt-3 mb-3 text-center">
           <button
@@ -459,25 +576,38 @@ const ReporteFlujoCajaTienda = () => {
           columns={columnsExportExcel}
           content={dataReportToTable}
         />
-        <div className="col-12">
-          {elementPdf ? (
-            <PDFViewer
-              className="col-12"
-              style={{ height: "800px" }}
-              children={
-                <ReporteFlujoCajaTiendaPdf
-                  general={elementPdf}
-                  movimientosFlujoTienda={movimientosFlujoTienda}
-                  totalesFlujoTienda={totalesFlujoTienda}
-                />
-              }
-            />
-          ) : (
-            <div className="text-center">
-              <h2>No se a realizado una búsqueda</h2>
+        {isPdfGenerated ? (
+          <div className="col-12">
+            {elementPdf ? (
+              <PDFViewer
+                className="col-12"
+                style={{ height: "800px" }}
+                children={
+                  <ReporteFlujoCajaTiendaPdf
+                    general={elementPdf}
+                    movimientosFlujoTienda={movimientosFlujoTienda}
+                    totalesFlujoTienda={totalesFlujoTienda}
+                  />
+                }
+              />
+            ) : (
+              <div className="text-center">
+                <h2>No se a realizado una búsqueda</h2>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="row" style={{ overflow: "hidden" }}>
+            <div className="col" style={{ overflow: "scroll" }}>
+              <Table
+                classForm
+                columns={columnsTable}
+                dataSource={dataReportToTable}
+                pagination={{ pageSize: 50 }}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </ReportContainer>
       {isLoading === true && <Loading />}
     </>

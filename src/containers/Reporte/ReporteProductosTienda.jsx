@@ -22,6 +22,8 @@ import InputComponent from "../../components/InputComponent/InputComponent";
 import NumberRangeComponent from "../../components/NumberRangeComponent/NumberRangeComponent";
 import LoadingModal from "../../components/Modal/LoadingModal";
 import SearchModalProducto from "../../components/Modal/SearchModalProducto";
+import { Radio, Table } from "antd";
+import { separator } from "../../utilities/Functions/FormatNumber";
 
 const columnsExportExcel = [
   {
@@ -107,6 +109,174 @@ const columnsExportExcel = [
   },
 ];
 
+const columnsTable = [
+  {
+    title: "AGENCIA",
+    dataIndex: "agencia_desc",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "PRODUCTO ",
+    dataIndex: "c_item",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "DESCRICPION",
+    dataIndex: "c_descripcionproducto",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 400
+  },
+  {
+    title: "UNIDAD",
+    dataIndex: "c_unidadmedida",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "STOCK",
+    dataIndex: "stock",
+    render: (stock) => <span>{Number(stock).toFixed(2)}</span>,
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "UNICACIÓN",
+    dataIndex: "ubicacion_desc",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 200
+  },
+  {
+    title: "F. INGRESO",
+    dataIndex: "fechaingresa",
+    render: (fechaingresa) => (
+      <span>{moment(fechaingresa).format("DD/MM/yyyy")}</span>
+    ),
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 150
+  },
+  {
+    title: "C. ING",
+    dataIndex: "cantidad_ingreso",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "F. SALIDA",
+    dataIndex: "fechasalida",
+    render: (fechasalida) => (
+      <span>{moment(fechasalida).format("DD/MM/yyyy")}</span>
+    ),
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 150
+  },
+  {
+    title: "C. SALIDA",
+    dataIndex: "cantidad_salida",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "ANTIGUEDAD (DÍAS)",
+    dataIndex: "tiempo_transcurrido_dias",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "PRECIO PROM. S/.",
+    dataIndex: "precio",
+    render: (precio) => <span>{Number(precio).toFixed(2)}</span>,
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "TIPO PRODUCTO",
+    dataIndex: "descripciontipo",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "SUBTIPO PRODUCTO",
+    dataIndex: "descripcionsubtipo",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "PESO BRUTO",
+    dataIndex: "n_pesobruto",
+    render: (value) => <span>{Number(value).toFixed(2)}</span>,
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 140
+  },
+  {
+    title: "PESO NETO",
+    dataIndex: "n_pesoneto",
+    render: (value) => <span>{Number(value).toFixed(2)}</span>,
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "# PRESTAMO",
+    dataIndex: "c_prestamo",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "ITEM ORIGEN",
+    dataIndex: "c_itemorigen",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 180
+  },
+  {
+    title: "ESTADO",
+    dataIndex: "c_estado",
+    ellipsis: {
+      showTitle: false,
+    },
+  },
+  {
+    title: "OBSERVACIONES",
+    dataIndex: "producto_observaciones",
+    ellipsis: {
+      showTitle: false,
+    },
+    width: 400
+  },
+];
+
 const opciones = [
   { name: "TODAS", value: "T" },
   { name: "SI", value: "S" },
@@ -150,6 +320,7 @@ const ReporteProductosTienda = () => {
     isValid: false,
   });
   const [tieneUbicacion, setTieneUbicacion] = useState("T");
+  const [isPdfGenerated, setIsPdfGenerated] = useState(true);
   // Listas
   const [companias, setCompanias] = useState([]);
   const [agencias, setAgencias] = useState([]);
@@ -170,7 +341,7 @@ const ReporteProductosTienda = () => {
     tieneStock: "",
     agencia: "",
     ubicacion: "",
-    estado: ""
+    estado: "",
   });
 
   const prepareBodyToSearch = () => {
@@ -187,7 +358,7 @@ const ReporteProductosTienda = () => {
       body.c_tipoproducto = tipoProducto;
     if (codigoProducto) body.c_producto = codigoProducto;
     if (estado && estado !== "T") body.c_estado = estado;
-    filters.estado = estados.find(e => e.value === estado).name;
+    filters.estado = estados.find((e) => e.value === estado).name;
     if (subtipo && subtipo !== "T") body.subtipoproducto = subtipo;
     if (ubicacion && ubicacion !== "T") {
       body.c_ubicacion = ubicacion;
@@ -246,7 +417,7 @@ const ReporteProductosTienda = () => {
   };
 
   const getLineasReportes = (datos) => {
-    return {lineasReporte: datos};
+    return { lineasReporte: datos };
   };
 
   const onHandleClickSearch = async () => {
@@ -514,6 +685,20 @@ const ReporteProductosTienda = () => {
             classForm="col-12 col-lg-6"
             marginForm="ml-0"
           />
+          <div className={`form-group col-12 row`}>
+            <label className={`col-12 col-form-label label-input`}>
+              ¿Generar pdf?
+            </label>
+            <div className="col-12">
+              <Radio.Group
+                onChange={(e) => setIsPdfGenerated(e.target.value)}
+                value={isPdfGenerated}
+              >
+                <Radio value={true}>SI</Radio>
+                <Radio value={false}>NO</Radio>
+              </Radio.Group>
+            </div>
+          </div>
         </div>
         <div className="col-12 col-md-12 mt-3 mb-3 text-center">
           <button
@@ -530,24 +715,37 @@ const ReporteProductosTienda = () => {
           columns={columnsExportExcel}
           content={dataReportToTable}
         />
-        <div className="col-12">
-          {elementPdf ? (
-            <PDFViewer
-              className="col-12"
-              style={{ height: "800px" }}
-              children={
-                <ReporteProductosTiendaPdf
-                  element={elementPdf}
-                  general={general}
-                />
-              }
-            />
-          ) : (
-            <div className="text-center">
-              <h2>No se a realizado una búsqueda</h2>
+        {isPdfGenerated ? (
+          <div className="col-12">
+            {elementPdf ? (
+              <PDFViewer
+                className="col-12"
+                style={{ height: "800px" }}
+                children={
+                  <ReporteProductosTiendaPdf
+                    element={elementPdf}
+                    general={general}
+                  />
+                }
+              />
+            ) : (
+              <div className="text-center">
+                <h2>No se a realizado una búsqueda</h2>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="row" style={{ overflow: "hidden" }}>
+            <div className="col" style={{ overflow: "scroll" }}>
+              <Table
+                classForm
+                columns={columnsTable}
+                dataSource={dataReportToTable || []}
+                pagination={{ pageSize: 50 }}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </ReportContainer>
       {isLoading === true && <LoadingModal />}
       <SearchModalProducto

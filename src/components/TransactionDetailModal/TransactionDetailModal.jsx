@@ -90,7 +90,7 @@ const TransactionDetailModal = (props) => {
               n_preciobasehist: precioBaseHistorico.value,
               n_porcremate: porcentajeRemate.value,
               n_porcrematehist: porcentajeBaseHistoricoRemate.value,
-              c_prestamoitem: productoSeleccionado.c_prestamo
+              c_prestamoitem: productoSeleccionado.c_prestamo,
             },
           ]);
           handleClose();
@@ -305,18 +305,18 @@ const TransactionDetailModal = (props) => {
                 classForm="col-12 col-lg-6"
                 readOnly={true}
               />
+              <InputComponent
+                label="Porcentaje Actual"
+                state={porcentajeRemate}
+                setState={() => {}}
+                type="number"
+                placeholder="Precio"
+                inputId="precioId"
+                classForm="col-12 col-lg-6"
+                readOnly={true}
+              />
             </>
           )}
-          <InputComponent
-            label="Porcentaje Actual"
-            state={porcentajeRemate}
-            setState={() => {}}
-            type="number"
-            placeholder="Precio"
-            inputId="precioId"
-            classForm="col-12 col-lg-6"
-            readOnly={true}
-          />
           <TextareaComponent
             inputId="observacionesDetalleId"
             label="Observaciones"
