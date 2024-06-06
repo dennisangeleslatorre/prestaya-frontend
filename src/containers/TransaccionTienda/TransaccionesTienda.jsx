@@ -257,7 +257,7 @@ const TransaccionesTienda = () => {
     if (codigoProducto) {
       const response = await getProductoDinamico({
         c_compania: compania,
-        c_agencia: agencia,
+        c_agencia: agencia !== "T" ? agencia : null,
         c_item: codigoProducto,
         c_codigousuario: userLogedIn,
       });
@@ -671,7 +671,7 @@ const TransaccionesTienda = () => {
           </Space>
         </div>
         <div className="col-12" style={{ overflow: "scroll" }}>
-          <Table
+          {!isLoading && <Table
             classForm
             rowSelection={{
               type: "radio",
@@ -681,7 +681,7 @@ const TransaccionesTienda = () => {
             columns={listColumns}
             dataSource={dataTableTransacciones}
             pagination={{ pageSize: 50 }}
-          />
+          />}
         </div>
       </ReportContainer>
       {isLoading === true && <LoadingModal />}
@@ -711,6 +711,7 @@ const TransaccionesTienda = () => {
         setProductoObtained={setProductoSeleccionado}
         compania={compania}
         agencia={agencia}
+        userLogedIn={userLogedIn}
       />
     </>
   );

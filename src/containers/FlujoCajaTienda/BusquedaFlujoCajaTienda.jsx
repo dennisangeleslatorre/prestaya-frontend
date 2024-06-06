@@ -446,7 +446,7 @@ const BusquedaFlujoCajaTienda = () => {
                 </div>
                 <div className="row">
                   <div className="col" style={{ overflow: "scroll" }}>
-                    <Table
+                   {!isLoading && <Table
                       classForm
                       rowSelection={{
                         type: "radio",
@@ -456,7 +456,7 @@ const BusquedaFlujoCajaTienda = () => {
                       columns={columns}
                       dataSource={flujosCajaTiendaTabla}
                       pagination={{ pageSize: 50 }}
-                    />
+                    />}
                   </div>
                 </div>
               </div>

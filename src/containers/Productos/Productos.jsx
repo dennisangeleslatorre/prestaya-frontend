@@ -328,7 +328,7 @@ const Productos = () => {
                 </div>
                 <div className="row">
                   <div className="col" style={{ overflow: "scroll" }}>
-                    <Table
+                    {!isLoading && <Table
                       classForm
                       rowSelection={{
                         type: "radio",
@@ -338,7 +338,7 @@ const Productos = () => {
                       columns={columns}
                       dataSource={dataTableProductos}
                       pagination={{ pageSize: 50 }}
-                    />
+                    />}
                   </div>
                 </div>
               </div>
