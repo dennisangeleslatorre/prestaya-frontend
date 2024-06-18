@@ -365,6 +365,8 @@ const TransaccionesTienda = () => {
   };
 
   const handleAnular = async () => {
+    await setIsLoading(true);
+    setOpen(false);
     if (elementSelected.length > 0) {
       const response = await postAnularTransaccion({
         c_compania: elementSelected[0].c_compania,
@@ -396,7 +398,7 @@ const TransaccionesTienda = () => {
         message: "Favor de seleccionar un item de la tabla",
       });
     }
-    setOpen(false);
+    setIsLoading(false);
     setOpenResponseModal(true);
   };
 
