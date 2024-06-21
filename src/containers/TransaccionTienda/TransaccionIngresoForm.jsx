@@ -429,7 +429,7 @@ const TransaccionIngresoForm = () => {
             optionField="c_nombres"
             valueField="c_codigousuario"
             classForm="col-12 col-lg-6"
-            disabledElement={!usuarioAccesoTotalPermiso}
+            disabledElement={false}
           />
           <SelectComponent
             labelText="Estado"

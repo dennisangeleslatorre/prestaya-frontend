@@ -91,7 +91,7 @@ const TransaccionSalidaForm = () => {
   const [usuariosCajaAgenciaRelacionada, setUsuariosCajaAgenciaRelacionada] =
     useState([]);
   const [usuarioTransaccion, setUsuarioTransaccion] = useState(userLogedIn);
-  const [usuariofcTienda, setUsuariofcTienda] = useState(userLogedIn);
+  const [usuariofcTienda, setUsuariofcTienda] = useState("");
   const [agenciaDestino, setAgenciaDestino] = useState("");
   const [usuarioFCDestino, setUsuarioFCDestino] = useState("");
   const [agencias, setAgencias] = useState([]);
@@ -451,7 +451,7 @@ const TransaccionSalidaForm = () => {
             optionField="c_nombres"
             valueField="c_codigousuario"
             classForm="col-12 col-lg-6"
-            disabledElement={!usuarioAccesoTotalPermiso}
+            disabledElement={false}
           />
           <SelectComponent
             labelText="Estado"

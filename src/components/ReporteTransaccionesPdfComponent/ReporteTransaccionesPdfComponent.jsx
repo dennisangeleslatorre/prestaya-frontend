@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     table__header__observaciones: {
-        width: '1.65cm',
+        width: '1.25cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
         margin: '0px',
     },
     table__body__observaciones: {
-        width: '1.65cm',
+        width: '1.25cm',
         minHeight: '0.7cm',
         display: 'flex',
         justifyContent: 'center',
@@ -409,6 +409,9 @@ const getHeader = () => (
         <View style={styles.table__header__precio}>
             <Text style={styles.table__text__header}>Precio H.</Text>
         </View>
+        <View style={[styles.table__header__cantidad, {width: '0.8cm'}]}>
+            <Text style={styles.table__text__header}>M. Margen</Text>
+        </View>
         <View style={styles.table__header__cantidad}>
             <Text style={styles.table__text__header}>% H.</Text>
         </View>
@@ -488,6 +491,11 @@ const getColumns = (data, key) => {
                     {item.n_preciobasehist ? separator(Number(item.n_preciobasehist).toFixed(2)) : ""}
                 </Text>
             </View>
+            <View style={[styles.table__body__precio, {width: '0.8cm'}]}>
+                <Text style={styles.table__text__body}>
+                    {item.n_montomargen ? separator(Number(item.n_montomargen).toFixed(2)) : ""}
+                </Text>
+            </View>
             <View style={styles.table__body__cantidad}>
                 <Text style={styles.table__text__body}>{item.n_porcrematehist ? Number(item.n_porcrematehist).toFixed(2) : ""}</Text>
             </View>
@@ -560,7 +568,14 @@ const getSumas = (element) => (
                 <Text style={styles.table__text__body}></Text>
             </View>
             <View style={styles.table__body__precio}>
-                <Text style={styles.table__text__body}></Text>
+                <Text style={styles.table__text__body}>Mnt. Margen Local</Text>
+            </View>
+            <View style={[styles.table__body__precio, {width: '0.8cm'}]}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaMargenLocal) < 0 && {color: "red"}]}>
+                    { element.sumaMargenLocal ?
+                        Number(element.sumaMargenLocal) < 0 ? `(${separator(Number(Number(element.sumaMargenLocal) * -1).toFixed(2))})` : separator(element.sumaMargenLocal)
+                        : "0.00" }
+                </Text>
             </View>
             <View style={styles.table__body__cantidad}>
                 <Text style={styles.table__text__body}></Text>
@@ -629,7 +644,171 @@ const getSumas = (element) => (
                 <Text style={styles.table__text__body}></Text>
             </View>
             <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>Mnt. Margen Ext.</Text>
+            </View>
+            <View style={[styles.table__body__precio, {width: '0.8cm'}]}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaMargenExterior) < 0 && {color: "red"}]}>
+                    { element.sumaMargenExterior ?
+                        Number(element.sumaMargenExterior) < 0 ? `(${separator(Number(Number(element.sumaMargenExterior) * -1).toFixed(2))})` : separator(element.sumaMargenExterior)
+                        : "0.00" }
+                </Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
                 <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+        </View>
+    </>
+)
+
+const getSumasTotal = (element) => (
+    <>
+        <View key={element.key+'L'+'total_general'} style={[styles.table__row__container, {marginTop: '0.5cm'}]}>
+            <View style={styles.table__body__agencia}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__producto}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__descripcion__producto}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__unidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__tipo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__numero_doc}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__fecha}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__periodo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cliente}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__prestamo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__moneda}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__linea}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>Total General Local:</Text>
+            </View>
+            <View style={styles.table__body__monto__total}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaLocal) < 0 && {color: "red"}]}>
+                    { element.sumaLocal ?
+                        Number(element.sumaLocal) < 0 ? `(${separator(Number(Number(element.sumaLocal) * -1).toFixed(2))})` : separator(element.sumaLocal)
+                        : "0.00" }
+                </Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>Total M. Margen L.</Text>
+            </View>
+            <View style={[styles.table__body__precio, {width: '0.8cm'}]}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaMargenLocal) < 0 && {color: "red"}]}>
+                    { element.sumaMargenLocal ?
+                        Number(element.sumaMargenLocal) < 0 ? `(${separator(Number(Number(element.sumaMargenLocal) * -1).toFixed(2))})` : separator(element.sumaMargenLocal)
+                        : "0.00" }
+                </Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+        </View>
+        <View key={element.key+'S'+'total_general'} style={styles.table__row__container}>
+            <View style={styles.table__body__agencia}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__producto}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__descripcion__producto}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__unidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__tipo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__numero_doc}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__fecha}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__periodo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cliente}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__prestamo}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__moneda}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__observaciones}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__linea}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>Total General Exterior:</Text>
+            </View>
+            <View style={styles.table__body__monto__total}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaExterior) < 0 && {color: "red"}]}>
+                    { element.sumaExterior ?
+                        Number(element.sumaExterior) < 0 ? `(${separator(Number(Number(element.sumaExterior) * -1).toFixed(2))})` : separator(element.sumaExterior)
+                        : "0.00" }
+                </Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__cantidad}>
+                <Text style={styles.table__text__body}></Text>
+            </View>
+            <View style={styles.table__body__precio}>
+                <Text style={styles.table__text__body}>Total M. Margen Ext.</Text>
+            </View>
+            <View style={[styles.table__body__precio, {width: '0.8cm'}]}>
+                <Text style={[styles.table__text__body, {textAlign: 'right'}, Number(element.sumaMargenExterior) < 0 && {color: "red"}]}>
+                    { element.sumaMargenExterior ?
+                        Number(element.sumaMargenExterior) < 0 ? `(${separator(Number(Number(element.sumaMargenExterior) * -1).toFixed(2))})` : separator(element.sumaMargenExterior)
+                        : "0.00" }
+                </Text>
             </View>
             <View style={styles.table__body__cantidad}>
                 <Text style={styles.table__text__body}></Text>
@@ -659,7 +838,7 @@ const getTable = (elements) => {
     })
 }
 
-const ReporteTransaccionesPdfComponent = ({data, dataHeadPdf}) => (
+const ReporteTransaccionesPdfComponent = ({data, dataHeadPdf, total}) => (
     <Document>
         <Page size="A4" orientation='landscape' style={styles.page}>
             <View fixed style={styles.header__container}>
@@ -683,6 +862,7 @@ const ReporteTransaccionesPdfComponent = ({data, dataHeadPdf}) => (
             </View>
             <View style={styles.body__container}>
                 {getTable(data)}
+                {getSumasTotal(total)}
             </View>
         </Page>
     </Document>

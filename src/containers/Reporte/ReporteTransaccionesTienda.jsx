@@ -17,13 +17,14 @@ import {
   listAgenciesByUserAndCompany,
   getClienteByCodigoCliente,
   getReporteTransaccion,
+  listUsers,
 } from "../../Api/Api";
 import { getProductoDinamico } from "../../Api/Comercial/producto.service";
 import moment from "moment";
 import { formatPeriodo } from "../../utilities/Functions/FormatPeriodo";
 import UserContext from "../../context/UserContext/UserContext";
 import PagesContext from "../../context/PagesContext/PagesContext";
-import { Radio, Table } from 'antd';
+import { Radio, Table } from "antd";
 //PDF
 import { PDFViewer } from "@react-pdf/renderer";
 import ReporteTransaccionesPdfComponent from "../../components/ReporteTransaccionesPdfComponent/ReporteTransaccionesPdfComponent";
@@ -115,6 +116,10 @@ const columnsExportExcel = [
     value: (row) => row.n_preciobasehist || "",
   },
   {
+    label: "Monto Margen",
+    value: (row) => row.n_montomargen || "",
+  },
+  {
     label: "Porcentaje histórico",
     value: (row) => row.n_porcrematehist || "",
   },
@@ -145,7 +150,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_numerodocumento",
-    width: 160
+    width: 160,
   },
   {
     title: "Fecha Doc",
@@ -156,7 +161,7 @@ const columnsTable = [
     render: (d_fechadocumento) => (
       <span>{moment(d_fechadocumento).format("DD/MM/yyyy")}</span>
     ),
-    width: 160
+    width: 160,
   },
   {
     title: "Periodo",
@@ -186,7 +191,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_obsv_cabecera",
-    width: 300
+    width: 300,
   },
   {
     title: "Linea",
@@ -201,7 +206,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_descripcionproducto",
-    width: 300
+    width: 300,
   },
   {
     title: "Descripcion Producto",
@@ -216,7 +221,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_unidadmedida",
-    width: 200
+    width: 200,
   },
   {
     title: "Cantidad",
@@ -231,7 +236,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "n_precio",
-    width: 300
+    width: 300,
   },
   {
     title: "Monto total",
@@ -239,7 +244,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "n_montototal",
-    width: 300
+    width: 300,
   },
   {
     title: "Usuario operación",
@@ -247,7 +252,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_usuariooperacion",
-    width: 300
+    width: 300,
   },
   {
     title: "Porcentaje G.",
@@ -255,7 +260,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "n_porcremate",
-    width: 200
+    width: 200,
   },
   {
     title: "Precio histórico",
@@ -263,7 +268,15 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "n_preciobasehist",
-    width: 200
+    width: 200,
+  },
+  {
+    title: "Monto Margen",
+    ellipsis: {
+      showTitle: false,
+    },
+    dataIndex: "n_montomargen",
+    width: 200,
   },
   {
     title: "Porcentaje histórico",
@@ -271,7 +284,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "n_porcrematehist",
-    width: 200
+    width: 200,
   },
   {
     title: "Observaciones Det.",
@@ -279,7 +292,7 @@ const columnsTable = [
       showTitle: false,
     },
     dataIndex: "c_observacionesdet",
-    width: 300
+    width: 300,
   },
 ];
 
@@ -312,6 +325,8 @@ const ReporteTransaccionesTienda = () => {
   const [estado, setEstado] = useState("RE");
   const [nPrestamo, setNPrestamo] = useState({ value: "" });
   const [isPdfGenerated, setIsPdfGenerated] = useState(true);
+  const [usuarioOperacion, setUsuarioOperacion] = useState("T");
+  const [usuarios, setUsuarios] = useState([]);
   //Listas obtenidas
   const [dataReportToTable, setDataReportToTable] = useState([]);
   const [elementPdf, setElementPdf] = useState(null);
@@ -381,6 +396,7 @@ const ReporteTransaccionesTienda = () => {
     if (codigoProducto) body.c_item = codigoProducto;
     if (estado && estado !== "TO") body.c_estado = estado;
     if (nPrestamo.value) body.c_prestamo = nPrestamo.value;
+    if(usuarioOperacion && usuarioOperacion !== "T") body.c_usuariooperacion = usuarioOperacion;
     body.c_codigousuario = userLogedIn;
     return body;
   };
@@ -401,6 +417,12 @@ const ReporteTransaccionesTienda = () => {
   };
 
   const prepareDataToPdf = (data = [], dataHeadPdf) => {
+    let total = {
+      sumaExterior: 0,
+      sumaLocal: 0,
+      sumaMargenLocal: 0,
+      sumaMargenExterior: 0,
+    };
     const arregloAgrupado = data.reduce((acumulador, elemento) => {
       const grupo = `${elemento.c_compania}-${elemento.c_agencia}-${elemento.c_item}`;
       if (!acumulador[grupo]) {
@@ -410,6 +432,8 @@ const ReporteTransaccionesTienda = () => {
         acumulador[grupo].sumaLocal = 0;
         acumulador[grupo].sumaExterior = 0;
         acumulador[grupo].cantidad = 0;
+        acumulador[grupo].sumaMargenLocal = 0;
+        acumulador[grupo].sumaMargenExterior = 0;
       }
       acumulador[grupo].data.push(elemento);
       if (elemento.c_moneda === "L") {
@@ -420,6 +444,11 @@ const ReporteTransaccionesTienda = () => {
           acumulador[grupo].cantidad = Number(
             Number(acumulador[grupo].cantidad) + Number(elemento.n_cantidad)
           ).toFixed(0);
+          acumulador[grupo].sumaMargenLocal = Number(
+            Number(acumulador[grupo].sumaMargenLocal) + Number(elemento.n_montomargen)
+          ).toFixed(2);
+          total.sumaLocal = Number(Number(total.sumaLocal) + Number(elemento.n_montototal)).toFixed(2);
+          total.sumaMargenLocal = Number(Number(total.sumaMargenLocal) + Number(elemento.n_montomargen)).toFixed(2);
         } else if (elemento.c_tipodocumento === "NS") {
           acumulador[grupo].sumaLocal = Number(
             Number(acumulador[grupo].sumaLocal) - Number(elemento.n_montototal)
@@ -427,6 +456,11 @@ const ReporteTransaccionesTienda = () => {
           acumulador[grupo].cantidad = Number(
             Number(acumulador[grupo].cantidad) - Number(elemento.n_cantidad)
           ).toFixed(0);
+          acumulador[grupo].sumaMargenLocal = Number(
+            Number(acumulador[grupo].sumaMargenLocal) - Number(elemento.n_montomargen)
+          ).toFixed(2);
+          total.sumaLocal = Number(Number(total.sumaLocal) - Number(elemento.n_montototal)).toFixed(2);
+          total.sumaMargenLocal = Number(Number(total.sumaMargenLocal) - Number(elemento.n_montomargen)).toFixed(2);
         }
       } else {
         if (elemento.c_tipodocumento === "NI") {
@@ -437,6 +471,11 @@ const ReporteTransaccionesTienda = () => {
           acumulador[grupo].cantidad = Number(
             Number(acumulador[grupo].cantidad) + Number(elemento.n_cantidad)
           ).toFixed(0);
+          acumulador[grupo].sumaMargenExterior = Number(
+            Number(acumulador[grupo].sumaMargenExterior) + Number(elemento.n_montomargen)
+          ).toFixed(2);
+          total.sumaExterior = Number(Number(total.sumaExterior) + Number(elemento.n_montototal)).toFixed(2);
+          total.sumaMargenExterior = Number(Number(total.sumaMargenExterior) + Number(elemento.n_montomargen)).toFixed(2);
         } else if (elemento.c_tipodocumento === "NS") {
           acumulador[grupo].sumaExterior = Number(
             Number(acumulador[grupo].sumaExterior) -
@@ -445,11 +484,16 @@ const ReporteTransaccionesTienda = () => {
           acumulador[grupo].cantidad = Number(
             Number(acumulador[grupo].cantidad) - Number(elemento.n_cantidad)
           ).toFixed(0);
+          acumulador[grupo].sumaMargenExterior = Number(
+            Number(acumulador[grupo].sumaMargenExterior) - Number(elemento.n_montomargen)
+          ).toFixed(2);
+          total.sumaExterior = Number(Number(total.sumaExterior) - Number(elemento.n_montototal)).toFixed(2);
+          total.sumaMargenExterior = Number(Number(total.sumaMargenExterior) - Number(elemento.n_montomargen)).toFixed(2);
         }
       }
       return acumulador;
     }, {});
-    setElementPdf({ data: arregloAgrupado, dataHeadPdf: dataHeadPdf });
+    setElementPdf({ data: arregloAgrupado, dataHeadPdf: dataHeadPdf, total: total});
   };
 
   const onHandleSearch = async () => {
@@ -463,14 +507,22 @@ const ReporteTransaccionesTienda = () => {
           const newItem = { ...item };
           newItem.n_porcrematehist = "";
           newItem.n_preciobasehist = "";
+          newItem.n_montomargen = "";
           newItem.n_porcremate = "";
           return newItem;
         });
         setDataReportToTable(newData);
         prepareDataToPdf(newData, dataHeadPdf);
       } else {
-        setDataReportToTable(data);
-        prepareDataToPdf(data, dataHeadPdf);
+        const newData = data.map((item) => {
+          const newItem = { ...item };
+          newItem.n_montomargen =
+            (Number(item.n_precio || 0) - Number(item.n_preciobasehist || 0)) *
+            Number(item.n_cantidad);
+          return newItem;
+        });
+        setDataReportToTable(newData);
+        prepareDataToPdf(newData, dataHeadPdf);
       }
     } else {
       setElementPdf(null);
@@ -537,6 +589,14 @@ const ReporteTransaccionesTienda = () => {
         ...response.body.data,
       ]);
   };
+  const getUsuarios = async () => {
+    const response = await listUsers();
+    if (response && response.status === 200)
+      setUsuarios([
+        { c_codigousuario: "T", c_nombres: "TODOS" },
+        ...response.body.data,
+      ]);
+  };
 
   useEffect(() => {
     if (productoSeleccionado) {
@@ -562,6 +622,7 @@ const ReporteTransaccionesTienda = () => {
   useEffect(async () => {
     await setIsLoading(true);
     await getCompanias();
+    await getUsuarios();
     getPeriodoDefualt();
     setIsLoading(false);
   }, []);
@@ -689,6 +750,18 @@ const ReporteTransaccionesTienda = () => {
             classForm="col-12 col-md-6"
             marginForm="ml-0"
           />
+          <ReactSelect
+            inputId="usuarioCodeId"
+            labelText="Usuario"
+            placeholder="Seleccione un Usuario"
+            valueSelected={usuarioOperacion}
+            data={usuarios}
+            handleElementSelected={setUsuarioOperacion}
+            optionField="c_nombres"
+            valueField="c_codigousuario"
+            classForm="col-12 col-md-6"
+            marginForm="ml-0"
+          />
           <div className={`form-group col-12 row`}>
             <label className={`col-12 col-form-label label-input`}>
               ¿Generar pdf?
@@ -733,6 +806,7 @@ const ReporteTransaccionesTienda = () => {
                   <ReporteTransaccionesPdfComponent
                     data={elementPdf.data}
                     dataHeadPdf={elementPdf.dataHeadPdf}
+                    total={elementPdf.total}
                   />
                 }
               />
